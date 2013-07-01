@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- $Id: test1.xml,v 1.3 2012/07/25 13:56:03 marco Exp $ -->
+<l:definitions xmlns:l="http://www.mmarini.org/leibnitz-0-2-0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mmarini.org/leibnitz-0-2-0 ../../../../../../Leibnitz/res/leibnitz-0-2-0.xsd ">
+	<l:dimension>3</l:dimension>
+	<l:order>2</l:order>
+	<l:t0>0.0</l:t0>
+	<l:t1>0.0</l:t1>
+	<l:dt>0.0</l:dt>
+	<l:function id="R">q</l:function>
+	<l:function id="D">q+R</l:function>
+	<l:function id="F">e0*t</l:function>
+	<l:function id="A">I3</l:function>
+	<l:initValue>10*e1+0*e2</l:initValue>
+	<l:initValue order="1">10*e0+0*e2</l:initValue>
+	<l:equation>A*(D-F)</l:equation>
+</l:definitions>
