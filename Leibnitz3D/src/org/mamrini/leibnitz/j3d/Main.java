@@ -9,7 +9,9 @@ import java.awt.Container;
 import java.awt.GraphicsConfiguration;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.media.j3d.AmbientLight;
 import javax.media.j3d.Background;
@@ -44,7 +46,6 @@ import com.sun.j3d.utils.universe.ViewingPlatform;
  */
 public class Main extends JApplet {
 
-	private static final String[] DEFAULT_ARGS = { "paraboloide.xml", "r" };
 	private static final Color3f BLACK = new Color3f(0f, 0f, 0f);
 	private static final Color3f WHITE = new Color3f(1f, 1f, 1f);
 	private static final Color3f AMBIENT_COLOR_LIGHT = new Color3f(0.1f, 0.1f,
@@ -57,6 +58,8 @@ public class Main extends JApplet {
 	private static final float EYES_DISTANCE = 10f;
 
 	private static final long serialVersionUID = 1L;
+	private static final String[] DEFAULT_ARGUMENTS = {
+			"filename=rotazione.xml", "corpe=R,q" };
 
 	private static Log log = LogFactory.getLog(Main.class);
 
@@ -80,6 +83,9 @@ public class Main extends JApplet {
 	private FunctionGenerator generator;
 
 	private List<AbstractCorpe> corpes;
+	private String filename;
+	private Map<String, String[]> corpeMap;
+	private List<String> corpeNames;
 
 	/**
 	 * 
@@ -87,6 +93,8 @@ public class Main extends JApplet {
 	public Main() {
 		behaviour = new LeibnitzBehaviour();
 		corpes = new ArrayList<AbstractCorpe>();
+		corpeNames = new ArrayList<>();
+		corpeMap = new HashMap<>();
 	}
 
 	/**
@@ -193,76 +201,128 @@ public class Main extends JApplet {
 	 */
 	private void load(String[] args) throws ParserConfigurationException,
 			SAXException, IOException {
-		int n = args.length;
-		if (n < 1) {
-			args = DEFAULT_ARGS;
-			n = args.length;
+		if (args.length == 0) {
+			args = DEFAULT_ARGUMENTS;
 		}
+		try {
+			parseArgs(args);
+		} catch (IllegalArgumentException e) {
+			log.error(e.getMessage());
+			usage();
+			throw e;
+		}
+
+		if (filename == null) {
+			throw new IllegalArgumentException("Missing filename argument");
+		}
+
 		/*
 		 * First arguments is the function xml file
 		 */
-		generator = new LeibnitzParser().parse(args[0]);
+		generator = new LeibnitzParser().parse(filename);
+
 		Command cmd = generator.getFunction("dt");
 		if (cmd == null)
 			throw new IllegalArgumentException("Undefined function \"dt\"");
 		if (cmd.getType() != Type.SCALAR)
 			throw new IllegalArgumentException(
 					"Function \"dt\" is not a scalar");
-		int m = n - 2;
-		if (m <= 0)
-			m = 1;
-		/*
-		 * Next parameters are the specifications for each corpe. The location
-		 * and optionally the rotation form the specifications. The rotation
-		 * variable is separated by a comma from the location variable
-		 */
-		for (int i = 1; i < n; ++i) {
-			String parm = args[i];
-			log.info("Loading " + parm + " ...");
-			int idx = parm.indexOf(",");
+
+		int m = corpeNames.size();
+		int i = 0;
+		for (String name : corpeNames) {
+			/*
+			 * Parameters are the specifications for each corpe. The location
+			 * and optionally the rotation form the specifications. The rotation
+			 * variable is separated by a comma from the location variable
+			 */
+			log.info("Loading " + name + " ...");
+			String[] parms = corpeMap.get(name);
 			AbstractCorpe corpe = null;
-			String loc = null;
+			String loc = parms[0];
 			String rot = null;
+			if (parms.length > 1)
+				rot = parms[1];
 			float h = 0.8f * (i - 1) / m;
 			Color3f color = new Color3f(Color.getHSBColor(h, 1f, 1f));
-			if (idx < 0) {
-				loc = parm;
+			if (rot == null) {
 				Particle particle = new Particle();
 				particle.setColor(color);
 				corpe = particle;
 			} else {
-				loc = parm.substring(0, idx);
-				rot = parm.substring(idx + 1);
 				Diamond bar = new Diamond();
 				bar.setColor(color);
 				corpe = bar;
 			}
 			Command tfd = generator.getFunction(loc);
 			if (tfd == null)
-				throw new IllegalArgumentException("Undefined function " + loc);
+				throw new IllegalArgumentException("Function \"" + loc
+						+ "\" of corpe \"" + name + "\" undefined.");
 			if (tfd.getType() != Type.VECTOR)
-				throw new IllegalArgumentException("Function " + loc
-						+ " is not a vector");
+				throw new IllegalArgumentException("Function \"" + loc
+						+ "\" of corpe \"" + name + "\" is not a vector.");
 			TypeDimensions dims = tfd.getDimensions();
 			int dim = dims.getRowCount();
 			if (dim != 3)
-				throw new IllegalArgumentException("Function " + loc
-						+ " is not a location vector in 3D space (" + dims
-						+ ")");
+				throw new IllegalArgumentException("Function \"" + loc
+						+ "\" of corpe \"" + name
+						+ "\" is not a location vector in 3D space (" + dim
+						+ "D).");
 			corpe.setGenerator(generator);
 			corpe.setTranslateFunction(loc);
 			if (rot != null) {
 				Command rfd = generator.getFunction(rot);
 				if (rfd == null)
-					throw new IllegalArgumentException("Undefined function "
-							+ rot);
+					throw new IllegalArgumentException("Function \"" + rot
+							+ "\" of corpe \"" + name + "\" undefined.");
 				if (rfd.getType() != Type.QUATERNION)
-					throw new IllegalArgumentException("Function " + rot
-							+ " is not a quaternion");
+					throw new IllegalArgumentException("Function \"" + loc
+							+ "\" of corpe \"" + name
+							+ "\" is not a quaternion.");
 				corpe.setRotationFunction(rot);
 			}
 			corpes.add(corpe);
 		}
 		generator.init();
+	}
+
+	/**
+	 * 
+	 * @param args
+	 */
+	private void parseArgs(String[] args) {
+		for (String arg : args) {
+			String[] txt = arg.split("=");
+			if (txt.length != 2) {
+				throw new IllegalArgumentException("Wrong argument \"" + arg
+						+ "\"");
+			}
+			String key = txt[0];
+			String value = txt[1];
+			switch (key) {
+			case "filename":
+				filename = value;
+				break;
+			default:
+				String[] funcs = value.split(",");
+				if (corpeMap.containsKey(key)) {
+					throw new IllegalArgumentException("Corpe \"" + key
+							+ "\" already defined");
+				}
+				corpeMap.put(key, funcs);
+				corpeNames.add(key);
+			}
+		}
+	}
+
+	/**
+	 * 
+	 */
+	private void usage() {
+		System.out.println("Usage:");
+		System.out
+				.println(getClass()
+						+ " filename=<filename>"
+						+ " [*<corpeName>=<locationFunctionName>,[<rotationFunctionName>]");
 	}
 }
