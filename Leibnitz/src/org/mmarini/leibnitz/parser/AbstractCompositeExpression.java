@@ -19,7 +19,7 @@ public abstract class AbstractCompositeExpression extends AbstractExpression {
 	 */
 	protected AbstractCompositeExpression(String name) {
 		super(name);
-		expressions = new ArrayList<>();
+		expressions = new ArrayList<AbstractExpression>();
 	}
 
 	/**

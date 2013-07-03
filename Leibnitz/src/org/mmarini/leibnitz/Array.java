@@ -92,6 +92,14 @@ public class Array implements Cloneable {
 
 	/**
 	 * 
+	 * @return
+	 */
+	public int getColCount() {
+		return values[0].length;
+	}
+
+	/**
+	 * 
 	 */
 	public double getDeterminer() {
 		int n = values.length;

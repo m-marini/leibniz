@@ -42,7 +42,7 @@ public class TokenExpression extends AbstractExpression {
 			return true;
 		}
 		if (mandatory)
-			throw context.generateParseException(this);
+			context.generateParseException(this);
 		return false;
 	}
 }

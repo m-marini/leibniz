@@ -45,7 +45,7 @@ public class ChoiceExpression extends AbstractCompositeExpression {
 				return true;
 		}
 		if (mandatory)
-			throw context.generateParseException(this);
+			context.generateParseException(this);
 		return false;
 	}
 

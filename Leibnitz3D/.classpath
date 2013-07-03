@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="res"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Leibnitz"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="j3d/lib/ext/j3daudio.jar"/>
+	<classpathentry kind="lib" path="j3d/lib/ext/j3dcore.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Leibnitz3D/j3d/bin"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="j3d/lib/ext/j3dutils.jar"/>
+	<classpathentry kind="lib" path="j3d/lib/ext/vecmath.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

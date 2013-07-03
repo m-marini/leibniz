@@ -1,0 +1,939 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[italian]{babel}
+\usepackage{graphicx}
+\newtheorem{theorem}{Teorema}
+
+\title{Studio matematico per software Leibnitz}
+\author{Marco Marini}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\begin{abstract}
+\end{abstract}
+
+\part{Calcolo tensoriale}
+
+\section{Tensore d'inerzia}
+
+Prendiamo un sistema di coordinate cartesiane euclideo $x, y, z$.
+
+Il tensore d'inerzia per un punto $ \vec r_0 = (x_0, y_0, z_0) $ è dato da
+\begin{equation}
+\begin{array}{r}
+	I_{11} = \int_V \rho(\vec r) [(y - y_0)^2 + (z - z_0)^2 ] dV
+\\
+	I_{22} = \int_V \rho(\vec r) [(x - x_0)^2 + (z - z_0)^2 ] dV
+\\
+	I_{33} = \int_V \rho(\vec r) [(x - x_0)^2 + (y - y_0)^2 ] dV
+\\
+	I_{12} = I_{21} = -\int_V \rho(\vec r) (x - x_0) (y - y_0) dV
+\\
+	I_{13} = I_{31} = -\int_V \rho(\vec r) (x - x_0) (z - z_0) dV	
+\\
+	I_{23} = I_{31} = -\int_V \rho(\vec r) (y - y_0) (z - z_0) dV	
+\end{array}
+\end{equation}
+
+Con il tensore di'inerzia si può calcolare sia il momento d'inerzia
+\begin{equation}
+	\vec L = L^i = I_{ij} \omega^j
+\end{equation}
+
+Sia l'energia cinetica di rotazione
+\begin{equation}
+	E = I_{ij} \omega^i \omega^j
+\end{equation}
+
+
+\subsection{Tensore d'inerzia di un parallelepipedo}
+
+Come esempio calcoliamo il tensore d'inerzia di un parallelepipedo di di dimensione $ w \times h \times d $ e di densità uniforme $ \rho $ nel punto $ \vec {r_0} = (x_0, y_0, z_0) $ .
+
+\begin{eqnarray*}
+	I_{11} = \int_V \rho [ (y - y_0)^2 + (z - z_0)^2] dV
+\\
+	= \rho \int_{z=0}^h \int_{y=0}^d \int_{x=0}^w [ (y - y_0)^2 + (z - z_0)^2] dx \, dy \, dz
+\\
+	= \rho w \int \int [ (y - y_0)^2 + (z - z_0)^2] dy \, dz
+\\
+	= \rho w \int \left[ \frac{y^3}{3} - y^2 y_0 + y y_0 ^2 + y (z - z_0)^2 \right]_{y=0}^d dz
+\\
+	= \rho w d \int \left[ \frac{d^2}{3} - d y_0 + y_0 ^2 + (z - z_0)^2 \right] dz
+\\
+	= \rho w d \left[ \left(\frac{d^2}{3} - d y_0 + y_0 ^2\right) z + \frac{z^3}{3} - z^2 z_0 + z z_0^2 \right]_{z=0}^h
+\\
+	= \rho w d h \left( \frac{d^2}{3} - d y_0 + y_0 ^2 + \frac{h^2}{3} - h z_0 + z_0^2 \right)
+\end{eqnarray*}
+poichè $\rho w d h = M $ è la massa del parallelepipedo abbiamo
+\begin{equation}
+	I_{11} = M \left( \frac{d^2+h^2}{3} - d y_0 - h z_0 + y_0 ^2 + z_0^2 \right)
+\end{equation}
+in maniera simile si calcola
+\begin{eqnarray}
+	I_{22} = M \left( \frac{w^2+h^2}{3} - w x_0 - h z_0 + x_0 ^2 + z_0^2 \right)
+\\
+	I_{33} = M \left( \frac{w^2+d^2}{3} - w x_0 - d y_0 + x_0 ^2 + y_0^2 \right)
+\end{eqnarray}
+
+\begin{eqnarray*}
+	I_{12} = -\int_V \rho (x - x_0) (y - y_0) dV
+\\
+	= -\rho \int_{z=0}^h \int_{y=0}^d \int_{x=0}^w (x - x_0) (y - y_0) dx \, dy \, dz
+\\
+	= -\rho \int \int (y - y_0)  \left. \left( \frac{x^2}{2} - x x_0 \right) \right|_{x=0}^w dy \, dz
+\\
+	= -\rho w \left( \frac{w}{2} - x_0 \right) \int \int (y - y_0) dy \,  dz
+\\
+	= -\rho w \left( \frac{w}{2} - x_0 \right) \int \left. \left( \frac{y^2}{2} - y y_0 \right) \right|_{y=0}^d  dz
+\\
+	= -\rho w d \left( \frac{w}{2} - x_0 \right) \left( \frac{d}{2} - y_0 \right) \int  dz
+\\
+	= -\rho w d h \left( \frac{w}{2} - x_0 \right) \left( \frac{d}{2} - y_0 \right)
+\end{eqnarray*}
+\begin{equation}
+	I_{12} = -M \left( \frac{w}{2} - x_0 \right) \left( \frac{d}{2} - y_0 \right)
+\end{equation}
+similmente abbiamo
+\begin{eqnarray*}
+	I_{13} = -M \left( \frac{w}{2} - x_0 \right) \left( \frac{h}{2} - z_0 \right)
+\\
+	I_{23} = -M \left( \frac{d}{2} - y_0 \right) \left( \frac{h}{2} - z_0 \right)
+\end{eqnarray*}
+
+In sintensi
+\[
+	I_{ij} = M
+	\left|
+\begin{array}{ccc}
+	\frac{d^2+h^2}{3} - d y_0 - h z_0 + y_0 ^2 + z_0^2 ,
+	& - \left( \frac{w}{2} - x_0 \right) \left( \frac{d}{2} - y_0 \right),
+	& - \left( \frac{w}{2} - x_0 \right) \left( \frac{h}{2} - z_0 \right)
+\\
+	-\left( \frac{w}{2} - x_0 \right) \left( \frac{d}{2} - y_0 \right), 
+	& \frac{w^2+h^2}{3} - w x_0 - h z_0 + x_0 ^2 + z_0^2,
+	& - \left( \frac{d}{2} - y_0 \right) \left( \frac{h}{2} - z_0 \right)
+\\
+	-\left( \frac{w}{2} - x_0 \right) \left( \frac{h}{2} - z_0 \right),
+	& -\left( \frac{d}{2} - y_0 \right) \left( \frac{h}{2} - z_0 \right),
+	&  \frac{w^2+d^2}{3} -w x_0 - d y_0 + x_0 ^2 + y_0^2
+\end{array}
+	\right|
+\]
+
+Si può facilmente vedere che nel caso si prenda come punto di rotazione il centro di massa
+$ \vec r_0 = \left( \frac{w}{2}, \frac{d}{2}, \frac{h}{2} \right) $ 
+la matrice $ I_{ij}$ si diagonalizza in
+\[
+	I_{ij} = \frac{M}{12}
+	\left|
+\begin{array}{ccc}
+	d^2 + h^2, & 0, & 0
+\\
+	0, & w^2 + h^2, & 0
+\\
+	0, & 0, & w^2 + d^2
+\end{array}
+	\right|
+	=
+	\left|
+\begin{array}{ccc}
+	I_1, &0, &0
+\\
+	0, & I_2, & 0
+\\
+	0, & 0, & I_3
+\end{array}
+	\right|
+\]
+con
+\begin{eqnarray*}
+	I_1 = \frac{M}{12}(d^2 + h^2)
+\\
+	I_2 = \frac{M}{12}(w^2 + h^2)
+\\
+	I_3 = \frac{M}{12}(w^2 + d^2) 
+\end{eqnarray*}
+e gli assi $ x, y, z $ risultano essere gli assi d'inerzia principali.
+
+
+\subsection{Esempio di cambio di sistema di riferimento}
+
+Prendiamo ora in cosiderazione un esempio di cambio di sistema di riferimento per osservare come
+varia il tensore d'inerzia.
+
+Prendiamo in considerazione il centro di massa del parallelepipedo $\vec r_0 = \left( \frac{w}{2},  \frac{d}{2},  \frac{h}{2} \right) $
+\[
+	I_{ij} =
+	\left|
+\begin{array}{ccc}
+	I_1, &0, &0
+\\
+	0, & I_2, & 0
+\\
+	0, & 0, & I_3
+\end{array}
+	\right|
+\]
+
+Prendiamo ora il sistema di riferimento $ z^1, z^2, z^3 $
+\begin{eqnarray*}
+	z^1 = x^1 \cos \upsilon t - x^2 \sin \upsilon t
+\\
+	z^2 = x^1 \sin \upsilon t + x^2 \cos \upsilon t
+\\	
+	z^3 = x^3
+\end{eqnarray*} che corrisponde ad un sistema in rotazione attorno all'asse $z$ alla velocità angolare $ \upsilon $.
+
+Lo jacobiano è
+\[
+	J^i_j = \frac{\partial z^i}{\partial x^j} = 
+\left|
+\begin{array}{lll}
+	\cos \upsilon t, & -\sin \upsilon t, & 0
+\\
+	\sin \upsilon t, & \cos \upsilon t, & 0
+\\
+	0, & 0, & 1
+\end{array}
+\right|
+	=
+\left|
+\begin{array}{lll}
+	c, & -s, & 0
+\\
+	s, & c, & 0
+\\
+	0, & 0, & 1
+\end{array}
+\right|
+\]
+mentre l'inveso è 
+\[
+	(J^{-1})^i_j = \frac{\partial x^i}{\partial z^j} = 
+\left|
+\begin{array}{lll}
+	c, & s, & 0
+\\
+	-s, & c, & 0
+\\
+	0, & 0, & 1
+\end{array}
+\right|
+\]
+
+Il tensore d'inerzia diventa
+\begin{eqnarray*}
+	I'_{ij} = I_{kl} \frac{\partial x^k}{\partial z^i} \frac{\partial x^l}{\partial z^j}
+	= I_{kl} (J^{-1})^k_i (J^{-1})^l_j = (J^{-1})^T I J^{-1}
+\\
+	= \left|
+\begin{array}{lll}
+	c, & -s, & 0
+\\
+	s, & c, & 0
+\\
+	0, & 0, & 1
+\end{array}
+	\right|
+	\left|
+\begin{array}{lll}
+	I_1, & 0, & 0
+\\
+	0, & I_2, & 0
+\\
+	0, & 0, & I_3
+\end{array}
+	\right|
+	\left|
+\begin{array}{lll}
+	c, & s, & 0
+\\
+	-s, & c, & 0
+\\
+	0, & 0, & 1
+\end{array}
+\right|
+\\
+=
+	\left|
+\begin{array}{lll}
+	c^2 I_1 + s^2 I_2, & sc (I_1 - I_2), & 0
+\\
+	sc (I_1 - I_2), &s^2 I_1 + c^2 I_2 , & 0
+\\
+	0, & 0, & I_3
+\end{array}\
+\right|
+\end{eqnarray*}
+
+Se il parallelepipedo ruota ad una velocià angolare $ \vec \omega = \omega^i \vec e_i$ il momento d'inerzia è dato da
+\[
+	\vec L = L_i \vec {e^i} = I_{ij} \omega^j \vec {e^i} = I_1 \omega^1 \vec {e^1} +  I_2 \omega^2 \vec {e^2} + I_3 \omega^3 \vec {e^3}
+\]
+mentre nel sistema di coordinate $ z^1,  z^2, z^3 $
+la velocità angolare è data da
+\[
+	{\omega'}^i = \omega^j \frac{\partial z^i}{\partial x^j} = J \vec w = 
+	\left|
+\begin{array}{lll}
+	c, & -s, & 0
+\\
+	s, & c, & 0
+\\
+	0, & 0, & 1	
+\end{array}
+	\right|
+	\left|
+\begin{array}{l}
+	\omega^1
+\\
+	\omega^2
+\\
+	\omega^3
+\end{array}
+	\right|
+=
+	\left|
+\begin{array}{l}
+	c \omega^1 - s \omega^2
+\\
+	s \omega^1 + c \omega^2
+\\
+	\omega^3
+\end{array}
+	\right|
+\]
+mentre il tensore d'inerzia è
+\begin{eqnarray*}
+	\vec L' = L'_i \vec {e'^i} = I'_{ij} {\omega'}^j \vec {e'^i}
+\\
+	= 
+	\left|
+\begin{array}{lll}
+	c^2 I_1 + s^2 I_2, & sc (I_1 - I_2), & 0
+\\
+	sc (I_1 - I_2), &s^2 I_1 + c^2 I_2 , & 0
+\\
+	0, & 0, & I_3
+\end{array}
+	\right|
+	\left|
+\begin{array}{l}
+	c \omega^1 - s \omega^2
+\\
+	s \omega^1 + c \omega^2
+\\
+	\omega^3
+\end{array}
+	\right|
+= 
+	\left|
+\begin{array}{l}
+	c I_1 \omega^1 - s I_2 \omega^2
+\\
+	s I_1 \omega^1 + c I_2 \omega^2
+\\
+	I_3 \omega^3
+\end{array}
+	\right|
+\end{eqnarray*}
+verifichiamo che applicando la trasformazione di coordinate il momento d'inerzia risulta uguale a quanto calcolato:
+\begin{eqnarray*}
+	L'_i = L_j \frac{\partial x^j}{\partial z^i} = ( J^{-1} )^T L
+	= 
+	\left|
+\begin{array}{lll}
+	c, & -s, & 0
+\\
+	s, &c, & 0
+\\
+	0, & 0, & 1
+\end{array}
+	\right|
+	\left|
+\begin{array}{l}
+	I_1 \omega^1
+\\
+	I_2 \omega^2
+\\
+	I_1 \omega^3
+\end{array}
+	\right|
+= 
+	\left|
+\begin{array}{l}
+	c I_1 \omega^1 - s I_2 \omega^2
+\\
+	s I_1 \omega^1 + c I_2 \omega^2
+\\
+	I_3 \omega^3
+\end{array}
+	\right|
+\end{eqnarray*}
+
+
+\subsection{Dinamica}
+
+L'equazione dinamica del moto rotazionale è
+\[
+	\frac{d L_i}{dt} = M_i
+\]
+dove $ M_i $ è la somma dei momenti delle forze agenti sul corpo.
+\[
+	M_i = \frac{d L_i}{dt} = \frac{d I_{ij} \omega^j}{dt};
+\]
+
+Quindi posto
+\[
+\dot \omega^j = \frac{d  \omega^j}{dt}
+\]
+abbiamo
+\begin{equation}
+	M_i = \frac{d I_{ij}}{dt} \omega^j + I_{ij} \dot \omega^j 
+\end{equation}
+\\
+
+Nel sistema $ x^1, x^2, x^3 $ abbiamo che $ I_{ij} $ non dipende esplicitamente da $ t $ quindi $ \frac{d I_{ij}}{dt} = 0 $ da cui
+\[
+	M_i = I_{ij} \dot \omega^j
+\]
+da cui
+\[
+	I^{-1}_{ki} M_i = I^{-1}_{ki} I_{ij} \dot \omega^j = \dot \omega^k
+\]
+In caso di corpo in equilibrio le forze agenti sul corpo sono nulle quindi $ M_i = 0 $ quindi 
+\[
+	\dot \omega^i = 0 \Rightarrow \omega^i = \omega_0^i
+\]
+e il corpo permane i rotazione costante sull'asse in direzione $ \vec \omega_0 $
+\\
+
+Nel sistema $ z^1, z^2, z^3 $ abbiamo
+\[
+	M'_i = \frac{dL'_i}{dt} = \frac{d I'_{ij}}{dt} {\omega'}^j + I'_{ij} \dot \omega'^j
+\]
+che in caso di equilibrio è $ M'_i = ({J^{-1}})_i^j M_j = 0 $
+\[
+	\frac{d I'_{ij}}{dt} {\omega'}^j + I'_{ij} \dot \omega'^j = 0
+\]
+quindi 
+\[
+	I'_{ij} \dot \omega'^j = -\frac{d I'_{ij}}{dt} {\omega'}^j
+\]
+da cui possiamo ricavare
+\begin{equation}
+	\dot \omega'^k = -I_{ki}^{'-1} \frac{d I'_{ij}}{dt} {\omega'}^j
+\end{equation}
+
+Calcoliamo
+\begin{eqnarray*}
+	\frac{d I'_{ij}}{dt} = \frac{d (J^{-1})^T I J^{-1}}{dt}
+\\
+	= \frac{d (J^{-1})^T}{dt} I J^{-1} + (J^{-1})^T \frac{d I}{dt} J^{-1} + (J^{-1})^T I \frac{d J^{-1}}{dt}
+\\
+	=  \frac{d (J^{-1})^T}{dt} I J^{-1} + (J^{-1})^T I \frac{d J^{-1}}{dt}
+\end{eqnarray*}
+
+\subsection{Dinamica 1}
+
+Prendiamo il sistema di riferimento $ x^1, x^2, x^3 $, abbiamo visto che in tale sistema l'equazione del moto 
+risulta essere
+
+\[
+	\dot \omega^k = I_ {ki}^{-1} M_i
+\]
+
+Ipotiziamo che $ M_i $ sia dovuto alle forze $ \vec F_1 = (F, 0, 0) $ e $ \vec F_2 = (-F, 0, 0) $ applicate ai rispettivi punti
+$P_1 = (0, 0, h) $ e $ P_2 = (0, 0, 0) $
+
+Il momento risultate delle forze sarà quindi 
+
+\begin{equation}
+M_i = \sum F_\nu^i \times (P_\nu^i - R_0^i) =
+\
+\begin{array}{lll}
+
+\end{array}
+\end{equation}
+
+\section{Appendice di calcolo}
+Matrice Jacobiana
+\begin{equation}
+	J =
+\left|
+\begin{array}{lll}
+	c,	&	-s,	&	0
+	\\
+	s,	&	c,	&	0
+	\\
+	0,	&	0,	&	1
+\end{array}
+\right|
+\end{equation}
+
+Matrice Jacobiana inversa
+\begin{equation}
+	J^{-1} =
+\left|
+\begin{array}{lll}
+	c,	&	s,	&	0
+	\\
+	-s,	&	c,	&	0
+	\\
+	0,	&	0,	&	1
+\end{array}
+\right|
+\end{equation}
+
+Derivata della jacobiana inversa:
+\[
+	\frac{d (J^{-1})^i_j}{dt} = \upsilon
+	\left|
+\begin{array}{lll}
+	-s, & c, & 0
+\\
+	-c, &-s, & 0
+\\
+	0, & 0, & 0
+\end{array}
+	\right|
+\]
+
+Tensore d'inerzia nel sistema $ x^1, x^2, x^3 $ 
+\begin{equation}
+	I =
+\left|
+\begin{array}{lll}
+	I_1,	&	0,	&	0
+	\\
+	0,	&	I_2,	&	0
+	\\
+	0,	&	0,	&	I_3
+\end{array}
+\right|
+\end{equation}
+
+Inversa del tensore d'inerzia nel sistema $ x^1, x^2, x^3 $ 
+\begin{equation}
+	I^{-1} =
+\left|
+\begin{array}{lll}
+	\frac{1}{I_1},	&	0,			&	0
+	\\
+	0,			&	\frac{1}{I_2},	&	0
+	\\
+	0,			&	0,			&	\frac{1}{I_3}	
+\end{array}
+\right|
+\end{equation}
+
+
+Tensore d'inerzia nel sistema $ z^1, z^2, z^3 $ 
+\begin{eqnarray*}
+	I' = (J^{-1})^T I J^{-1} =
+\left|
+\begin{array}{lll}
+	c,	&	-s,	&	0
+	\\
+	s,	&	c,	&	0
+	\\
+	0,	&	0,	&	1
+\end{array}
+\right|
+\left|
+\begin{array}{lll}
+	I_1,	&	0,	&	0
+	\\
+	0,	&	I_2,	&	0
+	\\
+	0,	&	0,	&	I_3
+\end{array}
+\right|
+\left|
+\begin{array}{lll}
+	c,	&	s,	&	0
+	\\
+	-s,	&	c,	&	0
+	\\
+	0,	&	0,	&	1
+\end{array}
+\right|
+\\
+=\left|
+\begin{array}{lll}
+	c I_1,	&	-s I_2,	&	0
+	\\
+	s I_1,	&	c I_2,	&	0
+	\\
+	0,		&	0,		&	I_3
+\end{array}
+\right|
+\left|
+\begin{array}{lll}
+	c,	&	s,	&	0
+	\\
+	-s,	&	c,	&	0
+	\\
+	0,	&	0,	&	1
+\end{array}
+\right|
+=\left|
+\begin{array}{lll}
+	c^2 I_1 + s^2 I_2,	&	s c (I_1 - I_2),		&	0
+	\\
+	s c (I_1 - I_2),		&	s^2 I_1 + c^2 I_2,	&	0
+	\\
+	0,				&	0,				&	I_3
+\end{array}
+\right|
+\end{eqnarray*}
+
+Derivata temporale del tensore d'inerzia in $ z^1, z^2, z^3 $
+\begin{eqnarray}
+	\frac{d I'}{dt}
+	= \left|
+	\begin{array}{lll}
+	2 c (-s) \upsilon I_1+ 2 s c \upsilon I_2  ,	&	\upsilon (c^2-s^2) (I_1 - I_2),		&	0
+	\\
+	\upsilon (c^2-s^2) (I_1 - I_2),			&	2 c s \upsilon I_1- 2 s c \upsilon I_2,	&	0
+	\\
+	0,								&	0,							&	0
+	\end{array}
+	\right|
+	\\
+	= \upsilon (I_1 - I_2) \left|
+	\begin{array}{lll}
+	-2 s c  ,		&	c^2 - s ^2,	&	0
+	\\
+	c^2 - s ^2,	&	2 s c,			&	0
+	\\
+	0,			&	0,			&	0
+	\end{array}
+	\right|
+\end{eqnarray}
+
+Inversa del tensore d'inerzia in $ z^1, z^2, z^3 $
+\[
+	{I'}^{-1} = 
+\left| 
+\begin{array}{lll}
+	c^2 I_1 + s^2 I_2,	&	sc (I_1 - I_2),		&	0
+\\
+	sc (I_1 - I_2),		&	s^2 I_1 + c^2 I_2,	&	0
+\\
+	0,				&	0,				&	I_3
+\end{array}
+\right|^{-1}
+=
+\left| 
+\begin{array}{lll}
+	a,	&	b,	&	0
+\\
+	b,	&	d,	&	0
+\\
+	0,	&	0,	&	e
+\end{array}
+\right|^{-1}
+\]
+
+
+\begin{eqnarray*}
+\left| 
+\begin{array}{lll}
+	a,	&	b,	&	0
+\\
+	b,	&	d,	&	0
+\\
+	0,	&	0,	&	e
+\end{array}
+\right|
+\left.
+\begin{array}{lll}
+	1,	&	0,	&	0
+\\
+	0,	&	1,	&	0
+\\
+	0,	&	0,	&	1
+\end{array}
+\right|
+\Rightarrow
+\left| 
+\begin{array}{lll}
+	ab,	&	b^2,	&	0
+\\
+	ab,	&	ad,	&	0
+\\
+		&	\cdots	&
+\end{array}
+\right|
+\left.
+\begin{array}{lll}
+	b,	&	0,	&	0
+\\
+	0,	&	a,	&	0
+\\
+		&	\cdots	&
+\end{array}
+\right|
+\\
+\left| 
+\begin{array}{lll}
+		&	\cdots	&
+\\
+	0,	&	b^2-ad,	&	0
+\\
+		&	\cdots	&
+\end{array}
+\right|
+\left.
+\begin{array}{lll}
+		&	\cdots	&
+\\
+	b,	&	-a,	&	0
+\\
+		&	\cdots	&
+\end{array}
+\right|
+\Rightarrow
+\left| 
+\begin{array}{lll}
+		&	\cdots	&
+\\
+	0,	&	1,	&	0
+\\
+		&	\cdots	&
+\end{array}
+\right|
+\left.
+\begin{array}{lll}
+		&	\cdots	&
+\\
+	\frac{b}{b^2 - ad},	&	-\frac{a}{b^2 - ad},	&	0
+\\
+		&	\cdots	&
+\end{array}
+\right|
+\\
+\left| 
+\begin{array}{lll}
+	ad,	&	bd,	&	0
+\\
+	b^2,	&	bd,	&	0
+\\
+		&	\cdots	&
+\end{array}
+\right|
+\left.
+\begin{array}{lll}
+	d,	&	0,	&	0
+\\
+	0,	&	b,	&	0
+\\
+		&	\cdots	&
+\end{array}
+\right|
+\Rightarrow
+\left| 
+\begin{array}{lll}
+	b^2 - ad,	&	0,	&	0
+\\
+		&	\cdots	&
+\\
+		&	\cdots	&
+\end{array}
+\right|
+\left.
+\begin{array}{lll}
+	-d,	&	b,	&	0
+\\
+		&	\cdots	&
+\\
+		&	\cdots	&
+\end{array}
+\right|
+\\
+\left| 
+\begin{array}{lll}
+	1,	&	0,	&	0
+\\
+		&	\cdots	&
+\\
+		&	\cdots	&
+\end{array}
+\right|
+\left.
+\begin{array}{lll}
+	-\frac{d}{b^2 - ad},	&	\frac{b}{b^2 - ad},	&	0
+\\
+		&	\cdots	&
+\\
+		&	\cdots	&
+\end{array}
+\right|
+\Rightarrow
+\left| 
+\begin{array}{lll}
+	1,	&	0,	&	0
+\\
+	0,	&	1,	&	0
+\\
+	0,	&	0,	&	1
+\end{array}
+\right|
+\left.
+\begin{array}{lll}
+	-\frac{d}{b^2 - ad},	&	\frac{b}{b^2 - ad},	&	0
+\\
+	\frac{b}{b^2 - ad},	&	-\frac{a}{b^2 - ad},	&	0
+\\
+	0	,			&	0,				&	\frac{1}{e}
+\end{array}
+\right|
+\\
+b^2 - ad = s^2 c^2 (I_1 - I_2)^2 - (c^2 I_1 + s^2 I_2) (s^2 I_1 + c^2 I_2) = 
+\\
+s^2 c^2 I_1^2 + s^2 c^2 I_2^2 - 2 s^2 c^2 I_1 I_2 - s^2 c^2 I_1^2 - s^2 c^2 I_2^2 - I_1 I_2 (s^4 + c^4) =
+\\
+- I_1 I_2 (s^4 + c^4 + 2 s^2 c^2) = - I_1 I_2 (s^2 + c^2)^2 = - I_1 I_2 
+\\
+\end{eqnarray*}
+\begin{equation}
+{I'}^{-1} = 
+\left|
+\begin{array}{lll}
+	\frac{s^2 I_1 + c^2 I_2}{I_1 I_2},	&	-sc \frac{I_1 - I_2}{I_1 I_2},		&	0
+\\
+	-sc \frac{I_1 - I_2}{I_1 I_2},		&	\frac{c^2 I_1 + s^2 I_2}{I_1 I_2},	&	0
+\\
+	0	,						&	0,							&	\frac{1}{I_3}
+\end{array}
+\right|
+\end{equation}
+
+Accelerazione angolare nel sistema $ z^1, z^2, z^3 $
+
+\begin{eqnarray*}
+	\dot \omega'^k = - {I'_{ki}}^{-1} \frac{d I'_{ij}}{dt} {\omega'}^j
+\\
+	= - \upsilon (I_1 - I_2)
+	\left|
+	\begin{array}{lll}
+	\frac{s^2 I_1 + c^2 I_2}{I_1 I_2},	&	-sc \frac{I_1 - I_2}{I_1 I_2},		&	0
+	\\
+	-sc \frac{I_1 - I_2}{I_1 I_2},		&	\frac{c^2 I_1 + s^2 I_2}{I_1 I_2},	&	0
+	\\
+	0,							&	0,							&	\frac{1}{I_3}
+	\end{array}
+	\right|
+	\left|
+	\begin{array}{lll}
+	-2 s c,	&	c^2 - s^2,	&	0
+	\\
+	c^2 - s^2,	&	2 s c,		&	0
+	\\
+	0,		&	 0,		&	0
+	\end{array}
+	\right|
+	\left|
+	\begin{array}{l}
+	{\omega'}^1
+	\\
+	{\omega'}^2
+	\\
+	{\omega'}^3
+	\end{array}
+	\right|
+\\
+	= \upsilon \frac{I_1 - I_2}{I_1 I_2}
+	\left|
+	\begin{array}{lll}
+	a,	&	b,	&	0
+	\\
+	f,	&	g,	&	0
+	\\
+	0,	&	0,	&	0
+	\end{array}
+	\right|
+	\left|
+	\begin{array}{l}
+	{\omega'}^1
+	\\
+	{\omega'}^2
+	\\
+	{\omega'}^3
+	\end{array}
+	\right|
+\\
+\\
+	a = s c [2 (s^2 I_1 + c^2 I_2) + (I_1 - I_2) (c^2 - s^2)]
+\\
+	= s c (2 s^2 I_1 + 2 c^2 I_2 + c^2 I_1 - s^2 I_1 - c^2 I_2 + s^2 I_2)
+\\
+	= s c (s^2 I_1 + c^2 I_2 + c^2 I_1 + s^2 I_2) = s c (I_1 + I_2)
+\\
+\\
+	b = -(s^2 I_1 + c^2 I_2) (c^2 - s^2) + 2 s^2 c^2 (I_1 - I_2)
+\\
+	= -s^2 c^2 I_1 + s^4 I_1 - c^4 I_2 + s^2 c^2 I_2 + 2 s^2 c^2 I_1 - 2 s^2 c^2 I_2
+\\
+	= s^2 c^2 I_1 + s^4 I_1 - c^4 I_2 - s^2 c^2 I_2
+	= s^2 (c^2 + s^2) I_1 - c^2 (c^2 + s^2) I_2
+\\
+	= s^2 I_1 - c^2 I_2
+\\
+\\
+	f = -2 s^2 c^2 (I_1 - I_2) - (c^2 I_1 + s^2 I_2) (c^2 - s^2) 
+\\
+	= -2 s^2 c^2 I_1 + 2 s^2 c^2 I_2 - c^4 I_1 + s^2 c^2 I_1 - s^2 c^2 I_2 + s^4 I_2
+\\
+	= - s^2 c^2 I_1 + s^2 c^2 I_2 - c^4 I_1 + s^4 I_2
+	= -c^2 (s^2 + c^2) I_1 + s^2 (c^2 + s^2) I_2
+\\
+	= -c^2 I_1 + s^2 I_2
+\\
+\\
+	g = s c [(I_1 - I_2) (c^2 - s^2) - 2 (c^2 I_1 + s^2 I_2)]
+\\
+	= s c (c^2 I_1 - s^2 I_1 - c^2 I_2 + s^2 I_2 - 2 c^2 I_1 - 2 s^2 I_2) 
+\\
+	= s c (-c^2 I_1 - s^2 I_1 - c^2 I_2 - s^2 I_2)
+	= - s c (I_1 + I_2)
+\\
+\\
+	\left|
+	\begin{array}{l}
+	\dot {\omega '}^1
+	\\
+	\dot {\omega'}^2
+	\\
+	\dot {\omega'}^3
+	\end{array}
+	\right| =
+	\upsilon \frac{I_1 - I_2}{I_1 I_2}
+	\left|
+	\begin{array}{lll}
+	s c (I_1 + I_2),		&	s^2 I_1 - c^2 I_2,	&	0
+	\\
+	-c^2 I_1 + s^2 I_2,	&	-s c (I_1 + I_2),		&	0
+	\\
+	0,				&	0,				&	0
+	\end{array}
+	\right|	
+	\left|
+	\begin{array}{l}
+	{\omega '}^1
+	\\
+	{\omega'}^2
+	\\
+	{\omega'}^3
+	\end{array}
+	\right|
+\end{eqnarray*}
+
+\end{document}

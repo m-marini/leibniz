@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.mmarini.org/leibnitz-1-0-0"
+	elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:l="http://www.mmarini.org/leibnitz-1-0-0">
+	<annotation>
+		<documentation>
+			$Id: leibnitz-0-2-0.xsd,v 1.2 2012/07/25 13:55:45 marco Exp $
+		</documentation>
+	</annotation>
+	<element name="definitions" type="l:DefinitionsType"></element>
+	<complexType name="DefinitionsType">
+		<sequence>
+
+
+
+
+
+
+			<choice maxOccurs="unbounded" minOccurs="0">
+				<element name="variable" type="l:FunctionType">
+				</element>
+				<element name="function" type="l:FunctionType">
+				</element>
+			</choice>
+			<element name="update" type="l:FunctionType" maxOccurs="unbounded" minOccurs="0"></element>
+		</sequence>
+	</complexType>
+	<complexType name="FunctionType">
+		<simpleContent>
+			<extension base="string">
+				<attribute name="id" type="l:IdType" use="required"></attribute>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<simpleType name="IdType">
+		<restriction base="string">
+			<whiteSpace value="collapse"></whiteSpace>
+		</restriction>
+	</simpleType>
+	<complexType name="OutputType">
+		<simpleContent>
+			<extension base="string">
+				<attribute name="label" type="string"></attribute>
+			</extension>
+		</simpleContent>
+	</complexType>
+
+	<complexType name="VariableType">
+		<sequence>
+			<element name="initValue" type="string"></element>
+			<element name="function" type="string"></element>
+		</sequence>
+		<attribute name="id" type="l:IdType"></attribute>
+	</complexType>
+</schema>

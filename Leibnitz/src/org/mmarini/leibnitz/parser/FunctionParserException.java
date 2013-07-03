@@ -22,9 +22,13 @@ public class FunctionParserException extends Exception {
 		super(message);
 	}
 
+	/**
+	 * 
+	 * @param message
+	 * @param cause
+	 */
 	public FunctionParserException(String message, Throwable cause) {
 		super(message, cause);
-		// TODO Auto-generated constructor stub
 	}
 
 }

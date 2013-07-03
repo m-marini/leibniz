@@ -5,54 +5,72 @@ package org.mmarini.leibnitz.parser;
 
 import org.mmarini.leibnitz.Array;
 import org.mmarini.leibnitz.Vector;
-import org.mmarini.leibnitz.function.ACosFunction;
-import org.mmarini.leibnitz.function.ASinFunction;
-import org.mmarini.leibnitz.function.ATanFunction;
-import org.mmarini.leibnitz.function.AddArrayFunction;
-import org.mmarini.leibnitz.function.AddScalarFunction;
-import org.mmarini.leibnitz.function.AddVectorFunction;
-import org.mmarini.leibnitz.function.AppendArrayArrayFunction;
-import org.mmarini.leibnitz.function.AppendArrayFunction;
-import org.mmarini.leibnitz.function.AppendVectorFunction;
-import org.mmarini.leibnitz.function.ArrayFunction;
-import org.mmarini.leibnitz.function.ArrayProductFunction;
-import org.mmarini.leibnitz.function.ArrayVectorProductFunction;
-import org.mmarini.leibnitz.function.CosFunction;
-import org.mmarini.leibnitz.function.CoshFunction;
-import org.mmarini.leibnitz.function.DeterminerFunction;
-import org.mmarini.leibnitz.function.DivideArrayFunction;
-import org.mmarini.leibnitz.function.DivideScalarFunction;
-import org.mmarini.leibnitz.function.DivideVectorFunction;
-import org.mmarini.leibnitz.function.ExpFunction;
-import org.mmarini.leibnitz.function.Function;
-import org.mmarini.leibnitz.function.InverseFunction;
-import org.mmarini.leibnitz.function.LogFunction;
-import org.mmarini.leibnitz.function.ModuleFunction;
-import org.mmarini.leibnitz.function.MultiplyFunction;
-import org.mmarini.leibnitz.function.NegateArrayFunction;
-import org.mmarini.leibnitz.function.NegateScalarFunction;
-import org.mmarini.leibnitz.function.NegateVectorFunction;
-import org.mmarini.leibnitz.function.PowerFunction;
-import org.mmarini.leibnitz.function.ScalarFunction;
-import org.mmarini.leibnitz.function.ScalarParameterFunction;
-import org.mmarini.leibnitz.function.ScalarProduct;
-import org.mmarini.leibnitz.function.ScaleArrayFunction;
-import org.mmarini.leibnitz.function.ScaleVectorFunction;
-import org.mmarini.leibnitz.function.SinFunction;
-import org.mmarini.leibnitz.function.SinhFunction;
-import org.mmarini.leibnitz.function.SqrtFunction;
-import org.mmarini.leibnitz.function.SubArrayFunction;
-import org.mmarini.leibnitz.function.SubScalarFunction;
-import org.mmarini.leibnitz.function.SubVectorFunction;
-import org.mmarini.leibnitz.function.TanFunction;
-import org.mmarini.leibnitz.function.TanhFunction;
-import org.mmarini.leibnitz.function.TraceArrayFunction;
-import org.mmarini.leibnitz.function.TraceScalarFunction;
-import org.mmarini.leibnitz.function.TraceVectFunction;
-import org.mmarini.leibnitz.function.TransposeFunction;
-import org.mmarini.leibnitz.function.VectorFunction;
-import org.mmarini.leibnitz.function.VectorParameterFunction;
-import org.mmarini.leibnitz.function.VersusFunction;
+import org.mmarini.leibnitz.commands.AcosCommand;
+import org.mmarini.leibnitz.commands.AddACommand;
+import org.mmarini.leibnitz.commands.AddQCommand;
+import org.mmarini.leibnitz.commands.AddSCommand;
+import org.mmarini.leibnitz.commands.AddSQCommand;
+import org.mmarini.leibnitz.commands.AddSVCommand;
+import org.mmarini.leibnitz.commands.AddVCommand;
+import org.mmarini.leibnitz.commands.AddVQCommand;
+import org.mmarini.leibnitz.commands.AngleCommand;
+import org.mmarini.leibnitz.commands.AppendAACommand;
+import org.mmarini.leibnitz.commands.AppendACommand;
+import org.mmarini.leibnitz.commands.AppendVCommand;
+import org.mmarini.leibnitz.commands.AsinCommand;
+import org.mmarini.leibnitz.commands.AtanCommand;
+import org.mmarini.leibnitz.commands.Command;
+import org.mmarini.leibnitz.commands.Command.Type;
+import org.mmarini.leibnitz.commands.ConstACommand;
+import org.mmarini.leibnitz.commands.ConstSCommand;
+import org.mmarini.leibnitz.commands.ConstVCommand;
+import org.mmarini.leibnitz.commands.CosCommand;
+import org.mmarini.leibnitz.commands.CoshCommand;
+import org.mmarini.leibnitz.commands.Cylindric1Command;
+import org.mmarini.leibnitz.commands.CylindricCommand;
+import org.mmarini.leibnitz.commands.DeterminerCommand;
+import org.mmarini.leibnitz.commands.DivACommand;
+import org.mmarini.leibnitz.commands.DivQCommand;
+import org.mmarini.leibnitz.commands.DivSCommand;
+import org.mmarini.leibnitz.commands.DivVCommand;
+import org.mmarini.leibnitz.commands.ExpCommand;
+import org.mmarini.leibnitz.commands.InverseCommand;
+import org.mmarini.leibnitz.commands.LogCommand;
+import org.mmarini.leibnitz.commands.ModuleVCommand;
+import org.mmarini.leibnitz.commands.MulAACommand;
+import org.mmarini.leibnitz.commands.MulAVCommand;
+import org.mmarini.leibnitz.commands.MulQQCommand;
+import org.mmarini.leibnitz.commands.MulSACommand;
+import org.mmarini.leibnitz.commands.MulSQCommand;
+import org.mmarini.leibnitz.commands.MulSSCommand;
+import org.mmarini.leibnitz.commands.MulSVCommand;
+import org.mmarini.leibnitz.commands.MulVVCommand;
+import org.mmarini.leibnitz.commands.NegateACommand;
+import org.mmarini.leibnitz.commands.NegateQCommand;
+import org.mmarini.leibnitz.commands.NegateSCommand;
+import org.mmarini.leibnitz.commands.NegateVCommand;
+import org.mmarini.leibnitz.commands.PowerCommand;
+import org.mmarini.leibnitz.commands.QRotCommand;
+import org.mmarini.leibnitz.commands.SinCommand;
+import org.mmarini.leibnitz.commands.SinhCommand;
+import org.mmarini.leibnitz.commands.Spherical1Command;
+import org.mmarini.leibnitz.commands.SphericalCommand;
+import org.mmarini.leibnitz.commands.SqrtCommand;
+import org.mmarini.leibnitz.commands.SubACommand;
+import org.mmarini.leibnitz.commands.SubQCommand;
+import org.mmarini.leibnitz.commands.SubQSCommand;
+import org.mmarini.leibnitz.commands.SubQVCommand;
+import org.mmarini.leibnitz.commands.SubSCommand;
+import org.mmarini.leibnitz.commands.SubSVCommand;
+import org.mmarini.leibnitz.commands.SubVCommand;
+import org.mmarini.leibnitz.commands.TanCommand;
+import org.mmarini.leibnitz.commands.TanhCommand;
+import org.mmarini.leibnitz.commands.TraceACommand;
+import org.mmarini.leibnitz.commands.TraceSCommand;
+import org.mmarini.leibnitz.commands.TraceVCommand;
+import org.mmarini.leibnitz.commands.TransposeCommand;
+import org.mmarini.leibnitz.commands.TypeDimensions;
+import org.mmarini.leibnitz.commands.VersusCommand;
 
 /**
  * <pre>
@@ -93,6 +111,11 @@ import org.mmarini.leibnitz.function.VersusFunction;
  * unary := 'atan' unary
  * unary := 'log' unary
  * unary := 'sqrt' unary
+ * unary := 'cyl' unary
+ * unary := 'sphere' unary
+ * unary := 'cyl1' unary
+ * unary := 'sphere1' unary
+ * unary := 'qrot' unary
  * unary := power
  * 
  * power := term powerSuffix
@@ -102,18 +125,16 @@ import org.mmarini.leibnitz.function.VersusFunction;
  * 
  * term := '(' exp ')'
  * term := '|' exp '|'
- * term := 't'
- * term := 'I'
+ * term := 'I' dimension
  * constTerm := 'e' index
  * constTerm := 'E'
  * constTerm := 'PI'
- * term := 'q' order
  * term := id
  * term := number
  * 
- * index := digits
+ * dimension := digits
  * 
- * order := digitsOps
+ * index := digits
  * 
  * id := identifierChar idSuffix
  * 
@@ -149,10 +170,18 @@ import org.mmarini.leibnitz.function.VersusFunction;
  * 
  */
 public class SyntaxFactory {
-	private static final TokenExpression OPT_Q_TOKEN = new TokenExpression("q",
-			false);
-	private static final TokenExpression OPT_T_LOW_TOKEN = new TokenExpression(
-			"t", false);
+	private static final TokenExpression OPT_ANGLE_TOKEN = new TokenExpression(
+			"angle", false);
+	private static final TokenExpression OPT_QROT_TOKEN = new TokenExpression(
+			"qrot", false);
+	private static final TokenExpression OPT_CYL_TOKEN = new TokenExpression(
+			"cyl", false);
+	private static final TokenExpression OPT_CYL1_TOKEN = new TokenExpression(
+			"cyl1", false);
+	private static final TokenExpression OPT_SPHERE_TOKEN = new TokenExpression(
+			"sphere", false);
+	private static final TokenExpression OPT_SPHERE1_TOKEN = new TokenExpression(
+			"sphere1", false);
 	private static final TokenExpression OPT_SLASH_TOKEN = new TokenExpression(
 			"/", false);
 	private static final TokenExpression OPT_STAR_TOKEN = new TokenExpression(
@@ -210,6 +239,62 @@ public class SyntaxFactory {
 			"log", false);
 	private static final TokenExpression OPT_SQRT_TOKEN = new TokenExpression(
 			"sqrt", false);
+	private static final UnaryFunctionClassExpression VERSUS_CMD = new UnaryFunctionClassExpression(
+			"versusCommand", VersusCommand.class);
+	private static final UnaryFunctionClassExpression SIN_CMD = new UnaryFunctionClassExpression(
+			"sin", SinCommand.class);
+	private static final UnaryFunctionClassExpression COS_CMD = new UnaryFunctionClassExpression(
+			"cos", CosCommand.class);
+	private static final UnaryFunctionClassExpression TAN_CMD = new UnaryFunctionClassExpression(
+			"tan", TanCommand.class);
+	private static final UnaryFunctionClassExpression ASIN_CMD = new UnaryFunctionClassExpression(
+			"asin", AsinCommand.class);
+	private static final UnaryFunctionClassExpression ACOS_CMD = new UnaryFunctionClassExpression(
+			"acos", AcosCommand.class);
+	private static final UnaryFunctionClassExpression ATAN_CMD = new UnaryFunctionClassExpression(
+			"atan", AtanCommand.class);
+	private static final UnaryFunctionClassExpression SINH_CMD = new UnaryFunctionClassExpression(
+			"sinh", SinhCommand.class);
+	private static final UnaryFunctionClassExpression COSH_CMD = new UnaryFunctionClassExpression(
+			"cosh", CoshCommand.class);
+	private static final UnaryFunctionClassExpression TANH_CMD = new UnaryFunctionClassExpression(
+			"tanh", TanhCommand.class);
+	private static final UnaryFunctionClassExpression EXP_CMD = new UnaryFunctionClassExpression(
+			"exp", ExpCommand.class);
+	private static final UnaryFunctionClassExpression LOG_CMD = new UnaryFunctionClassExpression(
+			"log", LogCommand.class);
+	private static final UnaryFunctionClassExpression SQRT_CMD = new UnaryFunctionClassExpression(
+			"sqrt", SqrtCommand.class);
+	private static final UnaryFunctionClassExpression QROT_CMD = new UnaryFunctionClassExpression(
+			"qrot", QRotCommand.class);
+	private static final UnaryFunctionClassExpression ANGLE_CMD = new UnaryFunctionClassExpression(
+			"angle", AngleCommand.class);
+	private static final UnaryFunctionClassExpression CYL_CMD = new UnaryFunctionClassExpression(
+			"cyl", CylindricCommand.class);
+	private static final UnaryFunctionClassExpression SPHERE_CMD = new UnaryFunctionClassExpression(
+			"sphere", SphericalCommand.class);
+	private static final AbstractExpression CYL1_CMD = new AbstractExpression(
+			"cyl1") {
+
+		@Override
+		public boolean interpret(InterpreterContext context)
+				throws FunctionParserException {
+			Command p = context.pool();
+			context.push(new Cylindric1Command(p));
+			return true;
+		}
+	};
+	private static final AbstractExpression SPHERE1_CMD = new AbstractExpression(
+			"sphere1") {
+
+		@Override
+		public boolean interpret(InterpreterContext context)
+				throws FunctionParserException {
+			Command p = context.pool();
+			context.push(new Spherical1Command(p));
+			return true;
+		}
+	};
 	private static final AbstractExpression END_EXPRESSION = new AbstractExpression(
 			"<eof>") {
 
@@ -221,7 +306,7 @@ public class SyntaxFactory {
 		public boolean interpret(InterpreterContext context)
 				throws FunctionParserException {
 			if (context.getToken() != null)
-				throw context.generateParseException(this);
+				context.generateParseException(this);
 			return true;
 		}
 	};
@@ -232,11 +317,11 @@ public class SyntaxFactory {
 		public boolean interpret(InterpreterContext context)
 				throws FunctionParserException {
 			if (!context.isNumber())
-				throw context.generateParseException(this);
+				context.generateParseException(this);
 			String token = context.getToken();
 			context.nextToken();
 			double value = Double.parseDouble(token);
-			context.push(new FunctionDefinition(new ScalarFunction(value)));
+			context.push(new ConstSCommand(value));
 			return true;
 		}
 	};
@@ -263,40 +348,46 @@ public class SyntaxFactory {
 			int n = getIndex();
 			Array i = new Array(n, n);
 			i.setIdentity();
-			context.push(new FunctionDefinition(new ArrayFunction(i), n, n));
+			context.push(new ConstACommand(i));
 			return true;
 		}
 	};
 
-	private static final IndexedIdentifier Q_ORDER_PARM = new IndexedIdentifier(
-			"qOrder", "q") {
-		/**
-		 * @see org.mmarini.leibnitz.parser.TokenExpression#interpret(org.mmarini.leibnitz.parser.InterpreterContext)
-		 */
+	private static final AbstractExpression CHECK_FOR_QUATERNION = new AbstractExpression(
+			"check for quaternion") {
+
 		@Override
 		public boolean interpret(InterpreterContext context)
 				throws FunctionParserException {
-			if (!super.interpret(context))
-				return false;
-			int n = getIndex();
-			int order = context.getOrder();
-			if (n >= order)
-				throw context.generateParseException("parameter order " + n
-						+ " >= order " + order);
-			context.push(new FunctionDefinition(new VectorParameterFunction(n),
-					context.getDimension()));
+			if (context.peek().getType() != Type.QUATERNION)
+				context.generateParseException(this);
 			return true;
 		}
 	};
-
 	private static final AbstractExpression CHECK_FOR_VECTOR = new AbstractExpression(
 			"check for vector") {
 
 		@Override
 		public boolean interpret(InterpreterContext context)
 				throws FunctionParserException {
-			if (!context.peek().isVector())
-				throw context.generateParseException(this);
+			if (context.peek().getType() != Type.VECTOR)
+				context.generateParseException(this);
+			return true;
+		}
+	};
+	private static final AbstractExpression CHECK_FOR_3D_VECTOR = new AbstractExpression(
+			"check for 3D vector") {
+
+		@Override
+		public boolean interpret(InterpreterContext context)
+				throws FunctionParserException {
+			Command fd = context.peek();
+			if (fd.getType() != Type.VECTOR)
+				context.generateParseException(this);
+			int dim = fd.getDimensions().getRowCount();
+			if (dim != 3)
+				context.generateParseException(getName()
+						+ " mismatch dimension " + dim + "!=3");
 			return true;
 		}
 	};
@@ -306,8 +397,8 @@ public class SyntaxFactory {
 		@Override
 		public boolean interpret(InterpreterContext context)
 				throws FunctionParserException {
-			if (!context.peek().isArray())
-				throw context.generateParseException(this);
+			if (context.peek().getType() != Command.Type.ARRAY)
+				context.generateParseException(this);
 			return true;
 		}
 	};
@@ -317,8 +408,8 @@ public class SyntaxFactory {
 		@Override
 		public boolean interpret(InterpreterContext context)
 				throws FunctionParserException {
-			if (context.peek().isArray())
-				throw context.generateParseException(this);
+			if (context.peek().getType() == Command.Type.ARRAY)
+				context.generateParseException(this);
 			return true;
 		}
 	};
@@ -329,19 +420,25 @@ public class SyntaxFactory {
 		@Override
 		public boolean interpret(InterpreterContext context)
 				throws FunctionParserException {
-			if (!context.peek().isScalar())
-				throw context.generateParseException(this);
+			if (context.peek().getType() != Command.Type.SCALAR)
+				context.generateParseException(this);
 			return true;
 		}
 	};
-	private static final AbstractExpression CHECK_FOR_NOT_SCALAR = new AbstractExpression(
-			"check for not scalar") {
+	private static final AbstractExpression CHECK_FOR_ARRAY_OR_VECTOR = new AbstractExpression(
+			"check for array or vector") {
 
 		@Override
 		public boolean interpret(InterpreterContext context)
 				throws FunctionParserException {
-			if (context.peek().isScalar())
-				throw context.generateParseException(this);
+			switch (context.peek().getType()) {
+			case ARRAY:
+			case VECTOR:
+				break;
+			default:
+				context.generateParseException(this);
+				break;
+			}
 			return true;
 		}
 	};
@@ -354,10 +451,21 @@ public class SyntaxFactory {
 		@Override
 		public boolean interpret(InterpreterContext context)
 				throws FunctionParserException {
-			FunctionDefinition p1 = context.pool();
-			if (p1.isVector())
-				p1 = new FunctionDefinition(
-						new ModuleFunction(p1.getFunction()));
+			Command p1 = context.pool();
+			switch (p1.getType()) {
+			case SCALAR:
+				break;
+			case VECTOR:
+				p1 = new ModuleVCommand(p1);
+				break;
+			case QUATERNION:
+				context.generateParseException("check for not quaternion");
+				break;
+			case ARRAY:
+				break;
+			default:
+				break;
+			}
 			context.push(p1);
 			return true;
 		}
@@ -371,9 +479,9 @@ public class SyntaxFactory {
 		@Override
 		public boolean interpret(InterpreterContext context)
 				throws FunctionParserException {
-			Function exp = context.pool().getFunction();
-			Function base = context.pool().getFunction();
-			context.push(new FunctionDefinition(new PowerFunction(base, exp)));
+			Command exp = context.pool();
+			Command base = context.pool();
+			context.push(new PowerCommand(base, exp));
 			return true;
 		}
 	};
@@ -386,7 +494,7 @@ public class SyntaxFactory {
 		@Override
 		public boolean interpret(InterpreterContext context)
 				throws FunctionParserException {
-			context.push(new FunctionDefinition(new ScalarFunction(Math.E)));
+			context.push(new ConstSCommand(Math.E));
 			return true;
 		}
 	};
@@ -399,7 +507,7 @@ public class SyntaxFactory {
 		@Override
 		public boolean interpret(InterpreterContext context)
 				throws FunctionParserException {
-			context.push(new FunctionDefinition(new ScalarFunction(Math.PI)));
+			context.push(new ConstSCommand(Math.PI));
 			return true;
 		}
 	};
@@ -412,50 +520,31 @@ public class SyntaxFactory {
 		@Override
 		public boolean interpret(InterpreterContext context)
 				throws FunctionParserException {
-			FunctionDefinition p1 = context.pool();
-			int c = p1.getColCount();
-			int r = p1.getRowCount();
-			Function result = null;
-			if (p1.isScalar())
-				result = new TraceScalarFunction(p1.getFunction());
-			else if (p1.isVector())
-				result = new TraceVectFunction(p1.getFunction());
-			else if (c == r)
-				result = new TraceArrayFunction(p1.getFunction());
-			else
-				throw context
-						.generateParseException("trace mismatch dimension " + r
-								+ "!=" + c);
-			context.push(new FunctionDefinition(result));
+			Command p1 = context.pool();
+			Command result = null;
+			switch (p1.getType()) {
+			case SCALAR:
+				result = new TraceSCommand(p1);
+				break;
+			case VECTOR:
+				result = new TraceVCommand(p1);
+				break;
+			case ARRAY:
+				TypeDimensions type = p1.getDimensions();
+				int c = type.getColCount();
+				int r = type.getRowCount();
+				if (c != r)
+					context.generateParseException("trace mismatch dimension "
+							+ r + "!=" + c);
+				result = new TraceACommand(p1);
+				break;
+			default:
+				break;
+			}
+			context.push(result);
 			return true;
 		}
 	};
-	private static final UnaryFunctionClassExpression VERSUS_CMD = new UnaryFunctionClassExpression(
-			"versusCommand", VersusFunction.class);
-	private static final UnaryFunctionClassExpression SIN_CMD = new UnaryFunctionClassExpression(
-			"sin", SinFunction.class);
-	private static final UnaryFunctionClassExpression COS_CMD = new UnaryFunctionClassExpression(
-			"cos", CosFunction.class);
-	private static final UnaryFunctionClassExpression TAN_CMD = new UnaryFunctionClassExpression(
-			"tan", TanFunction.class);
-	private static final UnaryFunctionClassExpression ASIN_CMD = new UnaryFunctionClassExpression(
-			"asin", ASinFunction.class);
-	private static final UnaryFunctionClassExpression ACOS_CMD = new UnaryFunctionClassExpression(
-			"acos", ACosFunction.class);
-	private static final UnaryFunctionClassExpression ATAN_CMD = new UnaryFunctionClassExpression(
-			"atan", ATanFunction.class);
-	private static final UnaryFunctionClassExpression SINH_CMD = new UnaryFunctionClassExpression(
-			"sinh", SinhFunction.class);
-	private static final UnaryFunctionClassExpression COSH_CMD = new UnaryFunctionClassExpression(
-			"cosh", CoshFunction.class);
-	private static final UnaryFunctionClassExpression TANH_CMD = new UnaryFunctionClassExpression(
-			"tanh", TanhFunction.class);
-	private static final UnaryFunctionClassExpression EXP_CMD = new UnaryFunctionClassExpression(
-			"exp", ExpFunction.class);
-	private static final UnaryFunctionClassExpression LOG_CMD = new UnaryFunctionClassExpression(
-			"log", LogFunction.class);
-	private static final UnaryFunctionClassExpression SQRT_CMD = new UnaryFunctionClassExpression(
-			"sqrt", SqrtFunction.class);
 	private static final AbstractExpression TRANSPOSE_CMD = new AbstractExpression(
 			"transposeCommand") {
 
@@ -465,9 +554,8 @@ public class SyntaxFactory {
 		@Override
 		public boolean interpret(InterpreterContext context)
 				throws FunctionParserException {
-			FunctionDefinition p1 = context.pool();
-			context.push(new FunctionDefinition(new TransposeFunction(p1
-					.getFunction()), p1.getColCount(), p1.getRowCount()));
+			Command p = context.pool();
+			context.push(new TransposeCommand(p));
 			return true;
 		}
 	};
@@ -480,14 +568,14 @@ public class SyntaxFactory {
 		@Override
 		public boolean interpret(InterpreterContext context)
 				throws FunctionParserException {
-			FunctionDefinition p = context.pool();
-			int r = p.getRowCount();
-			int c = p.getColCount();
+			Command p = context.pool();
+			TypeDimensions type = p.getDimensions();
+			int r = type.getRowCount();
+			int c = type.getColCount();
 			if (r != c)
-				throw context
-						.generateParseException("inverse mismatch dimension "
-								+ r + "!=" + c);
-			context.push(p.clone(new InverseFunction(p.getFunction())));
+				context.generateParseException("inverse mismatch dimension "
+						+ r + "!=" + c);
+			context.push(new InverseCommand(p));
 			return true;
 		}
 	};
@@ -500,15 +588,23 @@ public class SyntaxFactory {
 		@Override
 		public boolean interpret(InterpreterContext context)
 				throws FunctionParserException {
-			FunctionDefinition p1 = context.pool();
-			Function function;
-			if (p1.isVector()) {
-				function = new NegateVectorFunction(p1.getFunction());
-			} else if (p1.isArray())
-				function = new NegateArrayFunction(p1.getFunction());
-			else
-				function = new NegateScalarFunction(p1.getFunction());
-			context.push(p1.clone(function));
+			Command p1 = context.pool();
+			Command function = null;
+			switch (p1.getType()) {
+			case SCALAR:
+				function = new NegateSCommand(p1);
+				break;
+			case VECTOR:
+				function = new NegateVCommand(p1);
+				break;
+			case QUATERNION:
+				function = new NegateQCommand(p1);
+				break;
+			case ARRAY:
+				function = new NegateACommand(p1);
+				break;
+			}
+			context.push(function);
 			return true;
 		}
 	};
@@ -521,19 +617,24 @@ public class SyntaxFactory {
 		@Override
 		public boolean interpret(InterpreterContext context)
 				throws FunctionParserException {
-			FunctionDefinition d = context.pool();
-			FunctionDefinition n = context.pool();
-			Function function;
-			if (n.isVector())
-				function = new DivideVectorFunction(n.getFunction(),
-						d.getFunction());
-			else if (n.isArray())
-				function = new DivideArrayFunction(n.getFunction(),
-						d.getFunction());
-			else
-				function = new DivideScalarFunction(n.getFunction(),
-						d.getFunction());
-			context.push(n.clone(function));
+			Command d = context.pool();
+			Command n = context.pool();
+			Command function = null;
+			switch (n.getType()) {
+			case SCALAR:
+				function = new DivSCommand(n, d);
+				break;
+			case QUATERNION:
+				function = new DivQCommand(n, d);
+				break;
+			case VECTOR:
+				function = new DivVCommand(n, d);
+				break;
+			case ARRAY:
+				function = new DivACommand(n, d);
+				break;
+			}
+			context.push(function);
 			return true;
 		}
 	};
@@ -546,60 +647,137 @@ public class SyntaxFactory {
 		@Override
 		public boolean interpret(InterpreterContext context)
 				throws FunctionParserException {
-			FunctionDefinition p2 = context.pool();
-			FunctionDefinition p1 = context.pool();
-			FunctionDefinition mul = null;
-			int r1 = p1.getRowCount();
-			int r2 = p2.getRowCount();
-			int c1 = p1.getColCount();
-			int c2 = p2.getColCount();
-			if (p1.isArray()) {
-				if (p2.isArray()) {
-					if (c1 != r2)
-						throw context
-								.generateParseException("product mismatch dimension "
-										+ c1 + "!=" + r2);
-					mul = new FunctionDefinition(new ArrayProductFunction(
-							p1.getFunction(), p2.getFunction()), r1, c2);
-				} else if (p2.isVector()) {
-					if (c1 != r2)
-						throw context
-								.generateParseException("product mismatch dimension "
-										+ c1 + "!=" + r2);
-					mul = new FunctionDefinition(
-							new ArrayVectorProductFunction(p1.getFunction(),
-									p2.getFunction()), r1);
-				} else
-					mul = p1.clone(new ScaleArrayFunction(p2.getFunction(), p1
-							.getFunction()));
-			} else if (p1.isVector()) {
-				if (p2.isArray())
-					throw context.generateParseException("check for vector");
-				if (p2.isVector()) {
-					if (r1 != r2)
-						throw context
-								.generateParseException("product mismatch dimension "
-										+ r1 + "!=" + r2);
-					mul = new FunctionDefinition(new ScalarProduct(
-							p1.getFunction(), p2.getFunction()));
-				} else
-					mul = p1.clone(new ScaleVectorFunction(p2.getFunction(), p1
-							.getFunction()));
-			} else if (p2.isArray()) {
-				mul = p2.clone(new ScaleArrayFunction(p1.getFunction(), p2
-						.getFunction()));
-			} else if (p2.isVector()) {
-				mul = p2.clone(new ScaleVectorFunction(p1.getFunction(), p2
-						.getFunction()));
-			} else
-				mul = p2.clone(new MultiplyFunction(p1.getFunction(), p2
-						.getFunction()));
+			Command p2 = context.pool();
+			Command p1 = context.pool();
+			Command mul = null;
+			switch (p1.getType()) {
+			case SCALAR:
+				mul = mulScalar(context, p1, p2);
+				break;
+			case VECTOR:
+				mul = mulVector(context, p1, p2);
+				break;
+			case QUATERNION:
+				mul = mulQuaterion(context, p1, p2);
+				break;
+			case ARRAY:
+				mul = mulArray(context, p1, p2);
+				break;
+			}
 			context.push(mul);
 			return true;
 		}
+
+		/**
+		 * 
+		 * @param context
+		 * @param p1
+		 * @param p2
+		 * @return
+		 * @throws FunctionParserException
+		 */
+		private Command mulArray(InterpreterContext context, Command p1,
+				Command p2) throws FunctionParserException {
+			TypeDimensions d1 = p1.getDimensions();
+			int c1 = d1.getColCount();
+			TypeDimensions d2;
+			int r2;
+			switch (p2.getType()) {
+			case SCALAR:
+				return new MulSACommand(p2, p1);
+			case VECTOR:
+				d2 = p2.getDimensions();
+				r2 = d2.getRowCount();
+				if (c1 != r2)
+					context.generateParseException("product mismatch dimension "
+							+ d1 + " by " + d2);
+				return new MulAVCommand(p1, p2);
+			case QUATERNION:
+				context.generateParseException("check for not quaternion");
+				break;
+			case ARRAY:
+				d2 = p2.getDimensions();
+				r2 = d2.getRowCount();
+				if (c1 != r2)
+					context.generateParseException("product mismatch dimension "
+							+ d1 + " by " + d2);
+				return new MulAACommand(p1, p2);
+			}
+			return null;
+		}
+
+		/**
+		 * 
+		 * @param context
+		 * @param p1
+		 * @param p2
+		 * @return
+		 * @throws FunctionParserException
+		 */
+		private Command mulQuaterion(InterpreterContext context, Command p1,
+				Command p2) throws FunctionParserException {
+			switch (p2.getType()) {
+			case SCALAR:
+				return new MulSQCommand(p2, p1);
+			case QUATERNION:
+				return new MulQQCommand(p1, p2);
+			default:
+				context.generateParseException("check for scalar or quaternion");
+			}
+			return null;
+		}
+
+		/**
+		 * 
+		 * @param context
+		 * @param p1
+		 * @param p2
+		 * @return
+		 */
+		private Command mulScalar(InterpreterContext context, Command p1,
+				Command p2) {
+			switch (p2.getType()) {
+			case SCALAR:
+				return new MulSSCommand(p1, p2);
+			case VECTOR:
+				return new MulSVCommand(p1, p2);
+			case QUATERNION:
+				return new MulSQCommand(p1, p2);
+			case ARRAY:
+				return new MulSACommand(p1, p2);
+			}
+			return null;
+		}
+
+		/**
+		 * 
+		 * @param context
+		 * @param p1
+		 * @param p2
+		 * @return
+		 * @throws FunctionParserException
+		 */
+		private Command mulVector(InterpreterContext context, Command p1,
+				Command p2) throws FunctionParserException {
+			switch (p2.getType()) {
+			case SCALAR:
+				return new MulSVCommand(p2, p1);
+			case VECTOR:
+				TypeDimensions d1 = p1.getDimensions();
+				TypeDimensions d2 = p2.getDimensions();
+				if (d1.getRowCount() != d2.getRowCount())
+					context.generateParseException("check for dimension " + d1
+							+ "!=" + d2);
+				return new MulVVCommand(p1, p2);
+			default:
+				context.generateParseException("check for scalar or vector");
+				break;
+			}
+			return null;
+		}
 	};
 	private static final AbstractExpression ADD_CMD = new AbstractExpression(
-			"subtract") {
+			"add") {
 
 		/**
 		 * @see org.mmarini.leibnitz.parser.TokenExpression#interpret(org.mmarini.leibnitz.parser.InterpreterContext)
@@ -607,38 +785,136 @@ public class SyntaxFactory {
 		@Override
 		public boolean interpret(InterpreterContext context)
 				throws FunctionParserException {
-			FunctionDefinition p2 = context.pool();
-			FunctionDefinition p1 = context.pool();
-			int r1 = p1.getRowCount();
-			int r2 = p2.getRowCount();
-			int c1 = p1.getColCount();
-			int c2 = p2.getColCount();
-			FunctionDefinition mul = null;
-			if (p1.isArray()) {
-				if (!p2.isArray())
-					throw context.generateParseException("check for array");
-				if (r1 != r2 || c1 != c2)
-					throw context
-							.generateParseException("add mismatch dimension "
-									+ r1 + "x" + c1 + "!=" + r2 + "x" + c2);
-				mul = p1.clone(new AddArrayFunction(p1.getFunction(), p2
-						.getFunction()));
-			} else if (p1.isVector()) {
-				if (!p2.isVector())
-					throw context.generateParseException("check for vector");
-				if (p1.getRowCount() >= p2.getRowCount())
-					mul = p1;
-				else
-					mul = p2;
-				mul = mul.clone(new AddVectorFunction(p1.getFunction(), p2
-						.getFunction()));
-			} else if (!p2.isScalar())
-				throw context.generateParseException("check for scalar");
-			else
-				mul = new FunctionDefinition(new AddScalarFunction(
-						p1.getFunction(), p2.getFunction()));
-			context.push(mul);
+			Command p2 = context.pool();
+			Command p1 = context.pool();
+			Command cmd = null;
+			switch (p1.getType()) {
+			case SCALAR:
+				cmd = processS(context, p1, p2);
+				break;
+			case VECTOR:
+				cmd = processV(context, p1, p2);
+				break;
+			case QUATERNION:
+				cmd = processQ(context, p1, p2);
+				break;
+			case ARRAY:
+				cmd = processA(context, p1, p2);
+				break;
+			}
+			context.push(cmd);
 			return true;
+		}
+
+		/**
+		 * 
+		 * @param context
+		 * @param p1
+		 * @param p2
+		 * @return
+		 * @throws FunctionParserException
+		 */
+		private Command processA(InterpreterContext context, Command p1,
+				Command p2) throws FunctionParserException {
+			if (p2.getType() != Type.ARRAY)
+				context.generateParseException("check for type " + p2 + " != "
+						+ Type.ARRAY);
+			TypeDimensions d1 = p1.getDimensions();
+			TypeDimensions d2 = p2.getDimensions();
+			if (!d1.equals(d2))
+				context.generateParseException("check for dimensions " + d1
+						+ " != " + d2);
+			return new AddACommand(p1, p2);
+		}
+
+		/**
+		 * 
+		 * @param context
+		 * @param p1
+		 * @param p2
+		 * @return
+		 * @throws FunctionParserException
+		 */
+		private Command processQ(InterpreterContext context, Command p1,
+				Command p2) throws FunctionParserException {
+			Type t2 = p2.getType();
+			switch (t2) {
+			case SCALAR:
+				return new AddSQCommand(p2, p1);
+			case VECTOR:
+				TypeDimensions d2 = p2.getDimensions();
+				if (d2.getRowCount() > 3)
+					context.generateParseException("check for dimension " + d2
+							+ " != [3 x 1]");
+				return new AddVQCommand(p2, p1);
+			case QUATERNION:
+				return new AddQCommand(p1, p2);
+			case ARRAY:
+				context.generateParseException("check for type " + t2);
+				break;
+			}
+			return null;
+		}
+
+		/**
+		 * 
+		 * @param context
+		 * @param p1
+		 * @param p2
+		 * @return
+		 * @throws FunctionParserException
+		 */
+		private Command processS(InterpreterContext context, Command p1,
+				Command p2) throws FunctionParserException {
+			Type t2 = p2.getType();
+			switch (t2) {
+			case SCALAR:
+				return new AddSCommand(p1, p2);
+			case VECTOR:
+				TypeDimensions d2 = p2.getDimensions();
+				if (d2.getRowCount() > 3)
+					context.generateParseException("check for dimension " + d2
+							+ " != [3 x 1]");
+				return new AddSVCommand(p1, p2);
+			case QUATERNION:
+				return new AddSQCommand(p1, p2);
+			case ARRAY:
+				context.generateParseException("check for type " + t2);
+				break;
+			}
+			return null;
+		}
+
+		/**
+		 * 
+		 * @param context
+		 * @param p1
+		 * @param p2
+		 * @return
+		 * @throws FunctionParserException
+		 */
+		private Command processV(InterpreterContext context, Command p1,
+				Command p2) throws FunctionParserException {
+			Type t2 = p2.getType();
+			int rc = p1.getDimensions().getRowCount();
+			switch (t2) {
+			case SCALAR:
+				if (rc > 3)
+					context.generateParseException("check for dimension " + rc
+							+ " > 3");
+				return new AddSVCommand(p2, p1);
+			case VECTOR:
+				return new AddVCommand(p1, p2);
+			case QUATERNION:
+				if (rc > 3)
+					context.generateParseException("check for dimension " + rc
+							+ " > 3");
+				return new AddVQCommand(p1, p2);
+			case ARRAY:
+				context.generateParseException("check for type " + t2);
+				break;
+			}
+			return null;
 		}
 	};
 	private static final AbstractExpression SUB_CMD = new AbstractExpression(
@@ -650,38 +926,125 @@ public class SyntaxFactory {
 		@Override
 		public boolean interpret(InterpreterContext context)
 				throws FunctionParserException {
-			FunctionDefinition p2 = context.pool();
-			FunctionDefinition p1 = context.pool();
-			int r1 = p1.getRowCount();
-			int r2 = p2.getRowCount();
-			int c1 = p1.getColCount();
-			int c2 = p2.getColCount();
-			FunctionDefinition mul = null;
-			if (p1.isArray()) {
-				if (!p2.isArray())
-					throw context.generateParseException("check for array");
-				if (r1 != r2 || c1 != c2)
-					throw context
-							.generateParseException("subtract mismatch dimension "
-									+ r1 + "x" + c1 + "!=" + r2 + "x" + c2);
-				mul = p1.clone(new SubArrayFunction(p1.getFunction(), p2
-						.getFunction()));
-			} else if (p1.isVector()) {
-				if (!p2.isVector())
-					throw context.generateParseException("check for vector");
-				if (p1.getRowCount() >= p2.getRowCount())
-					mul = p1;
-				else
-					mul = p2;
-				mul = mul.clone(new SubVectorFunction(p1.getFunction(), p2
-						.getFunction()));
-			} else if (!p2.isScalar())
-				throw context.generateParseException("check for scalar");
-			else
-				mul = new FunctionDefinition(new SubScalarFunction(
-						p1.getFunction(), p2.getFunction()));
-			context.push(mul);
+			Command p2 = context.pool();
+			Command p1 = context.pool();
+			Command cmd = null;
+			switch (p1.getType()) {
+			case SCALAR:
+				cmd = processS(context, p1, p2);
+				break;
+			case VECTOR:
+				cmd = processV(context, p1, p2);
+				break;
+			case QUATERNION:
+				cmd = processQ(context, p1, p2);
+				break;
+			case ARRAY:
+				cmd = processA(context, p1, p2);
+				break;
+			}
+			context.push(cmd);
 			return true;
+		}
+
+		/**
+		 * 
+		 * @param context
+		 * @param p1
+		 * @param p2
+		 * @return
+		 * @throws FunctionParserException
+		 */
+		private Command processA(InterpreterContext context, Command p1,
+				Command p2) throws FunctionParserException {
+			if (p2.getType() != Type.ARRAY)
+				context.generateParseException("check for type " + p2 + " != "
+						+ Type.ARRAY);
+			TypeDimensions d1 = p1.getDimensions();
+			TypeDimensions d2 = p2.getDimensions();
+			if (!d1.equals(d2))
+				context.generateParseException("check for dimensions " + d1
+						+ " != " + d2);
+			return new SubACommand(p1, p2);
+		}
+
+		/**
+		 * 
+		 * @param context
+		 * @param p1
+		 * @param p2
+		 * @return
+		 * @throws FunctionParserException
+		 */
+		private Command processQ(InterpreterContext context, Command p1,
+				Command p2) throws FunctionParserException {
+			Type t2 = p2.getType();
+			switch (t2) {
+			case SCALAR:
+				return new SubQSCommand(p1, p2);
+			case VECTOR:
+				TypeDimensions d2 = p2.getDimensions();
+				if (d2.getRowCount() > 3)
+					context.generateParseException("check for dimension " + d2
+							+ " != [3 x 1]");
+				return new SubQVCommand(p1, p2);
+			case QUATERNION:
+				return new SubQCommand(p1, p2);
+			case ARRAY:
+				context.generateParseException("check for type " + t2);
+				break;
+			}
+			return null;
+		}
+
+		/**
+		 * 
+		 * @param context
+		 * @param p1
+		 * @param p2
+		 * @return
+		 * @throws FunctionParserException
+		 */
+		private Command processS(InterpreterContext context, Command p1,
+				Command p2) throws FunctionParserException {
+			Type t2 = p2.getType();
+			switch (t2) {
+			case SCALAR:
+				return new SubSCommand(p1, p2);
+			case VECTOR:
+				TypeDimensions d2 = p2.getDimensions();
+				if (d2.getRowCount() > 3)
+					context.generateParseException("check for dimension " + d2
+							+ " != [3 x 1]");
+				return new SubSVCommand(p1, p2);
+			case QUATERNION:
+			case ARRAY:
+				context.generateParseException("check for type " + t2);
+				break;
+			}
+			return null;
+		}
+
+		/**
+		 * 
+		 * @param context
+		 * @param p1
+		 * @param p2
+		 * @return
+		 * @throws FunctionParserException
+		 */
+		private Command processV(InterpreterContext context, Command p1,
+				Command p2) throws FunctionParserException {
+			Type t2 = p2.getType();
+			switch (t2) {
+			case SCALAR:
+			case QUATERNION:
+			case ARRAY:
+				context.generateParseException("check for type " + t2);
+			case VECTOR:
+				return new SubVCommand(p1, p2);
+			}
+			return null;
 		}
 	};
 	private static final AbstractExpression DET_CMD = new AbstractExpression(
@@ -693,15 +1056,14 @@ public class SyntaxFactory {
 		@Override
 		public boolean interpret(InterpreterContext context)
 				throws FunctionParserException {
-			FunctionDefinition p = context.pool();
-			int r = p.getRowCount();
-			int c = p.getColCount();
+			Command p = context.pool();
+			TypeDimensions type = p.getDimensions();
+			int r = type.getRowCount();
+			int c = type.getColCount();
 			if (r != c)
-				throw context
-						.generateParseException("determiner mismatch dimension "
-								+ r + "!=" + c);
-			context.push(new FunctionDefinition(new DeterminerFunction(p
-					.getFunction())));
+				context.generateParseException("determiner mismatch dimension "
+						+ r + "!=" + c);
+			context.push(new DeterminerCommand(p));
 			return true;
 		}
 	};
@@ -714,63 +1076,38 @@ public class SyntaxFactory {
 		@Override
 		public boolean interpret(InterpreterContext context)
 				throws FunctionParserException {
-			FunctionDefinition p2 = context.pool();
-			FunctionDefinition p1 = context.pool();
-			int r1 = p1.getRowCount();
-			int r2 = p2.getRowCount();
-			int c1 = p1.getColCount();
-			int c2 = p2.getColCount();
-			int row = 0;
-			int col = 0;
-			Function function = null;
-			if (p1.isArray()) {
-				if (p2.isArray()) {
+			Command p2 = context.pool();
+			Command p1 = context.pool();
+			TypeDimensions dim1 = p1.getDimensions();
+			TypeDimensions dim2 = p2.getDimensions();
+			int r1 = dim1.getRowCount();
+			int r2 = dim2.getRowCount();
+			int c1 = dim1.getColCount();
+			int c2 = dim2.getColCount();
+			Command command = null;
+			if (p1.getType() == Type.ARRAY) {
+				if (p2.getType() == Type.ARRAY) {
 					// Array ; Array
 					if (c2 != c1)
-						throw context
-								.generateParseException("append mismatch dimension "
-										+ c1 + "!=" + c2);
-					col = c1;
-					function = new AppendArrayArrayFunction(p1.getFunction(),
-							p2.getFunction());
-					row = r1 + r2;
+						context.generateParseException("append mismatch dimension "
+								+ c1 + "!=" + c2);
+					command = new AppendAACommand(p1, p2);
 				} else {
 					// Array ; Vector
 					if (r2 != c1)
-						throw context
-								.generateParseException("append mismatch dimension "
-										+ c1 + "!=" + r2);
-					function = new AppendArrayFunction(p1.getFunction(),
-							p2.getFunction());
-					col = c1;
-					row = r1 + 1;
+						context.generateParseException("append mismatch dimension "
+								+ c1 + "!=" + r2);
+					command = new AppendACommand(p1, p2);
 				}
-			} else if (p2.isArray())
-				throw context.generateParseException("check for vector");
+			} else if (p2.getType() == Type.ARRAY)
+				context.generateParseException("check for vector");
 			else {
 				if (r1 != r2)
-					throw context
-							.generateParseException("append mismatch dimension "
-									+ r1 + "!=" + r2);
-				col = r1;
-				row = 2;
-				function = new AppendVectorFunction(p1.getFunction(),
-						p2.getFunction());
+					context.generateParseException("append mismatch dimension "
+							+ r1 + "!=" + r2);
+				command = new AppendVCommand(p1, p2);
 			}
-			context.push(new FunctionDefinition(function, row, col));
-			return true;
-		}
-	};
-	private static final AbstractExpression T_PARM_CMD = new AbstractExpression(
-			"tCommand") {
-
-		/**
-		 * @see org.mmarini.leibnitz.parser.TokenExpression#interpret(org.mmarini.leibnitz.parser.InterpreterContext)
-		 */
-		@Override
-		public boolean interpret(InterpreterContext context)
-				throws FunctionParserException {
-			context.push(new FunctionDefinition(new ScalarParameterFunction()));
+			context.push(command);
 			return true;
 		}
 	};
@@ -784,25 +1121,10 @@ public class SyntaxFactory {
 				return false;
 			String token = context.getToken();
 			context.nextToken();
-			FunctionDefinition result = context.getVariable(token);
+			Command result = context.getFunction(token);
 			if (result == null)
-				throw context.generateParseException(" undefined function "
-						+ token);
+				context.generateParseException(" undefined function " + token);
 			context.push(result);
-			return true;
-		}
-	};
-	private static final AbstractExpression DEFAULT_Q_PARM_CMD = new AbstractExpression(
-			"QCommand") {
-
-		/**
-		 * @see org.mmarini.leibnitz.parser.TokenExpression#interpret(org.mmarini.leibnitz.parser.InterpreterContext)
-		 */
-		@Override
-		public boolean interpret(InterpreterContext context)
-				throws FunctionParserException {
-			context.push(new FunctionDefinition(new VectorParameterFunction(0),
-					context.getDimension()));
 			return true;
 		}
 	};
@@ -817,14 +1139,10 @@ public class SyntaxFactory {
 			int idx = getIndex();
 			Vector vector = new Vector(idx + 1);
 			vector.setValues(idx, 1);
-			context.push(new FunctionDefinition(new VectorFunction(vector),
-					idx + 1));
+			context.push(new ConstVCommand(vector));
 			return true;
 		}
 	};
-	// private static final OptExpression IDENTITY = new
-	// OptExpression("identity",
-	// OPT_I_TOKEN, INDEX, IDENTITY_CMD);
 	private static final OptExpression E_CONST = new OptExpression("E",
 			OPT_E_TOKEN, E_CMD);
 	private static final OptExpression PI_CONST = new OptExpression("PI",
@@ -859,8 +1177,8 @@ public class SyntaxFactory {
 		expr.add(expSuffix);
 
 		expSuffix.add(new OptExpression("append", OPT_SEMICOMMA_TOKEN,
-				CHECK_FOR_NOT_SCALAR, sum, CHECK_FOR_NOT_SCALAR, APPEND_CMD,
-				expSuffix));
+				CHECK_FOR_ARRAY_OR_VECTOR, sum, CHECK_FOR_ARRAY_OR_VECTOR,
+				APPEND_CMD, expSuffix));
 		expSuffix.add(NONE);
 
 		SequenceExpression factor = new SequenceExpression("factor");
@@ -921,6 +1239,18 @@ public class SyntaxFactory {
 				CHECK_FOR_SCALAR, LOG_CMD));
 		unary.add(new OptExpression("sqrt", OPT_SQRT_TOKEN, unary,
 				CHECK_FOR_SCALAR, SQRT_CMD));
+		unary.add(new OptExpression("cyl", OPT_CYL_TOKEN, unary,
+				CHECK_FOR_3D_VECTOR, CYL_CMD));
+		unary.add(new OptExpression("angle", OPT_ANGLE_TOKEN, unary,
+				CHECK_FOR_QUATERNION, ANGLE_CMD));
+		unary.add(new OptExpression("qrot", OPT_QROT_TOKEN, unary,
+				CHECK_FOR_3D_VECTOR, QROT_CMD));
+		unary.add(new OptExpression("cyl1", OPT_CYL1_TOKEN, unary,
+				CHECK_FOR_3D_VECTOR, CYL1_CMD));
+		unary.add(new OptExpression("sphere1", OPT_SPHERE1_TOKEN, unary,
+				CHECK_FOR_3D_VECTOR, SPHERE1_CMD));
+		unary.add(new OptExpression("sphere", OPT_SPHERE_TOKEN, unary,
+				CHECK_FOR_3D_VECTOR, SPHERE_CMD));
 		unary.add(power);
 
 		ChoiceExpression term = new ChoiceExpression("term");
@@ -939,9 +1269,6 @@ public class SyntaxFactory {
 				CHECK_FOR_NOT_ARRAY, VBAR_TOKEN, MODULE_CMD));
 		term.add(BASE_TERM);
 		term.add(IDENTITY);
-		term.add(new OptExpression("tParm", OPT_T_LOW_TOKEN, T_PARM_CMD));
-		term.add(new OptExpression("qParm", OPT_Q_TOKEN, DEFAULT_Q_PARM_CMD));
-		term.add(Q_ORDER_PARM);
 		term.add(E_CONST);
 		term.add(PI_CONST);
 		term.add(OPT_IDENTIFIER);

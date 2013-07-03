@@ -1,14 +1,20 @@
 \documentclass[a4paper,twoside]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
 \usepackage[italian]{babel}
-\usepackage[latin1]{inputenc}
+\usepackage{graphicx}
 \begin{document}
+\newtheorem{theorem}{Teorema}
 \title{Leibnitz\thanks{$ $Id: notes.tex,v 1.3 2012/07/25 13:55:45 marco Exp $ $ }}
 \author{Marco Marini}
 \maketitle
 \tableofcontents
 \pagebreak
-\section{Notes release 0.0.1}
-\subsection{Generals}
+
+\section{Notes release 0.0.1.}
+
+\subsection{Generals.}
 The project computes the values of a vectorial function X defined by
 a differential vectorial equation:
 \begin{equation}
@@ -31,7 +37,7 @@ given the initial Cauchy condition
 
 The $\vec X^{(n)}$ defines the derived $n$ function.
 
-\subsection{Specifications}
+\subsection{Specifications.}
 
 The syntax of function definition is defined in org.mmarini.leibnitz.parser.InterpreterContext javadoc
 \\
@@ -61,7 +67,7 @@ The optional properties are:
 \end{description}
 
 
-\section{Addendum release 0.1.0}
+\section{Addendum release 0.1.0.}
 
 \begin{enumerate}
 \item
@@ -78,7 +84,7 @@ Le equazioni di Lagrange sono definite come
 \begin{equation}
 \frac{d}{dt} \frac{\partial T}{\partial \dot q_i} - \frac{\partial T}{\partial q_i} = f_i
 \end{equation}
-$T$ Ë l'energia definita come
+$T$ √® l'energia definita come
 \begin{eqnarray}
 T = T_2+T_1+T_0
 \\
@@ -132,14 +138,14 @@ A \vec {\ddot Q} = \vec G, \vec {\ddot Q} = A^{-1} \vec G
 Le funzioni da implementare sono:
 
 \begin{enumerate}
-\item definizione di vettori e matrici funzionali di dimensione m (n. di gradi di libert‡)
+\item definizione di vettori e matrici funzionali di dimensione m (n. di gradi di libert?)
 \item definizione di vettori funzionali di trasformazione di grado n (particelle)
 \item estendere l'interpretazione e valutazione delle espressioni con matrici e con riferimenti a vettori e matrici funzionali.
 \item variabili predefinite t,  Q, Q(1), ..., Q(n-1)
 \end{enumerate}
 
 
-\subsection{Specifications}
+\subsection{Specifications.}
 
 The syntax of function definition is defined in org.mmarini.leibnitz.parser.SyntaxFactory javadoc
 \\
@@ -151,15 +157,16 @@ The file parameter is a xml file containing the definitions.
 The output is stdout unless -o file is specified in line command.
 \\
 
-The file definition of xml is leibnitz-0.1.0.xsd
+The file \textbf{definition} of xml is leibnitz-0.1.0.xsd
 
 
-\section{Addendum release 0.4.0}
+\section{Addendum release 0.4.0.}
+
 Le condizioni iniziali sono impostate utilizzando il parse esteso di espressioni comprendenti anche la definizioni delle funzioni.
 The file definition of xml is leibnitz-0.2.0.xsd
 
 
-\subsection{Paraboloide}
+\subsection{Paraboloide.}
 
 Calcoliamo il moto di una particella libera su una superficie paraboloide
 
@@ -171,7 +178,7 @@ Calcoliamo il moto di una particella libera su una superficie paraboloide
 \frac{\partial \vec R}{\partial\varphi }=(-r \sin \varphi, r\cos \varphi, 0)
 \end{eqnarray}
 
-La forza agente sulla particella invece Ë
+La forza agente sulla particella invece ?
 
 \begin{equation}
 \vec F = (0,0, -mg)
@@ -238,7 +245,7 @@ mr^2\ddot\varphi +2mr\dot r\dot\varphi = 0
 \end{array}
 \end{equation}
 
-Calcoliamo la velocit‡ angolare per mantenere la particella in una traiettoria circolare parallela al piano
+Calcoliamo la velocit? angolare per mantenere la particella in una traiettoria circolare parallela al piano
 $xOy$. E' necessario che la forza centripeta $Q_r$ sia esattamente opposta alla forza centrifuga
 $mr\dot \varphi^2$ quindi:
 
@@ -247,7 +254,7 @@ $mr\dot \varphi^2$ quindi:
 \end{equation}
 
 
-\subsection{Orbita su piano}
+\subsection{Orbita su piano.}
 
 Calcoliamo il moto di una particella libera su un piano con campo gravitazionale $\frac{K}{r^2}$
 
@@ -259,7 +266,7 @@ Calcoliamo il moto di una particella libera su un piano con campo gravitazionale
 \frac{\partial \vec R}{\partial\varphi }=(-r \sin \varphi, r\cos \varphi)
 \end{eqnarray}
 
-La forza agente sulla particella invece Ë
+La forza agente sulla particella invece ?
 
 \begin{equation}
 \vec F = (-m\frac{K}{r^2}\cos\varphi, -m\frac{K}{r^2}\sin\varphi)
@@ -324,11 +331,23 @@ mr^2\ddot\varphi +2mr\dot r\dot\varphi = 0
 \end{array}
 \end{equation}
 
-Calcoliamo la velocit‡ angolare per mantenere la particella in una traiettoria circolare. E' necessario che la forza centripeta $Q_r$ sia esattamente opposta alla forza centrifuga
+Calcoliamo la velocit√† angolare per mantenere la particella in una traiettoria circolare. E' necessario che la forza centripeta $Q_r$ sia esattamente opposta alla forza centrifuga
 $mr\dot \varphi^2$ quindi:
 
 \begin{equation}
-m\frac{K}{r^2}=mr\dot\varphi^2 \Rightarrow \dot\varphi=\frac{1}{r}\sqrt {\frac{K}{r}}
+m \frac{K}{r^2} = m r \dot \varphi^2 \Rightarrow \dot \varphi = \frac{1}{r} \sqrt {\frac{K}{r}}
 \end{equation}
+
+
+\section{Addendum release 0.5.0.}
+
+Se alcune delle variabili indipendenti rappresentano degli angoli allora il calcolo degli angoli di rotazione
+deve essere eseguito con i quaternioni.
+E' necessario quindi identificare quali variabili indipendenti rappresentano degli angoli.
+
+
+\pagebreak
+\appendix
+\part{Appendice.}
 
 \end{document}

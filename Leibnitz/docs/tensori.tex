@@ -1,0 +1,500 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[italian]{babel}
+\usepackage{graphicx}
+\newtheorem{theorem}{Teorema}
+
+\title{Studio matematico per software Leibnitz}
+\author{Marco Marini}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\begin{abstract}
+\end{abstract}
+
+\part{Calcolo tensoriale}
+
+\section{Vettore controvariante}
+
+Prendiamo un sistema cartesiano associato ad un sistema di riferimento $ x^1, \dots, x^n $.
+Prendiamo poi un diverso sistema sistema di riferimento con basi $ z^1, \dots, z^n $ e le relative funzioni
+di trasformazione dei due sistema di riferimento
+\begin{eqnarray*}
+  z^1=z^1(x^1, \dots, x^n)
+  \\
+  \dots
+  \\
+  z^n=z^n(x^1, \dots, x^n)
+\end{eqnarray*}
+.
+ 
+Prendiamo una funzione parametrica che esprime una linea nel sistema $ x_1, \dots, x_n $:
+\[ f(t) = ( f^1(t), \dots,  f^n(t) ) \] 
+La stessa funzione è espressa nel sistema $ z^1, \dots, z^n $ come:
+\[ h(t) = ( h^1(t), \dots,  h^n(t) ) \]
+ovvero
+\begin{eqnarray*}
+  h^1(t) = z^1 \left( f^1(t), \dots, f^n(t) \right)
+  \\
+  \dots
+  \\
+  h^n(t) = z^n \left( f^1(t), \dots, f^n(t) \right)
+\end{eqnarray*}
+
+Calcoliamo la derivata rispetto $ t $
+\begin{equation}\label{eq:vettore1}
+  \frac{d}{dt} f(t) = \left( \frac{d}{dt} f^1(t), \dots, \frac{d}{dt} f^n(t) \right)
+\end{equation}
+mentre nel sistema di riferimento $ (x'_1, \dots, x'_n) $ sarà:
+\begin{equation}\label{eq:vettore2}
+  \frac{d}{dt} h(t)= \left( \frac{d}{dt} h^1(t), \dots, \frac{d}{dt} h^n(t) \right)
+\end{equation}
+applicando le funzioni di trasformazione avremo
+\begin{equation}\label{eq:vettore3}
+\begin{array}{r}
+  \frac{d}{dt} h^1(t) = \sum_{i=1}^n \frac{\partial z^1}{\partial x^i} \frac{d}{dt} f^i(t)
+  \\
+  \dots
+  \\
+  \frac{d}{dt} h^n= \sum_{i=1}^n \frac{\partial z^n}{\partial x^i} \frac{d}{dt} f^i(t)
+\end{array}
+\end{equation}
+
+Siano $ \vec {e_1}, \dots , \vec {e_n} $ e $ \vec {e_1'}, \dots , \vec {e_n'} $ i vettori base
+dei rispettivi sistemi di riferimento. Possiamo esprimere la (\ref{eq:vettore1})
+con la notazione vettoriale:
+\[ \frac{d}{dt} \vec f(t) = \frac{d}{dt} f^1(t) \vec {e_1} + \dots + \frac{d}{dt} f^n(t) \vec {e_n} = \sum_{i=1}^n \frac{d}{dt} f^i(t) \vec {e_i}\]
+o in forma più concisa (notazione di Einstein)
+\[ \frac{d}{dt} \vec f(t) = \frac{d}{dt} f^i(t) \vec {e_i} \]
+
+Allo stesso modo possiamo esprimere la (\ref{eq:vettore2}) come:
+\[ \frac{d}{dt} \vec h(t) = \frac{d}{dt} h^i(t) \vec {e_i'} \]
+e dalla (\ref{eq:vettore3})
+\[ \frac{d}{dt} \vec h(t) = \frac{\partial z^i}{\partial x^j} \frac{d}{dt} f^j(t) \vec {e_i'} \]
+
+La notazione vettoriale permette di identificare facilmente il sistema di riferimento evidenziando le specifiche basi.
+
+\paragraph{Esempio}
+Prendiamo il sistema di riferimento euclideo $ x, y, z $ e il sistema cilindrico $ r, \psi , z $.
+Le funzioni di trasformazione sono:
+\begin{eqnarray*}
+  x = r \cos \psi
+  \\
+  y = r \sin \psi
+  \\
+  z = z
+\end{eqnarray*}
+
+Prendiamo la curva $ f(t) $ espressa nel sistema $r, \psi , z $ dalle espressioni
+\[
+  f(t) = ( t, \psi_0,  k t)
+\]
+
+La curva è una retta passante per l'origine con pendenza $k$ e diretta con angolo polare $ \psi_0 $.
+
+Nelle coordinare euclidee la curva è:
+\[
+  h(t) = (t \cos \psi_0, t \sin \psi_0, k t )
+\]
+
+La derivata nel sistema $ r, \psi , z $ è
+\[ \frac{d}{dt} \vec f(t) = \frac{d}{dt} f^i(t) \vec {e_i}
+  = \vec {e_r} + 0 \vec {e_\psi} + k \vec {e_z}
+\].
+
+Posto che
+\[
+\begin{array}{rrr}
+  \frac{\partial x}{\partial r} = \cos \psi\ & \frac{\partial x}{\partial \psi} = -r \sin \psi & \frac{\partial x}{\partial z} = 0
+  \\
+  \frac{\partial y}{\partial r} = \sin \psi\ & \frac{\partial x}{\partial \psi} = r \cos \psi & \frac{\partial x}{\partial z} = 0
+  \\
+  \frac{\partial z}{\partial r} = 0\ & \frac{\partial z}{\partial \psi} = 0 & \frac{\partial z}{\partial z} = 1
+\end{array}
+\]
+
+Nel sistema $ x, y, z $ avremo:
+\begin{eqnarray*}
+  \frac{d}{dt} \vec h(t)= \frac{\partial z^i}{\partial x^j} \frac{d}{dt} f^j(t) \vec {è_i}
+  \\
+  \\
+  = \left( \frac{\partial x}{\partial r} \frac{d}{dt} f^r(t) + \frac{\partial x}{\partial \psi} \frac{d}{dt} f^\psi(t) + \frac{\partial x}{\partial z} \frac{d}{dt} f^z(t) \right) \vec {e_x}
+  \\
+  + \left( \frac{\partial y}{\partial r} \frac{d}{dt} f^r(t) + \frac{\partial y}{\partial \psi} f^\psi(t) + \frac{\partial y}{\partial z} \frac{d}{dt} f^z(t) \right) \vec {e_y}
+  \\
+  + \left( \frac{\partial z}{\partial r} \frac{d}{dt} f^r(t) + \frac{\partial z}{\partial \psi} f^\psi(t) + \frac{\partial z}{\partial z} \frac{d}{dt} f^z(t) \right) \vec {e_z}
+  \\
+  \\
+  = \cos \psi \vec {e_x} + \sin \psi \vec {e_y} + k \vec {e_z}
+\end{eqnarray*}
+ma essendo $ \psi = \psi_0 $ abbiamo 
+\[
+  \frac{d}{dt} \vec h(t)= \cos \psi_0 \vec {e_x} + \sin \psi_0 \vec {e_y} + k \vec {e_z}
+\]
+
+\subsection{Generalizzazione}
+
+Sia $\xi = (\xi ^1, \dots , \xi ^n)$ un vettore associato al sistema di coordinate $ x^1, \dots , x^n $.
+
+Se due sistemi di coordinate $ x^1, \dots , x^n $ e $ z^1, \dots , z^n $ sono legati mediante una trasformazione della forma $ x= x(z) $ tale che $ x^i (z_0^1, \dots , z_0^n) = x_0^i, i = 1, \dots , n $, lo stesso vettore si definisce nel nuovo sistema di coordinate $ z $ mediante un altro insieme di punti 
+$ \zeta ^1, \dots, \zeta ^n $ legato dalla formula:
+\begin{equation}\label{eq:trasformaVettore}
+  \xi ^i = \frac{\partial x^i}{\partial z^j} \zeta ^j
+\end{equation}
+
+Se $ \vec {e_i} = (\vec {e_1}, \dots, \vec {e_n}) $ e $ \vec {e_i'} = (\vec {e_1'}, \dots, \vec {e_n'}) $ sono i vettori base rispettivamente in $ x^1, \dots , x^n $ e $  z^1, \dots , z^n $ abbiamo:
+\begin{eqnarray*}
+  \vec \zeta = \zeta^i \vec {e_i'}
+  \\
+  \vec \xi = \xi^i \vec {e_i} = \frac{\partial x^i}{\partial z^j} \zeta ^j \vec {e_i}
+\end{eqnarray*}
+.
+
+\subsection{Trasformazione inversa}
+Sia $\xi = (\xi ^1, \dots , \xi ^n)$ un vettore associato al sistema di coordinate $ x^1, \dots , x^n $ e 
+$\zeta = (\zeta ^1, \dots , \zeta ^n)$ lo stesso vettore associato al sistema di coordinate $ z^1, \dots , z^n $.
+per la (\ref{eq:trasformaVettore}) abbiamo:
+\[
+  \xi ^i = \frac{\partial x^i}{\partial z^j} \zeta ^j
+\]
+
+Identifichiamo le relative funzioni di trasformazione inverse da $ z^1, \dots , z^n $ a  $ x^1, \dots , x^n $  con
+\begin{eqnarray*}
+  x^1=x^1(z^1, \dots, z^n)
+  \\
+  \dots
+  \\
+  x^n=x^n(z^1, \dots, z^n)
+\end{eqnarray*}
+avremo che 
+\[
+  \zeta ^i = \frac{\partial z^i}{\partial x^j} \xi ^j
+\]
+quindi
+\[
+  \zeta ^i = \frac{\partial z^i}{\partial x^j} \frac{\partial x^j}{\partial z^k} \zeta ^k = \delta^i_k \zeta ^k
+\].
+
+Da questo consegue che
+\begin{equation}
+\frac{\partial z^i}{\partial x^j} \frac{\partial x^j}{\partial z^k} =  \delta^i_k
+\Longrightarrow
+\frac{\partial z^i}{\partial x^j} = \left( \frac{\partial x^i}{\partial z^j} \right)^{-1}
+\end{equation}
+
+
+\section{Vettore covariante}
+
+Prendiamo un sistema cartesiano associato ad un sistema di riferimento $ x^1, \dots, x^n $.
+Prendiamo poi un diverso sistema sistema di riferimento con coordinate $ z^1, \dots, z^n $ e le relative funzioni
+di trasformazione dei due sistema di riferimento
+\begin{eqnarray*}
+  z^1=z^1(x^1, \dots, x^n)
+  \\
+  \dots
+  \\
+  z^n=z^n(x^1, \dots, x^n)
+\end{eqnarray*}
+.
+ 
+Prendiamouna funzione scalare nel sistema $ x_1, \dots, x_n $ 
+\[ f(x^1, \dots, x^n) \]
+
+La stessa funzione è espressa nel sistema $ z_1, \dots, z_n $ come:
+\[  h(z^1, \dots,  z^n) = f(x^1, \dots, x^n) \]
+ovvero
+\[
+  h(z^1 ( x^1, \dots, x^n), \dots, z^n ( x^1, \dots, x^n) )
+\]
+
+Calcoliamo il gradiente della funzione:
+\begin{equation}\label{eq:covettore1}
+ 	grad (f) = \left( \frac{\partial f}{\partial x^1} , \dots, \frac{\partial f}{\partial x^n} \right)
+ 	= \left( \frac{\partial h}{\partial x^1} , \dots, \frac{\partial f}{\partial x^n} \right)
+\end{equation} 
+mentre nel sistema di riferimento $ (x'_1, \dots, x'_n) $ sarà:
+\begin{equation}\label{eq:covettore2}
+	grad (h)= \left( \frac{\partial h}{\partial z^1}, \dots, \frac{\partial h}{\partial z^n} \right)
+\end{equation}
+applicando le funzioni di trasformazione avremo
+\begin{equation}\label{eq:covettore3}
+\begin{array}{r}
+	grad (f) = \left(
+	 \frac{\partial h(z^1 ( x^1, \dots, x^n), \dots, z^n ( x^1, \dots, x^n)}{\partial x^1} ,
+	\dots,
+	\frac{\partial h(z^1 ( x^1, \dots, x^n), \dots, z^n ( x^1, \dots, x^n)}{\partial x^n} 
+	\right)
+\\
+	= \left(
+	 \sum \frac{\partial h}{\partial z^i} \frac{\partial z^i}{\partial x^1}
+	\dots,
+	 \sum \frac{\partial h}{\partial z^i} \frac{\partial z^i}{\partial x^n}
+	\right)
+\end{array}
+\end{equation}
+
+Siano $ (\vec {e^1}, \dots , \vec {e^n}) $ e $ (\vec {{e'}^1}, \dots , \vec {{e'}^n}) $
+i vettori base dei rispettivi
+sistemi di riferimento. Possiamo esprimere la (\ref{eq:covettore1}) con la notazione vettoriale:
+\[ grad (f) = \frac{\partial f}{\partial x^1 } \vec {e^1} + \dots + \frac{\partial f}{\partial x^n} \vec {e^n}
+	= \sum_{i=1}^n \frac{\partial f}{\partial x^i} \vec {e^i}
+\]
+o in forma più concisa (notazione di Einstein)
+\[ grad(f) = \frac{\partial f}{\partial x^i} \vec {e^i} \]
+
+Allo stesso modo possiamo esprimere la (\ref{eq:covettore2}) come:
+\[ grad (h) = \frac{\partial h}{\partial z^i} \vec {{e'}^i} \]
+e dalla (\ref{eq:covettore3})
+\[ grad (f) = \frac{\partial h}{\partial z^j} \frac{\partial z^j}{\partial x^i}  \vec {{e'}_i} \]
+
+La notazione vettoriale permette di identificare facilmente il sistema di riferimento evidenziando le specifiche basi.
+
+\paragraph{Esempio}
+Prendiamo il sistema di riferimento euclideo $ x, y, z $ e il sistema cilindrico $ r, \psi , z $.
+Le funzioni di trasformazione sono:
+\begin{eqnarray*}
+  x = r \cos \psi
+  \\
+  y = r \sin \psi
+  \\
+  z = z
+\end{eqnarray*}
+
+Prendiamo la funzione $ h(x, y, z) $ espressa nel sistema $ x, y, z $ dalle espressioni
+\[
+  h(x, y, z) =  k_1 x +k_2 y + k_3 z
+\]
+
+Nel sistema cilindrico la funzione diventa:
+\[
+  f( r, \psi, z) =  k_1 r \cos \psi + k_2 r \sin \psi + k_3 z
+\]
+
+Il gradiente nel sistema $ x, y, z $ è
+\[ grad(h) = \frac{\partial h}{\partial z^i} \vec {e^i}
+  = k_1 \vec {e^x} + k_2 \vec {e^y} + k_3 \vec {e^z}
+\].
+
+Posto che
+\[
+\begin{array}{rrr}
+  \frac{\partial x}{\partial r} = \cos \psi\ & \frac{\partial x}{\partial \psi} = -r \sin \psi & \frac{\partial x}{\partial z} = 0
+  \\
+  \frac{\partial y}{\partial r} = \sin \psi\ & \frac{\partial x}{\partial \psi} = r \cos \psi & \frac{\partial x}{\partial z} = 0
+  \\
+  \frac{\partial z}{\partial r} = 0\ & \frac{\partial z}{\partial \psi} = 0 & \frac{\partial z}{\partial z} = 1
+\end{array}
+\]
+
+Nel sistema $ r, \psi, z $ avremo:
+\begin{eqnarray*}
+	grad (f) = \frac{\partial z^j}{\partial x^i} \frac{\partial h}{\partial z^j} \vec {{e'}^i}
+  \\
+  \\
+	= \left( \frac{\partial x}{\partial r} \frac{\partial h}{\partial x} + \frac{\partial y}{\partial r} \frac{\partial h}{\partial y} + \frac{\partial z}{\partial r} \frac{\partial h}{\partial z} \right) \vec {e^r}
+  \\
+	+ \left( \frac{\partial x}{\partial \psi} \frac{\partial h}{\partial x} + \frac{\partial y}{\partial \psi} \frac{\partial h}{\partial y} + \frac{\partial z}{\partial \psi} \frac{\partial h}{\partial z} \right) \vec {e^\psi}
+  \\
+	+ \left( \frac{\partial x}{\partial z} \frac{\partial h}{\partial x} + \frac{\partial y}{\partial z} \frac{\partial h}{\partial y} + \frac{\partial z}{\partial z} \frac{\partial h}{\partial z} \right) \vec {e^z}
+\\
+\\
+	= (k_1 \cos \psi + k_2 \sin \psi) \vec {e^r} + (-k_1 r \sin \psi + k_2 r \cos \psi) \vec {e^\psi} + k_z \vec {e^z}
+\end{eqnarray*}
+
+
+\subsection{Generalizzazione}
+
+Sia $\xi = (\xi_1, \dots , \xi_n)$ un covettore associato al sistema di coordinate $ x^1, \dots , x^n $.
+
+Se due sistemi di coordinate $ x^1, \dots , x^n $ e $  z^1, \dots , z^n  $ sono legati mediante una trasformazione della forma $ x= x(z) $ tale che $ x^i (z_0^1, \dots , z_0^n) = x_0^i, i = 1, \dots , n $, lo stesso covettore si definisce nel nuovo sistema di coordinate $ z $ mediante un altro insieme di punti 
+$ \zeta_1, \dots, \zeta_n $ legato dalla formula:
+\begin{equation}\label{eq:trasformaCovettore}
+  \zeta_i = \frac{\partial x^j}{\partial z^i} \xi_j
+\end{equation}
+
+Se $ \vec {e^i} = (\vec {e^1}, \dots, \vec {e^n}) $ e $ \vec {{e'}^i} = (\vec { {e'}^1}, \dots, \vec {{e'}_n}) $ sono i vettori base rispettivamente in $ x^1, \dots , x^n $ e $ z^1, \dots , z^n $ abbiamo:
+\begin{eqnarray*}
+  \vec \xi = \xi_i \vec {e^i}
+  \\
+  \vec \zeta = \zeta_i \vec {{e'}^i} = \frac{\partial x^j}{\partial z^i} \zeta_j \vec {{e'}^i}
+\end{eqnarray*}
+.
+
+\subsection{Trasformazione inversa}
+
+Sia $\xi = (\xi_1, \dots , \xi_n)$ un covettore associato al sistema di coordinate $ x^1, \dots , x^n $ e 
+$\zeta = (\zeta_1, \dots , \zeta_n)$ lo stesso covettore associato al sistema di coordinate $ z^1, \dots , z^n $.
+per la (\ref{eq:trasformaCovettore}) abbiamo:
+\[
+  \zeta_i = \frac{\partial x^j}{\partial z^i} \xi_j
+\]
+
+Identifichiamo le relative funzioni di trasformazione inverse da $ z^1, \dots , z^n $ a  $ x^1, \dots , x^n $  con
+\begin{eqnarray*}
+  x^1=x^1(z^1, \dots, z^n)
+  \\
+  \dots
+  \\
+  x^n=x^n(z^1, \dots, z^n)
+\end{eqnarray*}
+avremo che 
+\[
+  \xi_i = \frac{\partial z^j}{\partial x^i} \zeta_j
+\]
+quindi
+\[
+  \xi_i = \frac{\partial z^j}{\partial x^i} \frac{\partial x^k}{\partial z^j}  \xi_k = \delta _i^k \xi _k
+\].
+
+Da questo consegue che
+\begin{equation}
+	\frac{\partial z^j}{\partial x^i} \frac{\partial x^k}{\partial z^j} = \delta _i^k
+\Longrightarrow
+	\frac{\partial z^j}{\partial x^i} = \left( \frac{\partial x^i}{\partial z^j} \right)^{-1}
+\end{equation}
+
+
+\section{Metrica}
+
+Prendiamo due curve rappresentate dalle funzione parametriche $ f_1(t), f_2(t) $ espresse nel
+sistema $ x^1, \dots, x^n $.
+
+Consideriamo gli elementi infinitesimali lineari sulle curve considerate nello stesso punto $ t = t_0 $
+(distanze infinitesimale tra due punti ):
+\begin{eqnarray*}
+	\vec {dx_1} = dx_1^i \vec e_i = \left. \frac{d f^i_1}{dt} dt \, \vec e_i \right|_{t=t_0}
+\\
+	\vec {dx_2} = dx_2^i \vec e_i = \left. \frac{d f^i_2}{dt} dt \, \vec e_i \right|_{t=t_0}
+\end{eqnarray*}
+
+Supponiamo che il sistema $ x^1, \dots, x^n $ sia euclideo.
+Abbiamo che il prodotto scalare dei due vettori è
+\begin{equation}
+	\vec{dx_1} \vec{dx_2} = dx_1^i dx_2^i = \delta_{ij} dx_1^i dx_2^j = \delta_{ij} \frac{d f^i_1}{dt} \frac{d f^j_2}{dt} dt^2
+\end{equation}
+
+Siano $ h_1(t), h_2(t) $ la relative funzioni espresse nel sistema $ z^1, \dots, z^n $.
+Consideriamo gli elementi infinitesimali lineari sulle curve considerate nello stesso punto $ t = t_0 $:
+\begin{eqnarray*}
+	\vec {dz_1} = dz_1^i \vec e'_i = \left. \frac{d h^i_1}{dt} dt \, \vec e'_i \right|_{t=t_0}
+\\
+	\vec {dz_2} = dz_2^i \vec e'_i = \left. \frac{d h^i_2}{dt} dt \, \vec e'_i \right|_{t=t_0}
+\end{eqnarray*}
+
+Applicando le trasformazioni abbiamo che
+\begin{eqnarray*}
+	\vec {dx_1} = \frac{\partial x^i}{\partial z^j}  \frac{d h^j_1}{dt} dt \, \vec e_i =  \frac{\partial x^i}{\partial z^j}  dz_1^j dt \, \vec e_i 
+\\
+	\vec {dx_2} = \frac{\partial x^i}{\partial z^j}  \frac{d h^j_2}{dt} dt \, \vec e_i = \frac{\partial x^i}{\partial z^j} dz^j_2 dt \, \vec e_i 
+\end{eqnarray*}
+quindi il prodotto scalare può essere espresso con
+\[
+	\vec {ds_1} \vec {ds_2} = \delta_{ij} \frac{\partial x^i}{\partial z^k} dz^k_1 \frac{\partial x^j}{\partial z^l} dz^l_2
+\]
+ponendo
+\[
+	g_{ij} = \delta_{kl} \frac{\partial x^k}{\partial z_i} \frac{\partial x^l}{\partial z^j}
+\]
+abbiamo
+\[
+	\vec {ds_1} \vec {ds_2} = g_{ij} dz^k_1 dz^l_2
+\]
+
+Il prodotto scalare è invariante rispetto al sistema di riferimento quindi
+\[
+\vec {ds_1} \vec {ds_2} = \vec {ds'_1} \vec {ds'_2}
+\]
+ma viene espresso da forme bilineari diverse nei vari sistemi di riferimento:
+\[
+\vec {ds_1} \vec {ds_2} = \vec {ds'_1} \vec {ds'_2}  = \delta_{ij} dx_1^i dx_2^j = g_{ij} dz_1^i dz_2^j
+\]
+
+Le forme bilineare $\delta_{ij} dx_1^i dx_2^j $ e $ g_{ij} dz_1^i dz_2^j $ si dicono metriche.
+Se $ g_{ij} $ è la metrica nel sistema $ x^1, \dots, x^n $ e $g'_{ij} $ è la metrica nel sistema $ z^1, \dots, z^n $, le matrice metriche si trasformano secondo le funzioni:
+\begin{equation}
+	g'_{ij} = g_{kl} \frac{\partial x^k}{\partial z^i} \frac{\partial x^l}{\partial z^j}
+\end{equation}
+
+Si può notare che le matrici metriche sono matrici simmetriche quindi
+\[
+	g_{ij} = g_{ji}
+\]
+
+\paragraph{Esempio}
+
+Nel sistema euclideo la metrica è
+\[
+	g_{ij} = \delta_{ij} =
+	\left|
+\begin{array}{ccc}
+	1 & 0 & 0
+\\
+	0 & 1 & 0
+\\
+	0 & 0 & 1
+\end{array}
+	\right|
+\]
+
+Nel sistema cilindrico $ z= (r, \psi, z) $ invece è:
+\[
+	g'_{ij} = \delta_{kl} \frac{\partial x^k}{\partial z^i} \frac{\partial x^l}{\partial z^j} = \frac{\partial x^k}{\partial z^i} \frac{\partial x^k}{\partial z^j}
+\]
+cioè
+\begin{eqnarray*}
+	g'_{ij} = \left|
+\begin{array}{ccc}
+	(\frac{\partial x}{\partial r})^2 + (\frac{\partial y}{\partial r})^2 + (\frac{\partial z}{\partial r})^2,
+	& \frac{\partial x}{\partial r}\frac{\partial x}{\partial \psi} + \frac{\partial y}{\partial r}\frac{\partial y}{\partial \psi} + \frac{\partial z}{\partial r}\frac{\partial z}{\partial \psi},
+	& \frac{\partial x}{\partial r}\frac{\partial x}{\partial z} + \frac{\partial y}{\partial r}\frac{\partial y}{\partial z} + \frac{\partial z}{\partial r}\frac{\partial z}{\partial z}
+\\
+	\frac{\partial x}{\partial r}\frac{\partial x}{\partial \psi} + \frac{\partial y}{\partial r}\frac{\partial y}{\partial \psi} + \frac{\partial z}{\partial r}\frac{\partial z}{\partial \psi},
+	& (\frac{\partial x}{\partial \psi})^2 + (\frac{\partial y}{\partial \psi})^2 + (\frac{\partial z}{\partial \psi})^2,
+	& \frac{\partial x}{\partial \psi}\frac{\partial x}{\partial z} + \frac{\partial y}{\partial \psi}\frac{\partial y}{\partial z} + \frac{\partial z}{\partial \psi}\frac{\partial z}{\partial z}
+\\
+	\frac{\partial x}{\partial r}\frac{\partial x}{\partial z} + \frac{\partial y}{\partial r}\frac{\partial y}{\partial z} + \frac{\partial z}{\partial r}\frac{\partial z}{\partial z},
+	& \frac{\partial x}{\partial \psi}\frac{\partial x}{\partial z} + \frac{\partial y}{\partial \psi}\frac{\partial y}{\partial z} + \frac{\partial z}{\partial \psi}\frac{\partial z}{\partial z},
+	& (\frac{\partial x}{\partial z})^2 + (\frac{\partial y}{\partial z})^2 + (\frac{\partial \psi}{\partial z})^2
+\end{array}
+	\right|
+\\
+	= \left|
+\begin{array}{ccc}
+	\cos^2 \psi + \sin^2 \psi,
+	& -r \sin \psi \cos \psi +r \sin \psi \cos \psi,
+	& 0
+\\
+	-r \sin \psi \cos \psi +r \sin \psi \cos \psi,
+	& r^2 \sin^2 \psi + r^2 \cos^2 \psi,
+	& 0
+\\
+	0, & 0, &1
+\end{array}
+	\right|
+\\
+	= \left|
+\begin{array}{ccc}
+	1, & 0, & 0
+\\
+	0, & r^2, & 0
+\\
+	0, & 0, & 1
+\end{array}
+	\right|
+\end{eqnarray*}
+
+Il quadrato della lunghezza dell'elemento infinitesimale lineare $ ds^2 $ di una curva $ f(t) $ nel sistema $ x, y, z $ è quindi dato da
+\[
+	ds^2 = dx^2 + dy^2 + dz^2
+\]
+mentre nel sistema $ r,  \psi, z $
+\[
+	ds^2 = dr^2 + r^2 d\psi^2 + dz^2
+\]
+
+\end{document}

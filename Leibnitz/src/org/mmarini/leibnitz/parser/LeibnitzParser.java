@@ -13,6 +13,8 @@ import javax.xml.parsers.SAXParserFactory;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mmarini.leibnitz.FunctionGenerator;
 import org.xml.sax.SAXException;
 
@@ -21,6 +23,8 @@ import org.xml.sax.SAXException;
  * 
  */
 public class LeibnitzParser {
+	private static Log log = LogFactory.getLog(LeibnitzParser.class);
+	private static final String XSD_RESOURCE = "/leibnitz-1-0-0.xsd";
 
 	private SAXParserFactory factory;
 
@@ -36,7 +40,6 @@ public class LeibnitzParser {
 	 */
 	private void createFactory() throws SAXException {
 		if (factory == null) {
-			String XSD_RESOURCE = "/leibnitz-0-2-0.xsd";
 			Schema schema = SchemaFactory.newInstance(
 					XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(
 					getClass().getResource(XSD_RESOURCE));
@@ -56,6 +59,7 @@ public class LeibnitzParser {
 	 */
 	public FunctionGenerator parse(String file)
 			throws ParserConfigurationException, SAXException, IOException {
+		log.debug("Parsing " + file + " ...");
 		createFactory();
 		SAXParser parser = factory.newSAXParser();
 		LeibnitzSaxHandler handler = new LeibnitzSaxHandler();

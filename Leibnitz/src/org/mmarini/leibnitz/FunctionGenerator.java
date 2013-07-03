@@ -1,258 +1,180 @@
 /**
- * $Id: FunctionGenerator.java,v 1.3 2012/07/21 19:01:21 marco Exp $
+EvaluationContext * $Id: FunctionGenerator.java,v 1.3.6.1 2012/07/26 17:31:21 marco Exp $
  */
 package org.mmarini.leibnitz;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.mmarini.leibnitz.function.EvaluationContext;
-import org.mmarini.leibnitz.function.Function;
-import org.mmarini.leibnitz.parser.FunctionDefinition;
+import org.mmarini.leibnitz.commands.Command;
+import org.mmarini.leibnitz.commands.Command.Type;
+import org.mmarini.leibnitz.commands.VariableCommand;
+import org.mmarini.leibnitz.commands.VariableSCommand;
+import org.mmarini.leibnitz.parser.FunctionParserException;
 
 /**
- * <pre>
- * Y(n) + F(x, Y, Y(1), ..., Y(n-1)) = 0
- * Y(n) = -F(x, Y, Y(1), ..., Y(n-1))
- * </pre>
- * 
- * Example
- * 
- * <pre>
- * Y(2) + 10 Y(1) + 500 Y = 0
- * F(x, Y, Y(1)) = 10 Y(1) + 500 Y
- * </pre>
- * 
+ * The class implements a function generator.
+ * <p>
+ * The generation happens computing the required output values and then updating
+ * the state variables by applying the updating functions.
+ * </p>
  * 
  * @author US00852
  * 
  */
-public class FunctionGenerator implements EvaluationContext {
-
-	private Function function;
-	private Vector[] variable;
-	private double dt;
-	private double t;
-	private double scalar;
-	private Vector vector;
-	private double t1;
-	private Array array;
-	private List<OutputFunction> output;
+public class FunctionGenerator {
+	private CommandProcessor commandProcessor;
+	private Map<String, Command> functions;
+	private List<VariableCommand> variables;
+	private Map<String, VariableCommand> variableTable = new HashMap<String, VariableCommand>();
 
 	/**
 	 * 
 	 */
 	public FunctionGenerator() {
-		variable = new Vector[1];
-		output = new ArrayList<>();
+		commandProcessor = new CommandProcessor();
+		functions = new HashMap<String, Command>();
+		variables = new ArrayList<VariableCommand>();
+		variableTable = new HashMap<String, VariableCommand>();
 	}
 
 	/**
 	 * 
-	 * @param label
-	 * @param functionResult
+	 * @param id
+	 * @param function
 	 */
-	public void addOutput(String label, FunctionDefinition functionResult) {
-		output.add(new OutputFunction(label, functionResult));
+	public void add(String id, Command function) {
+		functions.put(id, function);
 	}
 
 	/**
 	 * 
+	 * @param id
+	 * @param variable
+	 */
+	public void add(String id, VariableCommand variable) {
+		variables.add(variable);
+		variableTable.put(id, variable);
+		functions.put(id, variable);
+	}
+
+	/**
+	 * Apply the update to the state variables.
 	 */
 	public void apply() {
-		Vector[] x = this.variable;
-		double dt = this.dt;
-		t += dt;
-		int n = x[0].getDimension();
-		Vector tmp = new Vector(n);
-		for (int i = x.length - 2; i >= 0; --i) {
-			tmp.setVector(x[i + 1]);
-			tmp.scale(dt);
-			x[i].add(tmp);
+		for (VariableCommand v : variables) {
+			v.update(commandProcessor);
 		}
+		resetCache();
 	}
 
 	/**
 	 * 
-	 * @param dt
+	 * @param id
+	 * @return
+	 * @throws FunctionParserException
 	 */
-	public void compute() {
-		function.apply(this);
-		vector.inverse();
-		variable[variable.length - 1].setVector(vector);
-	}
-
-	/**
-	 * @see org.mmarini.leibnitz.function.EvaluationContext#getArray()
-	 */
-	@Override
-	public Array getArray() {
-		return array;
+	public Array getArray(String id) throws FunctionParserException {
+		Command cmd = getFunction(id);
+		if (cmd.getType() != Type.ARRAY)
+			throw new FunctionParserException("check for type " + cmd.getType());
+		cmd.apply(commandProcessor);
+		return commandProcessor.getArray();
 	}
 
 	/**
 	 * 
+	 * @param id
 	 * @return
 	 */
-	public int getOrder() {
-		return variable.length;
-	}
-
-	/**
-	 * @return the output
-	 */
-	public List<OutputFunction> getOutput() {
-		return output;
-	}
-
-	/**
-	 * @return the scalar
-	 */
-	@Override
-	public double getScalar() {
-		return scalar;
+	public Command getFunction(String id) {
+		return functions.get(id);
 	}
 
 	/**
 	 * 
+	 * @param id
+	 * @return
+	 * @throws FunctionParserException
+	 */
+	public Quaternion getQuaternion(String id) throws FunctionParserException {
+		Command cmd = getFunction(id);
+		if (cmd.getType() != Type.QUATERNION)
+			throw new FunctionParserException("check for type " + cmd.getType());
+		cmd.apply(commandProcessor);
+		return commandProcessor.getQuaternion();
+	}
+
+	/**
+	 * 
+	 * @param id
+	 * @return
+	 * @throws FunctionParserException
+	 */
+	public double getScalar(String id) throws FunctionParserException {
+		Command cmd = getFunction(id);
+		if (cmd.getType() != Type.SCALAR)
+			throw new FunctionParserException("check for type " + cmd.getType());
+		cmd.apply(commandProcessor);
+		return commandProcessor.getScalar();
+	}
+
+	/**
+	 * 
+	 * @param id
 	 * @return
 	 */
-	public double getT() {
-		return t;
-	}
-
-	/**
-	 * @return the variable
-	 */
-	public Vector[] getVariable() {
-		return variable;
-	}
-
-	/**
-	 * @return the vector
-	 */
-	@Override
-	public Vector getVector() {
-		return vector;
-	}
-
-	/**
-	 * @return the x
-	 */
-	public Vector[] getX() {
-		return variable;
+	public VariableCommand getVariable(String id) {
+		return variableTable.get(id);
 	}
 
 	/**
 	 * 
+	 * @param id
 	 * @return
+	 * @throws FunctionParserException
 	 */
-	public boolean isCompleted() {
-		return t > t1;
-	}
-
-	/**
-	 * @see org.mmarini.leibnitz.function.EvaluationContext#setArray(org.mmarini.
-	 *      leibnitz.Array)
-	 */
-	@Override
-	public void setArray(Array a1) {
-		array = a1;
-	}
-
-	/**
-	 * @param dt
-	 *            the dt to set
-	 */
-	public void setDt(double dt) {
-		this.dt = dt;
+	public Vector getVector(String id) throws FunctionParserException {
+		Command cmd = getFunction(id);
+		if (cmd.getType() != Type.VECTOR)
+			throw new FunctionParserException("check for type " + cmd.getType());
+		cmd.apply(commandProcessor);
+		return commandProcessor.getVector();
 	}
 
 	/**
 	 * 
-	 * @param function
-	 * @throws FunctionException
 	 */
-	public void setFunction(Function function) {
-		this.function = function;
-	}
-
-	/**
-	 * @see org.mmarini.leibnitz.function.EvaluationContext#setParameter(int)
-	 */
-	@Override
-	public void setParameter(int order) {
-		vector = variable[order].clone();
+	public void init() {
+		for (VariableCommand v : variables)
+			v.init(commandProcessor);
 	}
 
 	/**
 	 * 
-	 * @param order
-	 * @param index
+	 */
+	private void resetCache() {
+		for (Command f : functions.values())
+			f.reset();
+	}
+
+	/**
+	 * 
+	 * @param id
 	 * @param value
+	 * @throws FunctionParserException
 	 */
-	public void setParameter(int order, Vector v) {
-		variable[order].setVector(v);
-	}
-
-	/**
-	 * 
-	 * @param order
-	 * @param value
-	 */
-	public void setQ(int order, Vector value) {
-		variable[order].setVector(value);
-	}
-
-	/**
-	 * @param scalar
-	 *            the scalar to set
-	 */
-	@Override
-	public void setScalar(double scalar) {
-		this.scalar = scalar;
-	}
-
-	/**
-	 * @see org.mmarini.leibnitz.function.EvaluationContext#setT()
-	 */
-	@Override
-	public void setT() {
-		scalar = t;
-	}
-
-	/**
-	 * @param t
-	 *            the t to set
-	 */
-	public void setT(double t) {
-		this.t = t;
-	}
-
-	/**
-	 * 
-	 * @param t1
-	 */
-	public void setT1(double t1) {
-		this.t1 = t1;
-	}
-
-	/**
-	 * 
-	 * @param order
-	 */
-	public void setVariable(int order, int dimension) {
-		variable = new Vector[order + 1];
-		for (int i = 0; i <= order; ++i)
-			variable[i] = new Vector(dimension);
-	}
-
-	/**
-	 * @param vector
-	 *            the vector to set
-	 */
-	@Override
-	public void setVector(Vector vector) {
-		this.vector = vector;
+	public void setVariable(String id, double value)
+			throws FunctionParserException {
+		VariableCommand var = variableTable.get(id);
+		if (var == null)
+			throw new FunctionParserException("variable \"" + id
+					+ "\" not found");
+		Type type = var.getType();
+		if (type != Type.SCALAR)
+			throw new FunctionParserException("check for type " + type);
+		((VariableSCommand) var).setValue(value);
 	}
 }

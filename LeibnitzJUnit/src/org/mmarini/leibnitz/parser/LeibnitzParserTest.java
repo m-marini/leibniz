@@ -23,7 +23,13 @@ public class LeibnitzParserTest {
 	public void testParse() {
 		try {
 			parser.parse("res/org/mmarini/leibnitz/parser/test1.xml");
-		} catch (ParserConfigurationException | SAXException | IOException e) {
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		} catch (SAXException e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		} catch (IOException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}

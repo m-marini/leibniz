@@ -31,7 +31,7 @@ public class SequenceExpression extends AbstractCompositeExpression {
 			throws FunctionParserException {
 		for (AbstractExpression e : getExpressions()) {
 			if (!e.interpret(context))
-				throw context.generateParseException(this);
+				context.generateParseException(this);
 		}
 		return true;
 	}

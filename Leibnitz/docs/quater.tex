@@ -1,0 +1,350 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[italian]{babel}
+\usepackage{graphicx}
+\newtheorem{theorem}{Teorema}
+
+\title{Studio matematico per software Leibnitz}
+\author{Marco Marini}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\begin{abstract}
+\end{abstract}
+
+\part{Quaternioni}
+
+\section{Introduzione ai quaternioni}
+Sia a $H$ l'insieme di elementi della forma
+\begin{equation}
+	\label{eq:quatForm}
+	a = a_1+a_2 i +a_3 j +a_4 k = a_1 + \vec a
+\end{equation}
+Definiamo l'operazione $+$ come
+\begin{equation}
+\begin{array}{r}
+	a = a_1 + a_2 i + a_3 j + a_4 k,  b = b_1 + b_2 i + b_3 j + b_4 k
+	\\
+	a + b = (a_1 + b_1) + (a_2 + b_2) i + (a_3 + b_3) j + (a_4 + b_4) k
+\end{array}
+\end{equation}
+o in notazione mista
+\begin{equation}
+\begin{array}{r}
+	\label{eq:somma}
+	a = a_1 + \vec a,  b = b_1 + \vec b
+	\\
+	a + b = (a_1 + b_1) + (\vec a + \vec b)
+\end{array}
+\end{equation}
+e il prodotto $\cdot$ come il normale prodotto con le regole di moltiplicazione tra letterali:
+\begin{equation}
+\begin{array}{r}
+	i \cdot i = j \cdot j = k \cdot k = -1
+	\\
+	i \cdot j = k, j \cdot k = i, 	k \cdot i = j 
+	\\
+	j \cdot i = -k, k \cdot j = -i, i \cdot k = -j 
+\end{array}
+\end{equation}
+per cui
+\begin{equation}
+\begin{array}{r}
+	a \cdot b  =a_1 b_1 - a_2 b_2 - a_3 b_3 - a_4 b_4 +
+\\
+	+ (a_1 b_2 + a_2 b_1 + a_3 b_4 - a_4 b_3) i +
+\\
+	+ (a_1 b_3 - a_2 b_4 + a_3 b_1 + a_4 b_2) j +
+\\
+	+ (a_1 b_4 + a_2 b_3 - a_3 b_2 + a_4 b_1) k
+\end{array}
+\end{equation}
+oppure
+\begin{equation}
+\begin{array}{r}
+	\label{eq:prodotto}
+	a \cdot b = (a_1 b_1 - \vec a \vec b) + (a_1 \vec b + \vec a b_1 + \vec a \times \vec b)
+\end{array}
+\end{equation}
+
+\begin{theorem}
+L'insieme $H$ è un corpo rispetto a (\ref{eq:somma}) e (\ref{eq:prodotto})
+\end{theorem}
+
+\paragraph{Dimostrazione.}
+Dimostriamo che $H$ è un gruppo rispetto alla somma:
+
+Dalla (\ref{eq:somma}) si vede che $a+b$ è della forma (\ref{eq:quatForm}) quindi $\forall a, b \in H: a + b \in H$ quindi $H$ è chiuso rispetto $+$.
+
+Abbiamo poi
+\begin{eqnarray*}
+	(a + b) + c  = [(a_1 + \vec a) + (b_1 + \vec b)] + (c_1 + \vec c)
+\\
+	= [a_1 + b_1 + (\vec a + \vec b)]+ (c_1 + \vec c)
+\\
+	= a_1 + b_1 + c_1 + [(\vec a + \vec b) + \vec c]
+\end{eqnarray*}
+per la proprietà associativa dei reali in $\Re$ e dei vettori in $\Re^3$ abbiamo
+\begin{eqnarray*}
+	a_1 + b_1 + c_1 + [(\vec a + \vec b) + \vec c]  = 
+\\
+	a_1 + (b_1 + c_1) + [\vec a + (\vec b + \vec c)]
+\\
+	=( a_1 + \vec a) + [(b_1 + \vec b) + (c_1 + \vec c)]
+\\
+	=a + (b + c)
+\end{eqnarray*}
+quindi la somma in $H$ è associativa
+
+Prendiamo l'elemento $0 = (0 + \vec 0)$
+abbiamo che
+\[
+a + 0 = 0 + a = a, \forall a \in H
+\]
+
+Prendiamo l'elemento $-a = (-a - \vec a)$
+abbiamo che 
+\[
+a + (-a) = (-a) + a = 0, \forall a \in H
+\]
+
+Quindi $H$ è un gruppo come volevasi dimostrare.
+
+Dimostriamo che $H$ è un gruppo rispetto al prodotto:
+
+Dalla (\ref{eq:prodotto}) si vede che $a \cdot b$ è della forma (\ref{eq:quatForm}) quindi $\forall a, b \in H: a, b \in H$ quindi $H$ è chiuso rispetto $\cdot$.
+
+Abbiamo poi
+\begin{eqnarray*}
+	(a b) c  = [(a_1 + a_2 i + a_3 j + a_4 k) (b_1 + b_2 i + b_3 j + b_4 k)] (c_1 + c_2 i + c_3 j + c_4 k)
+\\
+\\
+	= [(a_1 b_1 - a_2 b_2 - a_3 b_3  - a_4 b_4)  + (a_1 b_2 + a_2 b_1 + a_3 b_4 - a_4 b_3) i
+\\
+	+ (a_1 b_3 + a_3 b_1 + a_4 b_2 - a_2 b_4) j + (a_1 b_4 + a_4 b_1 + a_2 b_3 - a_3 b_2) k]
+\\
+	(c_1 + c_2 i + c_3 j + c_4 k)
+\\
+\\
+	= [(a_1 b_1 - a_2 b_2 - a_3 b_3  - a_4 b_4) c_1  - (a_1 b_2 + a_2 b_1 + a_3 b_4 - a_4 b_3) c_2
+\\
+	- (a_1 b_3 + a_3 b_1 + a_4 b_2 - a_2 b_4) c_3 - (a_1 b_4 + a_4 b_1 + a_2 b_3 - a_3 b_2) c_4]
+\\
+	+ [(a_1 b_1 - a_2 b_2 - a_3 b_3  - a_4 b_4) c_2 + (a_1 b_2 + a_2 b_1 + a_3 b_4 - a_4 b_3) c_1
+\\
+	+(a_1 b_3 + a_3 b_1 + a_4 b_2 - a_2 b_4) c_4 -  (a_1 b_4 + a_4 b_1 + a_2 b_3 - a_3 b_2) c_3] i
+\\
+	+ [(a_1 b_1 - a_2 b_2 - a_3 b_3  - a_4 b_4) c_3 - (a_1 b_2 + a_2 b_1 + a_3 b_4 - a_4 b_3) c_4
+\\
+	+(a_1 b_3 + a_3 b_1 + a_4 b_2 - a_2 b_4) c_1 +  (a_1 b_4 + a_4 b_1 + a_2 b_3 - a_3 b_2) c_2] j
+\\
+	+ [(a_1 b_1 - a_2 b_2 - a_3 b_3  - a_4 b_4) c_4 + (a_1 b_2 + a_2 b_1 + a_3 b_4 - a_4 b_3) c_3
+\\
+	-(a_1 b_3 + a_3 b_1 + a_4 b_2 - a_2 b_4) c_2 +  (a_1 b_4 + a_4 b_1 + a_2 b_3 - a_3 b_2) c_1] k
+\\
+\\
+	= [a_1 (b_1 c_1 -b_2 c_2- b_3 c_3 - b_4 c_4) - a_2 (b_1 c_2 + b_2 c_1 + b_3 c_4 - b_4 c_3)
+\\
+	- a_3 (b_1 c_3 + b_3 c_1 + b_4 c_2 - b_2 c_4) - a_4 (b_1 c_4 + b_4 c_1 + b_2 c_3 - b_3 c_2)]
+\\
+	+ [a_2 (b_1 c_1 -b_2 c_2- b_3 c_3 - b_4 c_4) + a_1 (b_1 c_2 + b_2 c_1 + b_3 c_4 - b_4 c_3)
+\\
+	- a_4 (b_1 c_3 + b_3 c_1 + b_4 c_2 - b_2 c_4) + a_3 (b_1 c_4 + b_4 c_1 + b_2 c_3 - b_3 c_2)] i
+\\
+	+ [a_3 (b_1 c_1 -b_2 c_2- b_3 c_3 - b_4 c_4) + a_4 (b_1 c_2 + b_2 c_1 + b_3 c_4 - b_4 c_3)
+\\
+	+ a_1 (b_1 c_3 + b_3 c_1 + b_4 c_2 - b_2 c_4) - a_2  (b_1 c_4 + b_4 c_1 + b_2 c_3 - b_3 c_2)] j
+\\
+	+ [a_4 (b_1 c_1 -b_2 c_2- b_3 c_3 - b_4 c_4) - a_3 (b_1 c_2 + b_2 c_1 + b_3 c_4 - b_4 c_3)
+\\
+	+ a_2 (b_1 c_3 + b_3 c_1 + b_4 c_2 - b_2 c_4) + a_1  (b_1 c_4 + b_4 c_1 + b_2 c_3 - b_3 c_2)] k
+\\
+\\
+	= (a_1 + a_2 i + a_3 j + a_4 k) [(b_1 + b_2 i + b_3 j + b_4 k)] (c_1 + c_2 i + c_3 j + c_4 k)]  = a (b c)
+\end{eqnarray*}
+quindi il prodotto è associativo.
+
+Prendiamo l'elemento $a^{-1} = \frac{\bar a}{|a|^2} = \frac{a1 - a_2 i - a_3 j - a_4 k}{a_1^2 + a_2^2 + a_3^2 + a_4^2 } $ con $a \ne 0$ abbiamo che
+\[
+	a \cdot a^{-1} = a^{-1} \cdot a = 1, \forall a \ne 0, a \in H
+\]
+
+Quindi  esiste l'elemento inverso e $H$ e un gruppo rispetto al prodotto e quindi è un corpo.
+
+
+Sviluppo di $(a b) c$ per coefficienti:
+\begin{eqnarray*}
+	(a b) c = [(a_1 b_1 - a_2 b_2 - a_3 b_3  - a_4 b_4) c_1  - (a_1 b_2 + a_2 b_1 + a_3 b_4 - a_4 b_3) c_2
+\\
+	- (a_1 b_3 + a_3 b_1 + a_4 b_2 - a_2 b_4) c_3 - (a_1 b_4 + a_4 b_1 + a_2 b_3 - a_3 b_2) c_4]
+\\
+	+ [(a_1 b_1 - a_2 b_2 - a_3 b_3  - a_4 b_4) c_2 + (a_1 b_2 + a_2 b_1 + a_3 b_4 - a_4 b_3) c_1
+\\
+	+(a_1 b_3 + a_3 b_1 + a_4 b_2 - a_2 b_4) c_4 -  (a_1 b_4 + a_4 b_1 + a_2 b_3 - a_3 b_2) c_3] i
+\\
+	+ [(a_1 b_1 - a_2 b_2 - a_3 b_3  - a_4 b_4) c_3 - (a_1 b_2 + a_2 b_1 + a_3 b_4 - a_4 b_3) c_4
+\\
+	+(a_1 b_3 + a_3 b_1 + a_4 b_2 - a_2 b_4) c_1 +  (a_1 b_4 + a_4 b_1 + a_2 b_3 - a_3 b_2) c_2] j
+\\
+	+ [(a_1 b_1 - a_2 b_2 - a_3 b_3  - a_4 b_4) c_4 + (a_1 b_2 + a_2 b_1 + a_3 b_4 - a_4 b_3) c_3
+\\
+	-(a_1 b_3 + a_3 b_1 + a_4 b_2 - a_2 b_4) c_2 +  (a_1 b_4 + a_4 b_1 + a_2 b_3 - a_3 b_2) c_1] k
+\\
+\\
+	= [a_1 b_1 c_1
+\\
+	- (a_2 b_2 + a_3 b_3 + a_4 b_4) c_1 - (a_2 c_2 + a_3 c_3 + a_4 c_4) b_1 - (b_2 c_2 + b_3 c_3 + b_4 c_4) a_1
+\\
+	- (a_3 b_4 - a_4 b_3) c_2 - (a_4 b_2 - a_2 b_4) c_3 - (a_2 b_3 - a_3 b_2) c_4]
+\\
+	+ a_1 b_1(c_2 i + c_3 j + c_4 k) + a_1 (b_2 i + b_3 j + b_4 k) c_1 + (a_2 i + a_3 j + a_4 k) b_1 c_1
+\\
+	+ a_1 [(b_3 c_4 - b_4 c_3) i + (b_4 c_2 - b_2 c_4) j + (b_2 c_3 - b_3 c_2) k]
+\\
+	+ b_1 [(a_3 c_4 - a_4 c_3) i + (a_4 c_2 - a_2 c_4) j + (a_2 c_3 - a_3 c_2) k]
+\\
+	+ c_1 [(a_3 b_4 - a_4 b_3) i + (a_4 b_2 - a_2 b_4) j + (a_2 b_3 - a_3 b_2) k]
+\\
+	- (a_2 b_2 + a_3 b_3 + a_4 b_4)(c_2 i + c_3 j + c_4 k)
+\\
+	+(a_4 b_2 c_4 - a_2 b_4 c_4 - a_2 b_3 c_3 + a_3 b_2 c_3) i
+\\
+	+( -a_3 b_4 c_4 + a_4 b_3 c_4 + a_2 b_3 c_2 - a_3 b_2 c_2) j
+\\
+	+ (a_3 b_4 c_3 - a_4 b_3 c_3 -a_4 b_2 c_2- a_2 b_4 c_2) k
+\\
+\\
+	= a_1 b_1 c_1 - \left(\vec a \vec b \right) c_1 - \left(\vec a \vec c \right) b_1 - \left(\vec b \vec c \right) a_1 - \left (\vec a \times \vec b \right) \vec c
+\\
+	+ a_1 b_1 \vec c + a_1 c_1 \vec b + b_1 c_1 \vec a + a_1 (\vec b \times \vec c) + b_1 (\vec a \times \vec c) + c_1 (\vec a \times \vec b)
+\\
+	- \left( \vec a \vec b \right) \vec c + \left( \vec a \times \vec b \right) \times \vec c
+\end{eqnarray*}
+
+Sviluppo di $(a b) c$ per vettori:
+\begin{eqnarray*}
+	(a b) c = [(a_1 + \vec a)(b_1 + \vec b)] (c_1 + \vec c)
+\\
+	= \left[a_1 b_1 - \left( \vec a \vec b \right) + a_1 \vec b + b_1 \vec a + \left( \vec a \times \vec b \right) \right]
+	(c_1 + \vec c)
+\\
+	= a_1 b_1 c_1 - \left( \vec a \vec b \right) c_1 - a_1 \left( \vec b \vec c \right)  - b_1 \left( \vec a \vec c \right) - \left( \vec a \times \vec b \right) \vec c
+\\
+	+ a_1 b_1 \vec c - \left( \vec a \vec b \right) \vec c + a_1 c_1 \vec b +b_1 c_1 \vec a
+	 + c_1 \left( \vec a \times \vec b \right)
+\\
+	 + a_1 \left( \vec b \times \vec c \right)
+	 + b_1 \left( \vec a \times \vec c \right) + \left( \vec a \times \vec b \right) \times \vec c
+\\
+	a (b c)
+	= a_1 b_1 c_1 - \left( \vec a \vec b \right) c_1 - a_1 \left( \vec b \vec c \right)  - b_1 \left( \vec a \vec c \right) - \vec a \left( \vec b \times \vec c \right)
+\\
+	+ a_1 b_1 \vec c - \vec a \left( \vec b \vec c \right) + a_1 c_1 \vec b +b_1 c_1 \vec a
+	 + c_1 \left( \vec a \times \vec b \right)
+\\
+	 + a_1 \left( \vec b \times \vec c \right)
+	 + b_1 \left( \vec a \times \vec c \right) + \vec a \times \left( \vec b \times \vec c \right)
+\end{eqnarray*}
+
+\section{Quaternioni e rotazioni.}
+Sia 
+\begin{equation}
+	q = e^{\frac{\varphi}{2} (u_x i + u_y j + u_z k)} = e^{\frac{\varphi}{2} \vec u} = \cos \frac{\varphi}{2} + \sin \frac{\varphi}{2} (u_x i + u_y j + u_z k)= \cos \frac{\varphi}{2} + \sin \frac{\varphi}{2} \vec u
+\end{equation}
+con $|\vec u|^2 = u_x^2+u_y^2+u_z^2= 1$ allora
+\begin{equation}
+	q^{-1} = \bar q = e^{-\frac{\varphi}{2} \vec u} = \cos \frac{\varphi}{2} - \sin \frac{\varphi}{2} \vec u
+\end{equation}
+quindi
+\begin{equation}
+	|q|^2 = q \bar q = q q^{-1}= e^0 = 1
+\end{equation}
+quindi $q$ è un quaternione unitario.
+
+\begin{theorem}
+Se $q = e^{\frac{\varphi}{2} \vec a} = \cos \frac{\varphi}{2} + \sin \frac{\varphi}{2} \vec a$ e $v = - \bar v = \vec v$,
+la trasformazione
+\begin{equation}
+	\alpha_q : p \rightarrow v' = q v q^{-1}
+\end{equation}
+rappresenta una rotazione dello spazio euclideo $\Re^3$ di $\varphi$ attorno all'asse $\vec u = (u_x, u_y, u_z)$
+\end{theorem}
+
+\paragraph{Dimostrazione.}
+Sviluppiamo la trasformazione:
+\begin{eqnarray*}
+	v' = q v q^{-1} = \left(\cos \frac{\varphi}{2} + \sin \frac{\varphi}{2} \vec u\right) \vec v \left(\cos \frac{\varphi}{2} - \sin \frac{\varphi}{2} \vec u\right)
+\\
+	= -\sin \frac{\varphi}{2} \cos \frac{\varphi}{2} (\vec u \vec v)
+	+\sin \frac{\varphi}{2} \cos \frac{\varphi}{2} (\vec u \vec v)
+	- \sin^2 \frac{\varphi}{2} (\vec u \times \vec v) \vec u
+\\
+	+ \sin^2 \frac{\varphi}{2} (\vec u \vec v) \vec u + \cos^2 \frac{\varphi}{2} \vec v
+	+ \sin \frac{\varphi}{2} \cos \frac{\varphi}{2} (\vec u \times \vec v) 
+	- \sin \frac{\varphi}{2} \cos \frac{\varphi}{2} (\vec v \times \vec u) 
+\\
+	- \sin^2  \frac{\varphi}{2} (\vec u \times \vec v) \times \vec u
+\end{eqnarray*}
+essendo
+\begin{eqnarray*}
+	(\vec u \times \vec v) \vec u = 0
+\\
+	\vec v \times \vec u = -\vec u \times \vec v
+\end{eqnarray*}
+abbiamo
+\begin{eqnarray*}
+	v' = 
+	\sin^2 \frac{\varphi}{2} (\vec u \vec v) \vec u + \cos^2 \frac{\varphi}{2} \vec v
+	+ 2 \sin \frac{\varphi}{2} \cos \frac{\varphi}{2} (\vec u \times \vec v) 
+	- \sin^2  \frac{\varphi}{2} (\vec u \times \vec v) \times \vec u
+\end{eqnarray*}
+ma scomponendo il vettore $\vec v$ nelle componenti $\vec v_\parallel$ parallela a $\vec u$  e $\vec v_\perp$ perpendicolare a $\vec u$
+\begin{eqnarray*}
+	 \vec v = \vec v_\parallel +  \vec v_\perp 
+\\
+	(\vec u \vec v) \vec u = \vec v_\parallel
+\\
+	\vec u \times \vec v_\parallel = 0
+\\
+	\vec u \times \vec v = \vec u \times \vec v_\parallel + \vec u \times \vec v_\perp = \vec u \times \vec v_\perp
+\\
+	(\vec u \times \vec v) \times \vec u = (\vec u \times \vec v_\perp) \times \vec u = \vec v_\perp
+\end{eqnarray*}
+risulta
+\begin{eqnarray*}
+	v' = 
+	\sin^2 \frac{\varphi}{2} \vec v_\parallel + \cos^2 \frac{\varphi}{2} (\vec v_\parallel + \vec v_\perp)
+	+ 2 \sin \frac{\varphi}{2} \cos \frac{\varphi}{2} (\vec u \times \vec v_\perp) 
+	- \sin^2  \frac{\varphi}{2} \vec v_\perp
+\\
+	= 
+	\vec v_\parallel + \left(\cos^2 \frac{\varphi}{2} - \sin^2 \frac{\varphi}{2} \right) \vec v_\perp
+	+ 2 \sin \frac{\varphi}{2} \cos \frac{\varphi}{2} (\vec u \times \vec v_\perp) 
+\\
+	= 
+	\vec v_\parallel + \left(1 - 2 \sin^2 \frac{\varphi}{2} \right) \vec v_\perp
+	+ 2 \sin \frac{\varphi}{2} \cos \frac{\varphi}{2} (\vec u \times \vec v_\perp) 
+\end{eqnarray*}
+applicando le formule di bisezione
+\begin{eqnarray*}
+	2 \sin \frac{\varphi}{2} \cos \frac{\varphi}{2} = \sin \varphi
+\\
+	2 \sin^2 \frac{\varphi}{2} = 1 - \cos \varphi
+\end{eqnarray*}
+abbiamo
+\begin{eqnarray*}
+	v' = \vec v_\parallel + (1 - 1 + cos \varphi) \vec v_\perp + \sin \varphi (\vec u \times \vec v_\perp) 
+\end{eqnarray*}
+da cui
+\begin{equation}
+	\label{eq:rotate}
+	v' = \vec v_\parallel + \cos \varphi \vec v_\perp + \sin \varphi (\vec u \times \vec v_\perp) 
+\end{equation}
+che è la formula di una rotazione di $\varphi$ attorno all'asse $\vec u$.
+
+\end{document}
