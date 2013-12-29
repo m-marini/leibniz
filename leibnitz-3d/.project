@@ -3,7 +3,6 @@
 	<name>leibnitz-3d</name>
 	<comment></comment>
 	<projects>
-		<project>leibnitz-lib</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

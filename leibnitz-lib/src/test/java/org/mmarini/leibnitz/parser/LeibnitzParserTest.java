@@ -22,7 +22,7 @@ public class LeibnitzParserTest {
 	@Test
 	public void testParse() {
 		try {
-			parser.parse("res/org/mmarini/leibnitz/parser/test1.xml");
+			parser.parse("src/test/resources/org/mmarini/leibnitz/parser/test1.xml");
 		} catch (ParserConfigurationException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
