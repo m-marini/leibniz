@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- $Id: caduta.xml,v 1.2 2012/07/25 13:55:45 marco Exp $ -->
+<l:definitions xmlns:l="http://www.mmarini.org/leibnitz-0-2-0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mmarini.org/leibnitz-0-2-0 bin/leibnitz-0-2-0.xsd ">
+	<l:dimension>2</l:dimension>
+	<l:order>2</l:order>
+	<l:t0>0</l:t0>
+	<l:t1>10</l:t1>
+	<l:dt>0.01</l:dt>
+	<l:function id="g">9.81</l:function>
+	<l:initValue>e1</l:initValue>
+	<l:initValue order="1">0*e1</l:initValue>
+	<l:equation>g*e1</l:equation>
+	<l:output label="t">t</l:output>
+	<l:output label="r">q</l:output>
+	<l:output label="v">q1</l:output>
+</l:definitions>

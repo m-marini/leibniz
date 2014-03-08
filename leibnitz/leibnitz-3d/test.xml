@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- $Id: paraboloide.xml,v 1.2.2.1 2012/07/26 17:31:21 marco Exp $ -->
+<l:definitions xmlns:l="http://www.mmarini.org/leibnitz-1-0-0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mmarini.org/leibnitz-1-0-0 ../Leibnitz/res/leibnitz-1-0-0.xsd ">
+
+	<l:variable id="t">0</l:variable>
+
+	<l:function id="dt">0.01</l:function>
+	<l:function id="r">sin(2*PI*t)*e2+0*e2</l:function>
+
+	<l:update id="t">t+dt</l:update>
+</l:definitions>

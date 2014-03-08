@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- $Id: orbitaPiano.xml,v 1.2 2012/07/25 13:55:45 marco Exp $ -->
+<l:definitions xmlns:l="http://www.mmarini.org/leibnitz-0-2-0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mmarini.org/leibnitz-0-2-0 bin/leibnitz-0-2-0.xsd ">
+	<l:dimension>2</l:dimension>
+	<l:order>2</l:order>
+	<l:t0>0</l:t0>
+	<l:t1>10</l:t1>
+	<l:dt>0.01</l:dt>
+	<l:function id="k">36</l:function>
+	<l:function id="r">q*(e0+0*e1)</l:function>
+	<l:function id="r1">q1*(e0+0*e1)</l:function>
+	<l:function id="phi">q*e1</l:function>
+	<l:function id="phi1">q1*e1</l:function>
+	<l:function id="r2">r*phi1^2-k/(r^2)</l:function>
+	<l:function id="phi2">-2*r1*phi1/r</l:function>
+	<l:function id="Q2">r2*e0+phi2*e1</l:function>
+	<l:function id="x">r*cos phi</l:function>
+	<l:function id="y">r*sin phi</l:function>
+	<l:function id="R">x*e0+y*e1</l:function>
+	<l:function id="dR_dr">cos phi*e0+sin phi * e1</l:function>
+	<l:function id="dR_dphi">-r*sin phi * e0+r * cos phi * e1</l:function>
+	<l:function id="dq_dR">dR_dr;dR_dphi</l:function>
+	<l:function id="dR_dq">T(dq_dR)</l:function>
+	<l:function id="R1">dR_dq*q1</l:function>
+	<l:function id="R2">dR_dq*Q2</l:function>
+	<l:initValue>e0+0*e1</l:initValue>
+	<l:initValue order="1">sqrt(k/r)/r*e1</l:initValue>
+	<l:equation>-Q2</l:equation>
+	<l:output label="t">t</l:output>
+	<l:output label="r">R</l:output>
+	<l:output label="v">R1</l:output>
+	<l:output label="a">R2</l:output>
+</l:definitions>

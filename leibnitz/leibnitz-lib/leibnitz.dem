@@ -1,0 +1,3 @@
+set style data lines
+set key autotitle columnhead
+splot 'C:\Documents and Settings\us00852\ws\Leibnitz\Leibnitz\leibnitz.dat'using 2:3:1

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<l:definitions xmlns:l="http://www.mmarini.org/leibnitz-0-2-0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mmarini.org/leibnitz-0-2-0 bin/leibnitz-0-2-0.xsd ">
+	<l:dimension>2</l:dimension>
+	<l:order>2</l:order>
+	<l:t0>0</l:t0>
+	<l:t1>10</l:t1>
+	<l:dt>0.01</l:dt>
+	<l:initValue>e0+0*e1</l:initValue>
+	<l:initValue order="1">0.1*e0+e1</l:initValue>
+	<l:equation>3*n(q)/tr(q)+90e-3*q1</l:equation>
+	<l:output label="t">t</l:output>
+	<l:output label="r">q*e0+tr(q)*e1</l:output>
+	<l:output label="v">(q1*e0)*e0+2*(q1*e0)*e1</l:output>
+</l:definitions>

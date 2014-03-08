@@ -1,0 +1,23 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.mmarini</groupId>
+	<artifactId>leibnitz</artifactId>
+	<version>1.2.0</version>
+	<packaging>pom</packaging>
+	<modules>
+		<module>leibnitz-3d</module>
+		<module>leibnitz-lib</module>
+	</modules>
+	<properties>
+		<leibniz-version>1.2.0</leibniz-version>
+	</properties>
+	<repositories>
+		<!--other repositories if any -->
+		<repository>
+			<id>org.mmarini</id>
+			<name>utils-lib</name>
+			<url>https://raw.github.com/m-marini/utils-lib/master/utils-lib/repo</url>
+		</repository>
+	</repositories>
+</project>
