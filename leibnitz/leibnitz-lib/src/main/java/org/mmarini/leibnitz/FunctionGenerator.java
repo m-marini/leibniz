@@ -32,7 +32,7 @@ public class FunctionGenerator {
 	private final Map<String, Command> functions;
 	private final List<VariableCommand> variables;
 	private Map<String, VariableCommand> variableTable = new HashMap<String, VariableCommand>();
-	private FPList<CorpeDefs> corpes;
+	private final FPList<CorpeDefs> corpes;
 
 	/**
 	 * 
@@ -43,6 +43,13 @@ public class FunctionGenerator {
 		functions = new HashMap<String, Command>();
 		variables = new ArrayList<VariableCommand>();
 		variableTable = new HashMap<String, VariableCommand>();
+	}
+
+	/**
+	 * @param corpeDefs
+	 */
+	public void add(final CorpeDefs corpeDefs) {
+		corpes.add(corpeDefs);
 	}
 
 	/**
@@ -87,6 +94,13 @@ public class FunctionGenerator {
 			throw new FunctionParserException("check for type " + cmd.getType());
 		cmd.apply(commandProcessor);
 		return commandProcessor.getArray();
+	}
+
+	/**
+	 * @return
+	 */
+	public FPList<CorpeDefs> getCorpes() {
+		return corpes;
 	}
 
 	/**
@@ -182,19 +196,5 @@ public class FunctionGenerator {
 		if (type != Type.SCALAR)
 			throw new FunctionParserException("check for type " + type);
 		((VariableSCommand) var).setValue(value);
-	}
-
-	/**
-	 * @return
-	 */
-	public FPList<CorpeDefs> getCorpes() {
-		return corpes;
-	}
-
-	/**
-	 * @param corpeDefs
-	 */
-	public void add(CorpeDefs corpeDefs) {
-		corpes.add(corpeDefs);
 	}
 }

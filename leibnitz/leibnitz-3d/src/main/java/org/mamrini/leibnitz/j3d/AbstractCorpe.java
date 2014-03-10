@@ -66,7 +66,8 @@ public class AbstractCorpe extends BranchGroup implements Corpe {
 	 * @param rot
 	 */
 	private void applyRotation(final Quaternion rot) {
-		final Quat4d quat = new Quat4d(rot.getI(), rot.getK(), rot.getJ(), rot.getR());
+		final Quat4d quat = new Quat4d(rot.getI(), rot.getK(), rot.getJ(),
+				rot.getR());
 		transform.set(quat);
 
 		// double psi = vect.getValue(0);

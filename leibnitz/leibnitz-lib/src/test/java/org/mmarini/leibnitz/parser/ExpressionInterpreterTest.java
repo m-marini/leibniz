@@ -20,7 +20,8 @@ public class ExpressionInterpreterTest {
 	private ExpressionInterpreter ctx;
 	private AbstractExpression functionSyntax;
 
-	private void assertMessageContains(final String msg, final String pattern, final Exception ex) {
+	private void assertMessageContains(final String msg, final String pattern,
+			final Exception ex) {
 		if (!ex.getMessage().contains(pattern)) {
 			ex.printStackTrace();
 			fail(msg + " Missing message " + pattern + " in " + ex.getMessage());
@@ -34,7 +35,8 @@ public class ExpressionInterpreterTest {
 	 * @param col
 	 * @param v00
 	 */
-	private void runArrayTest(final String exp, final int row, final int col, final double... v00) {
+	private void runArrayTest(final String exp, final int row, final int col,
+			final double... v00) {
 		assertEquals(exp, row * col, v00.length);
 		Command cmd = null;
 		try {
@@ -64,7 +66,8 @@ public class ExpressionInterpreterTest {
 		}
 	}
 
-	private void runQuatTest(final String exp, final double r, final double i, final double j, final double k) {
+	private void runQuatTest(final String exp, final double r, final double i,
+			final double j, final double k) {
 		Command cmd = null;
 		try {
 			cmd = ctx.parse(exp, functionSyntax);

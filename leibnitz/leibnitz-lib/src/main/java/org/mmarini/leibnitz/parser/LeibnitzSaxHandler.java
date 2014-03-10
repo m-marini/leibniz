@@ -24,28 +24,28 @@ import org.xml.sax.helpers.DefaultHandler;
  * 
  */
 public class LeibnitzSaxHandler extends DefaultHandler {
+	private interface EndHandler {
+		public abstract void apply() throws SAXException;
+	}
+
+	private interface StartHandler {
+		public abstract void apply(Attributes attributes) throws SAXException;
+	}
+
 	/**
 	 * 
 	 */
 	private static final String DEFINITIONS_KEY = "definitions";
-
 	public static final String NAME_SPACE = "http://www.mmarini.org/leibnitz-2-0-0";
-
 	private static final String ID_KEY = "id";
 	private static final String VARIABLE_KEY = "variable";
 	private static final String UPDATE_KEY = "update";
-	private static final String FUNCTION_KEY = "function";
-	private static final String CORPE_KEY = "corpe";
 
 	// private static final String DEFINITIONS_KEY = "definitions";
 
-	private interface StartHandler {
-		public abstract void apply(Attributes attributes) throws SAXException;
-	};
+	private static final String FUNCTION_KEY = "function";;
 
-	private interface EndHandler {
-		public abstract void apply() throws SAXException;
-	};
+	private static final String CORPE_KEY = "corpe";;
 
 	private Locator locator;
 	private final StringBuilder text;
@@ -78,10 +78,10 @@ public class LeibnitzSaxHandler extends DefaultHandler {
 		};
 
 		startHandler.put(DEFINITIONS_KEY, new StartHandler() {
-			
+
 			@Override
-			public void apply(Attributes attributes) throws SAXException {
-				contentFound=true;
+			public void apply(final Attributes attributes) throws SAXException {
+				contentFound = true;
 			}
 		});
 		startHandler.put(VARIABLE_KEY, parseIdHandler);
@@ -174,6 +174,15 @@ public class LeibnitzSaxHandler extends DefaultHandler {
 	}
 
 	/**
+	 * @see org.xml.sax.helpers.DefaultHandler#characters(char[], int, int)
+	 */
+	@Override
+	public void characters(final char[] ch, final int start, final int length)
+			throws SAXException {
+		text.append(ch, start, length);
+	}
+
+	/**
 	 * @see org.xml.sax.helpers.DefaultHandler#endDocument()
 	 */
 	@Override
@@ -181,15 +190,6 @@ public class LeibnitzSaxHandler extends DefaultHandler {
 		if (!contentFound)
 			throw new SAXParseException("Missing " + DEFINITIONS_KEY
 					+ " element", locator);
-	}
-
-	/**
-	 * @see org.xml.sax.helpers.DefaultHandler#characters(char[], int, int)
-	 */
-	@Override
-	public void characters(final char[] ch, final int start, final int length)
-			throws SAXException {
-		text.append(ch, start, length);
 	}
 
 	/**
@@ -223,22 +223,6 @@ public class LeibnitzSaxHandler extends DefaultHandler {
 	}
 
 	/**
-	 * 
-	 * @param id
-	 * @throws SAXParseException
-	 */
-	private void validateId(final String id) throws SAXParseException {
-		final char[] bfr = id.toCharArray();
-		if (bfr.length == 0 || !Character.isJavaIdentifierStart(bfr[0]))
-			throw new SAXParseException(id + " is not a valid identifier",
-					locator);
-		for (int i = 1; i < bfr.length; ++i)
-			if (!Character.isJavaIdentifierPart(bfr[i]))
-				throw new SAXParseException(id + " is not a valid identifier",
-						locator);
-	}
-
-	/**
 	 * @see org.xml.sax.helpers.DefaultHandler#setDocumentLocator(org.xml.sax.Locator
 	 *      )
 	 */
@@ -269,5 +253,21 @@ public class LeibnitzSaxHandler extends DefaultHandler {
 		final StartHandler h = startHandler.get(localName);
 		if (h != null)
 			h.apply(attributes);
+	}
+
+	/**
+	 * 
+	 * @param id
+	 * @throws SAXParseException
+	 */
+	private void validateId(final String id) throws SAXParseException {
+		final char[] bfr = id.toCharArray();
+		if (bfr.length == 0 || !Character.isJavaIdentifierStart(bfr[0]))
+			throw new SAXParseException(id + " is not a valid identifier",
+					locator);
+		for (int i = 1; i < bfr.length; ++i)
+			if (!Character.isJavaIdentifierPart(bfr[i]))
+				throw new SAXParseException(id + " is not a valid identifier",
+						locator);
 	}
 }

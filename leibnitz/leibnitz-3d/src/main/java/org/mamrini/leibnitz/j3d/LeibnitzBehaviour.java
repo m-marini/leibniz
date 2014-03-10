@@ -49,6 +49,13 @@ public class LeibnitzBehaviour extends Behavior {
 	}
 
 	/**
+	 * 
+	 */
+	public void clearCorpes() {
+		list.clear();
+	}
+
+	/**
 	 * @see javax.media.j3d.Behavior#initialize()
 	 */
 	@Override
@@ -101,25 +108,18 @@ public class LeibnitzBehaviour extends Behavior {
 	}
 
 	/**
+	 * @param dt
+	 *            the dt to set
+	 */
+	public void setDt(final long dt) {
+		this.dt = dt;
+	}
+
+	/**
 	 * @param generator
 	 *            the generator to set
 	 */
 	public void setGenerator(final FunctionGenerator generator) {
 		this.generator = generator;
-	}
-
-	/**
-	 * 
-	 */
-	public void clearCorpes() {
-		list.clear();
-	}
-
-	/**
-	 * @param dt
-	 *            the dt to set
-	 */
-	public void setDt(long dt) {
-		this.dt = dt;
 	}
 }

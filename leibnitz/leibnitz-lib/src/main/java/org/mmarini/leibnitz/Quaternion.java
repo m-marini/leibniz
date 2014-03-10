@@ -35,7 +35,8 @@ public class Quaternion implements Cloneable {
 	 * @param j
 	 * @param k
 	 */
-	public Quaternion(final double r, final double i, final double j, final double k) {
+	public Quaternion(final double r, final double i, final double j,
+			final double k) {
 		this.r = r;
 		this.i = i;
 		this.j = j;

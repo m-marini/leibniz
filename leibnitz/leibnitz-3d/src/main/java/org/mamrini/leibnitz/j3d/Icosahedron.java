@@ -167,7 +167,8 @@ public class Icosahedron extends Primitive {
 	 */
 	private Geometry createGeometry(final float radius) {
 		final GeometryInfo gi = new GeometryInfo(GeometryInfo.TRIANGLE_ARRAY);
-		final float[] coordinates = Arrays.copyOf(COORDINATES, COORDINATES.length);
+		final float[] coordinates = Arrays.copyOf(COORDINATES,
+				COORDINATES.length);
 		for (int i = 0; i < coordinates.length; ++i)
 			coordinates[i] *= radius;
 		gi.setCoordinates(coordinates);

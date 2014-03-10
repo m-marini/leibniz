@@ -32,12 +32,13 @@ public class CorpeFactory {
 	 * @return
 	 */
 	public FPList<AbstractCorpe> build() {
-		final int i = 0;
+		int i = 0;
 		final FPList<AbstractCorpe> r = new FPArrayList<>();
 		final int m = generator.getCorpes().size();
+		final int k = m > 1 ? m - 1 : 1;
 		for (final CorpeDefs cd : generator.getCorpes()) {
-			final Color3f color = new Color3f(Color.getHSBColor(0.8f * (i - 1)
-					/ m, 1f, 1f));
+			final Color3f color = new Color3f(Color.getHSBColor(0.75f * i / k,
+					1f, 1f));
 			final String rot = cd.getRotation();
 			AbstractCorpe c;
 			if (rot == null) {
@@ -54,6 +55,7 @@ public class CorpeFactory {
 			c.setGenerator(generator);
 			c.setTranslateFunction(cd.getLocation());
 			r.add(c);
+			++i;
 		}
 		generator.init();
 		return r;

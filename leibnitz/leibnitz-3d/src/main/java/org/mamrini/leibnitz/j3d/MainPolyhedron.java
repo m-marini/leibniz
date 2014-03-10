@@ -57,8 +57,8 @@ public class MainPolyhedron extends JApplet {
 	 * @throws SAXException
 	 * @throws ParserConfigurationException
 	 */
-	public static void main(final String[] args) throws ParserConfigurationException,
-			SAXException, IOException {
+	public static void main(final String[] args)
+			throws ParserConfigurationException, SAXException, IOException {
 		final MainPolyhedron main = new MainPolyhedron();
 		main.createFrame();
 	}
@@ -99,9 +99,12 @@ public class MainPolyhedron extends JApplet {
 
 		final AmbientLight ambientLight = new AmbientLight(AMBIENT_COLOR_LIGHT);
 
-		final DirectionalLight light1 = new DirectionalLight(LIGHT1_COLOR, lDir1);
-		final DirectionalLight light2 = new DirectionalLight(LIGHT2_COLOR, lDir2);
-		final DirectionalLight light3 = new DirectionalLight(LIGHT3_COLOR, lDir3);
+		final DirectionalLight light1 = new DirectionalLight(LIGHT1_COLOR,
+				lDir1);
+		final DirectionalLight light2 = new DirectionalLight(LIGHT2_COLOR,
+				lDir2);
+		final DirectionalLight light3 = new DirectionalLight(LIGHT3_COLOR,
+				lDir3);
 
 		final Background bg = new Background(BACKGROUND_COLOR);
 
@@ -126,14 +129,16 @@ public class MainPolyhedron extends JApplet {
 		tg1.addChild(s);
 
 		final Alpha alpha1 = new Alpha(-1, 1 * K);
-		final RotationInterpolator rotor1 = new RotationInterpolator(alpha1, tg1);
+		final RotationInterpolator rotor1 = new RotationInterpolator(alpha1,
+				tg1);
 		rotor1.setSchedulingBounds(bounds);
 
 		final TransformGroup tg2 = new TransformGroup();
 		tg2.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
 		tg2.addChild(tg1);
 		final Alpha alpha2 = new Alpha(-1, 60 * K);
-		final RotationInterpolator rotor2 = new RotationInterpolator(alpha2, tg2);
+		final RotationInterpolator rotor2 = new RotationInterpolator(alpha2,
+				tg2);
 		final Transform3D ta = new Transform3D();
 		ta.rotX(Math.PI / 2);
 		rotor2.setTransformAxis(ta);
@@ -148,7 +153,8 @@ public class MainPolyhedron extends JApplet {
 		final Transform3D ta3 = new Transform3D();
 		ta3.rotY(Math.PI / 2);
 
-		final RotationInterpolator rotor3 = new RotationInterpolator(alpha3, tg3);
+		final RotationInterpolator rotor3 = new RotationInterpolator(alpha3,
+				tg3);
 		rotor3.setTransformAxis(ta3);
 		rotor3.setSchedulingBounds(bounds);
 

@@ -16,7 +16,8 @@ public abstract class AbstractBinaryCommand extends AbstractCommand {
 	 * @param command1
 	 * @param command2
 	 */
-	protected AbstractBinaryCommand(final Command command1, final Command command2) {
+	protected AbstractBinaryCommand(final Command command1,
+			final Command command2) {
 		this.command1 = command1;
 		this.command2 = command2;
 	}

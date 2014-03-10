@@ -34,7 +34,8 @@ public class MulAACommand extends AbstractBinaryCommand {
 		final Array a = context.getArray();
 		getCommand2().apply(context);
 		final Array b = context.getArray();
-		final Array m = new Array(dimensions.getRowCount(), dimensions.getColCount());
+		final Array m = new Array(dimensions.getRowCount(),
+				dimensions.getColCount());
 		m.multiply(a, b);
 		context.setArray(m);
 	}

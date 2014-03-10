@@ -15,7 +15,8 @@ public abstract class AbstractVariableCommand extends AbstractCommand implements
 	 * @param initCmd
 	 * @return
 	 */
-	public static AbstractVariableCommand create(final String id, final Command initCmd) {
+	public static AbstractVariableCommand create(final String id,
+			final Command initCmd) {
 		AbstractVariableCommand var = null;
 		switch (initCmd.getType()) {
 		case SCALAR:

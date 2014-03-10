@@ -676,8 +676,9 @@ public class SyntaxFactory {
 		 * @return
 		 * @throws FunctionParserException
 		 */
-		private Command mulArray(final InterpreterContext context, final Command p1,
-				final Command p2) throws FunctionParserException {
+		private Command mulArray(final InterpreterContext context,
+				final Command p1, final Command p2)
+				throws FunctionParserException {
 			final TypeDimensions d1 = p1.getDimensions();
 			final int c1 = d1.getColCount();
 			TypeDimensions d2;
@@ -714,8 +715,9 @@ public class SyntaxFactory {
 		 * @return
 		 * @throws FunctionParserException
 		 */
-		private Command mulQuaterion(final InterpreterContext context, final Command p1,
-				final Command p2) throws FunctionParserException {
+		private Command mulQuaterion(final InterpreterContext context,
+				final Command p1, final Command p2)
+				throws FunctionParserException {
 			switch (p2.getType()) {
 			case SCALAR:
 				return new MulSQCommand(p2, p1);
@@ -734,8 +736,8 @@ public class SyntaxFactory {
 		 * @param p2
 		 * @return
 		 */
-		private Command mulScalar(final InterpreterContext context, final Command p1,
-				final Command p2) {
+		private Command mulScalar(final InterpreterContext context,
+				final Command p1, final Command p2) {
 			switch (p2.getType()) {
 			case SCALAR:
 				return new MulSSCommand(p1, p2);
@@ -757,8 +759,9 @@ public class SyntaxFactory {
 		 * @return
 		 * @throws FunctionParserException
 		 */
-		private Command mulVector(final InterpreterContext context, final Command p1,
-				final Command p2) throws FunctionParserException {
+		private Command mulVector(final InterpreterContext context,
+				final Command p1, final Command p2)
+				throws FunctionParserException {
 			switch (p2.getType()) {
 			case SCALAR:
 				return new MulSVCommand(p2, p1);
@@ -814,8 +817,9 @@ public class SyntaxFactory {
 		 * @return
 		 * @throws FunctionParserException
 		 */
-		private Command processA(final InterpreterContext context, final Command p1,
-				final Command p2) throws FunctionParserException {
+		private Command processA(final InterpreterContext context,
+				final Command p1, final Command p2)
+				throws FunctionParserException {
 			if (p2.getType() != Type.ARRAY)
 				context.generateParseException("check for type " + p2 + " != "
 						+ Type.ARRAY);
@@ -835,8 +839,9 @@ public class SyntaxFactory {
 		 * @return
 		 * @throws FunctionParserException
 		 */
-		private Command processQ(final InterpreterContext context, final Command p1,
-				final Command p2) throws FunctionParserException {
+		private Command processQ(final InterpreterContext context,
+				final Command p1, final Command p2)
+				throws FunctionParserException {
 			final Type t2 = p2.getType();
 			switch (t2) {
 			case SCALAR:
@@ -864,8 +869,9 @@ public class SyntaxFactory {
 		 * @return
 		 * @throws FunctionParserException
 		 */
-		private Command processS(final InterpreterContext context, final Command p1,
-				final Command p2) throws FunctionParserException {
+		private Command processS(final InterpreterContext context,
+				final Command p1, final Command p2)
+				throws FunctionParserException {
 			final Type t2 = p2.getType();
 			switch (t2) {
 			case SCALAR:
@@ -893,8 +899,9 @@ public class SyntaxFactory {
 		 * @return
 		 * @throws FunctionParserException
 		 */
-		private Command processV(final InterpreterContext context, final Command p1,
-				final Command p2) throws FunctionParserException {
+		private Command processV(final InterpreterContext context,
+				final Command p1, final Command p2)
+				throws FunctionParserException {
 			final Type t2 = p2.getType();
 			final int rc = p1.getDimensions().getRowCount();
 			switch (t2) {
@@ -955,8 +962,9 @@ public class SyntaxFactory {
 		 * @return
 		 * @throws FunctionParserException
 		 */
-		private Command processA(final InterpreterContext context, final Command p1,
-				final Command p2) throws FunctionParserException {
+		private Command processA(final InterpreterContext context,
+				final Command p1, final Command p2)
+				throws FunctionParserException {
 			if (p2.getType() != Type.ARRAY)
 				context.generateParseException("check for type " + p2 + " != "
 						+ Type.ARRAY);
@@ -976,8 +984,9 @@ public class SyntaxFactory {
 		 * @return
 		 * @throws FunctionParserException
 		 */
-		private Command processQ(final InterpreterContext context, final Command p1,
-				final Command p2) throws FunctionParserException {
+		private Command processQ(final InterpreterContext context,
+				final Command p1, final Command p2)
+				throws FunctionParserException {
 			final Type t2 = p2.getType();
 			switch (t2) {
 			case SCALAR:
@@ -1005,8 +1014,9 @@ public class SyntaxFactory {
 		 * @return
 		 * @throws FunctionParserException
 		 */
-		private Command processS(final InterpreterContext context, final Command p1,
-				final Command p2) throws FunctionParserException {
+		private Command processS(final InterpreterContext context,
+				final Command p1, final Command p2)
+				throws FunctionParserException {
 			final Type t2 = p2.getType();
 			switch (t2) {
 			case SCALAR:
@@ -1033,8 +1043,9 @@ public class SyntaxFactory {
 		 * @return
 		 * @throws FunctionParserException
 		 */
-		private Command processV(final InterpreterContext context, final Command p1,
-				final Command p2) throws FunctionParserException {
+		private Command processV(final InterpreterContext context,
+				final Command p1, final Command p2)
+				throws FunctionParserException {
 			final Type t2 = p2.getType();
 			switch (t2) {
 			case SCALAR:
@@ -1193,7 +1204,8 @@ public class SyntaxFactory {
 		sumSuffix.add(NONE);
 
 		final ChoiceExpression unary = new ChoiceExpression("unary");
-		final ChoiceExpression factorSuffix = new ChoiceExpression("factorSuffix");
+		final ChoiceExpression factorSuffix = new ChoiceExpression(
+				"factorSuffix");
 		factor.add(unary);
 		factor.add(factorSuffix);
 

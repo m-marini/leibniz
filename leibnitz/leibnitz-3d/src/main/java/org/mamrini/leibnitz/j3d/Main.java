@@ -15,6 +15,7 @@ import javax.media.j3d.BoundingSphere;
 import javax.media.j3d.BranchGroup;
 import javax.media.j3d.Canvas3D;
 import javax.media.j3d.DirectionalLight;
+import javax.media.j3d.Group;
 import javax.media.j3d.Transform3D;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -68,14 +69,8 @@ public class Main {
 		new Main().run();
 	}
 
-	/**
-	 * 
-	 */
-	private void run() {
-		frame.setVisible(true);
-	}
-
 	private final JFrame frame;
+
 	private final SwingOptions options;
 	private final Action openAction;
 	private final Action exitAction;
@@ -123,62 +118,11 @@ public class Main {
 				"file", openAction, null, exitAction, "options", "lookAndFeel"//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ 
 		));
 		SwingTools.centerOnScreen(frame);
-
+		fileChooser.setCurrentDirectory(new File("."));
 		final Container c = frame.getContentPane();
 		c.setLayout(new BorderLayout());
 		createScene();
 		c.add(createCanvas(), BorderLayout.CENTER);
-	}
-
-	/**
-	 * 
-	 */
-	private void openFile() {
-		if (fileChooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
-			try {
-				parseFile(fileChooser.getSelectedFile());
-			} catch (SAXException | IOException | ParserConfigurationException
-					| FunctionParserException e) {
-				new SwingTools(Messages.RESOURCE_BUNDLE).alert(e);
-			}
-		}
-	}
-
-	/**
-	 * @param f
-	 * @throws ParserConfigurationException
-	 * @throws IOException
-	 * @throws SAXException
-	 * @throws FunctionParserException
-	 */
-	private void parseFile(final File f) throws SAXException, IOException,
-			ParserConfigurationException, FunctionParserException {
-		removeCorpes();
-		final FunctionGenerator g = new LeibnitzParser().parse(f);
-		final Command cmd = g.getFunction("dt"); //$NON-NLS-1$
-		if (cmd == null)
-			throw new IllegalArgumentException("Undefined function \"dt\""); //$NON-NLS-1$
-		if (cmd.getType() != Type.SCALAR)
-			throw new IllegalArgumentException(
-					"Function \"dt\" is not a scalar"); //$NON-NLS-1$
-		behaviour.setDt(Math.round(g.getScalar("dt") * 1e9));
-
-		corpeList = new CorpeFactory(g).build();
-		behaviour.setGenerator(g);
-		for (final AbstractCorpe c : corpeList) {
-			behaviour.addCorpe(c);
-			scene.addChild(c);
-		}
-		g.init();
-	}
-
-	/**
-	 * 
-	 */
-	private void removeCorpes() {
-		behaviour.clearCorpes();
-		for (final AbstractCorpe c : corpeList)
-			scene.addChild(c);
 	}
 
 	/**
@@ -238,8 +182,70 @@ public class Main {
 		scene.addChild(l1);
 		scene.addChild(l2);
 		scene.addChild(l3);
-		// scene.addChild(behaviour);
-
+		scene.addChild(behaviour);
+		scene.setCapability(BranchGroup.ALLOW_DETACH);
+		scene.setCapability(Group.ALLOW_CHILDREN_WRITE);
+		scene.setCapability(Group.ALLOW_CHILDREN_EXTEND);
 		scene.compile();
+	}
+
+	/**
+	 * 
+	 */
+	private void openFile() {
+		if (fileChooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
+			try {
+				parseFile(fileChooser.getSelectedFile());
+			} catch (SAXException | IOException | ParserConfigurationException
+					| FunctionParserException e) {
+				new SwingTools(Messages.RESOURCE_BUNDLE).alert(e);
+			}
+		}
+	}
+
+	/**
+	 * @param f
+	 * @throws ParserConfigurationException
+	 * @throws IOException
+	 * @throws SAXException
+	 * @throws FunctionParserException
+	 */
+	private void parseFile(final File f) throws SAXException, IOException,
+			ParserConfigurationException, FunctionParserException {
+		removeCorpes();
+		final FunctionGenerator g = new LeibnitzParser().parse(f);
+		final Command cmd = g.getFunction("dt"); //$NON-NLS-1$
+		if (cmd == null)
+			throw new IllegalArgumentException("Undefined function \"dt\""); //$NON-NLS-1$
+		if (cmd.getType() != Type.SCALAR)
+			throw new IllegalArgumentException(
+					"Function \"dt\" is not a scalar"); //$NON-NLS-1$
+		behaviour.setDt(Math.round(g.getScalar("dt") * 1e9));
+
+		corpeList = new CorpeFactory(g).build();
+		behaviour.setGenerator(g);
+		for (final AbstractCorpe c : corpeList) {
+			c.setCapability(BranchGroup.ALLOW_DETACH);
+			c.compile();
+			behaviour.addCorpe(c);
+			scene.addChild(c);
+		}
+		g.init();
+	}
+
+	/**
+	 * 
+	 */
+	private void removeCorpes() {
+		behaviour.clearCorpes();
+		for (final AbstractCorpe c : corpeList)
+			scene.removeChild(c);
+	}
+
+	/**
+	 * 
+	 */
+	private void run() {
+		frame.setVisible(true);
 	}
 }
