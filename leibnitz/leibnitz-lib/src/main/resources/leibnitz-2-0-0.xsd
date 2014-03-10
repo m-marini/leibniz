@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.mmarini.org/leibnitz-2-0-0"
+	elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:l="http://www.mmarini.org/leibnitz-2-0-0">
+	<annotation>
+		<documentation>
+		</documentation>
+	</annotation>
+	<element name="definitions" type="l:DefinitionsType"></element>
+	<complexType name="DefinitionsType">
+		<sequence>
+			<choice maxOccurs="unbounded" minOccurs="0">
+				<element ref="l:variable"></element>
+				<element ref="l:function"></element>
+			</choice>
+			<element ref="l:update" maxOccurs="unbounded"
+				minOccurs="0">
+			</element>
+			<element ref="l:corpe" maxOccurs="unbounded" minOccurs="1"></element>
+		</sequence>
+	</complexType>
+	<complexType name="FunctionType">
+		<simpleContent>
+			<extension base="string">
+				<attribute name="id" type="l:IdType" use="required"></attribute>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<simpleType name="IdType">
+		<restriction base="string">
+			<whiteSpace value="collapse"></whiteSpace>
+		</restriction>
+	</simpleType>	<element name="variable" type="l:FunctionType"></element>
+	<element name="function" type="l:FunctionType"></element>
+	<element name="update" type="l:FunctionType"></element>
+    <element name="corpe" type="l:CorpeType"></element>
+    <complexType name="CorpeType">
+    	<sequence></sequence>
+    	<attribute name="location" type="l:IdType" use="required"></attribute>
+    	<attribute name="rotation" type="l:IdType"></attribute>
+    </complexType>
+</schema>

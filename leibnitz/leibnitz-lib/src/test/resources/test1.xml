@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<l:definitions xmlns:l="http://www.mmarini.org/leibnitz-2-0-0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mmarini.org/leibnitz-2-0-0 ../../main/resources/leibnitz-2-0-0.xsd ">
+	<l:variable id="t">0.0</l:variable>
+	<l:variable id="dt">0.1</l:variable>
+	<l:variable id="q">10 * e1 + 0 * e2</l:variable>
+	<l:variable id="q1">10 * e0 + 0 * e2</l:variable>
+	<l:function id="R">q</l:function>
+	<l:function id="D">q + R</l:function>
+	<l:function id="F">e0 * t</l:function>
+	<l:function id="A">I3</l:function>
+	<l:function id="q2">-A * (D - F)</l:function>
+	<l:function id="Rot">qrot(e2)</l:function>
+	<l:update id="q1">q1 + q2 * dt</l:update>
+	<l:update id="q">q + q1 * dt</l:update>
+	<l:update id="t">t + dt</l:update>
+	<l:corpe location="R" rotation="Rot"/>
+</l:definitions>

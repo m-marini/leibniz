@@ -3,10 +3,15 @@
  */
 package org.mmarini.leibnitz.parser;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.mmarini.leibnitz.FunctionGenerator;
 import org.mmarini.leibnitz.commands.AbstractCachedCommand;
 import org.mmarini.leibnitz.commands.AbstractVariableCommand;
 import org.mmarini.leibnitz.commands.Command;
+import org.mmarini.leibnitz.commands.Command.Type;
+import org.mmarini.leibnitz.commands.TypeDimensions;
 import org.mmarini.leibnitz.commands.VariableCommand;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
@@ -19,19 +24,38 @@ import org.xml.sax.helpers.DefaultHandler;
  * 
  */
 public class LeibnitzSaxHandler extends DefaultHandler {
-	public static final String NAME_SPACE = "http://www.mmarini.org/leibnitz-1-0-0";
+	/**
+	 * 
+	 */
+	private static final String DEFINITIONS_KEY = "definitions";
+
+	public static final String NAME_SPACE = "http://www.mmarini.org/leibnitz-2-0-0";
 
 	private static final String ID_KEY = "id";
 	private static final String VARIABLE_KEY = "variable";
 	private static final String UPDATE_KEY = "update";
 	private static final String FUNCTION_KEY = "function";
-	private static final String DEFINITIONS_KEY = "definitions";
+	private static final String CORPE_KEY = "corpe";
+
+	// private static final String DEFINITIONS_KEY = "definitions";
+
+	private interface StartHandler {
+		public abstract void apply(Attributes attributes) throws SAXException;
+	};
+
+	private interface EndHandler {
+		public abstract void apply() throws SAXException;
+	};
 
 	private Locator locator;
 	private final StringBuilder text;
 	private String id;
 	private final ExpressionInterpreter context;
 	private final FunctionGenerator generator;
+	private final Map<String, StartHandler> startHandler;
+	private final Map<String, EndHandler> endHandler;
+
+	private boolean contentFound;
 
 	/**
 	 * 
@@ -40,6 +64,123 @@ public class LeibnitzSaxHandler extends DefaultHandler {
 		text = new StringBuilder();
 		context = new ExpressionInterpreter();
 		generator = new FunctionGenerator();
+		startHandler = new HashMap<>();
+		endHandler = new HashMap<>();
+
+		final StartHandler parseIdHandler = new StartHandler() {
+
+			@Override
+			public void apply(final Attributes attributes) throws SAXException {
+				final String i = attributes.getValue(ID_KEY);
+				validateId(i);
+				id = i;
+			}
+		};
+
+		startHandler.put(DEFINITIONS_KEY, new StartHandler() {
+			
+			@Override
+			public void apply(Attributes attributes) throws SAXException {
+				contentFound=true;
+			}
+		});
+		startHandler.put(VARIABLE_KEY, parseIdHandler);
+		startHandler.put(UPDATE_KEY, parseIdHandler);
+		startHandler.put(FUNCTION_KEY, parseIdHandler);
+		startHandler.put(CORPE_KEY, new StartHandler() {
+
+			@Override
+			public void apply(final Attributes attributes) throws SAXException {
+				final String l = attributes.getValue("location");
+				final Command tfd = generator.getFunction(l);
+				if (tfd == null)
+					throw new SAXParseException("Function \"" + l
+							+ "\" undefined.", locator);
+				if (tfd.getType() != Type.VECTOR)
+					throw new SAXParseException("Function \"" + l
+							+ "\" is not a vector.", locator);
+				final TypeDimensions dims = tfd.getDimensions();
+				final int dim = dims.getRowCount();
+				if (dim != 3)
+					throw new SAXParseException("Function \"" + l
+							+ "\" is not a location vector in 3D space (" + dim
+							+ "D).", locator);
+
+				final String r = attributes.getValue("rotation");
+				if (r != null) {
+					final Command rfd = generator.getFunction(r);
+					if (rfd == null)
+						throw new SAXParseException("Function \"" + r
+								+ "\" undefined.", locator);
+					if (rfd.getType() != Type.QUATERNION)
+						throw new SAXParseException("Function \"" + r
+								+ "\" is not a quaternion.", locator);
+				}
+
+				generator.add(new CorpeDefs(l, r));
+			}
+		});
+
+		endHandler.put(FUNCTION_KEY, new EndHandler() {
+			@Override
+			public void apply() throws SAXParseException {
+				try {
+					final Command fr = context.parse(text.toString(),
+							SyntaxFactory.getInstance().getFunctionSyntax());
+					final AbstractCachedCommand function = AbstractCachedCommand
+							.create(fr);
+					context.put(id, fr);
+					generator.add(id, function);
+				} catch (final FunctionParserException e) {
+					throw new SAXParseException(e.getMessage(), locator, e);
+				}
+			}
+		});
+		endHandler.put(VARIABLE_KEY, new EndHandler() {
+			@Override
+			public void apply() throws SAXParseException {
+				try {
+					final Command fr = context.parse(text.toString(),
+							SyntaxFactory.getInstance().getFunctionSyntax());
+					final AbstractVariableCommand variable = AbstractVariableCommand
+							.create(id, fr);
+					context.put(id, variable);
+					generator.add(id, variable);
+				} catch (final FunctionParserException e) {
+					throw new SAXParseException(e.getMessage(), locator, e);
+				}
+			}
+		});
+		endHandler.put(UPDATE_KEY, new EndHandler() {
+			@Override
+			public void apply() throws SAXParseException {
+				try {
+					final VariableCommand v = generator.getVariable(id);
+					if (v == null)
+						throw new SAXParseException("Variable \"" + id
+								+ "\" not found", locator);
+					final Command fr = context.parse(text.toString(),
+							SyntaxFactory.getInstance().getFunctionSyntax());
+					if (fr.getType() != v.getType()) {
+						throw new SAXParseException("Update function return a "
+								+ id + "\" not found", locator);
+					}
+					v.setUpdateFunction(fr);
+				} catch (final FunctionParserException e) {
+					throw new SAXParseException(e.getMessage(), locator, e);
+				}
+			}
+		});
+	}
+
+	/**
+	 * @see org.xml.sax.helpers.DefaultHandler#endDocument()
+	 */
+	@Override
+	public void endDocument() throws SAXException {
+		if (!contentFound)
+			throw new SAXParseException("Missing " + DEFINITIONS_KEY
+					+ " element", locator);
 	}
 
 	/**
@@ -56,19 +197,13 @@ public class LeibnitzSaxHandler extends DefaultHandler {
 	 *      java.lang.String, java.lang.String)
 	 */
 	@Override
-	public void endElement(final String uri, final String localName, final String qName)
-			throws SAXException {
+	public void endElement(final String uri, final String localName,
+			final String qName) throws SAXException {
 		if (!NAME_SPACE.equals(uri))
 			return;
-		if (FUNCTION_KEY.equals(localName)) {
-			parseFunction();
-		} else if (VARIABLE_KEY.equals(localName)) {
-			parseVariable();
-		} else if (UPDATE_KEY.equals(localName)) {
-			parseUpdate();
-		} else if (DEFINITIONS_KEY.equals(localName)) {
-			parseDefinitions();
-		}
+		final EndHandler h = endHandler.get(localName);
+		if (h != null)
+			h.apply();
 	}
 
 	/**
@@ -89,32 +224,10 @@ public class LeibnitzSaxHandler extends DefaultHandler {
 
 	/**
 	 * 
-	 */
-	private void parseDefinitions() {
-	}
-
-	/**
-	 * @throws SAXParseException
-	 * 
-	 */
-	private void parseFunction() throws SAXParseException {
-		try {
-			final Command fr = context.parse(text.toString(), SyntaxFactory
-					.getInstance().getFunctionSyntax());
-			final AbstractCachedCommand function = AbstractCachedCommand.create(fr);
-			context.put(id, fr);
-			generator.add(id, function);
-		} catch (final FunctionParserException e) {
-			throw new SAXParseException(e.getMessage(), locator, e);
-		}
-	}
-
-	/**
-	 * 
 	 * @param id
 	 * @throws SAXParseException
 	 */
-	private void parseId(final String id) throws SAXParseException {
+	private void validateId(final String id) throws SAXParseException {
 		final char[] bfr = id.toCharArray();
 		if (bfr.length == 0 || !Character.isJavaIdentifierStart(bfr[0]))
 			throw new SAXParseException(id + " is not a valid identifier",
@@ -123,46 +236,6 @@ public class LeibnitzSaxHandler extends DefaultHandler {
 			if (!Character.isJavaIdentifierPart(bfr[i]))
 				throw new SAXParseException(id + " is not a valid identifier",
 						locator);
-		this.id = id;
-	}
-
-	/**
-	 * 
-	 * @throws SAXParseException
-	 */
-	private void parseUpdate() throws SAXParseException {
-		try {
-			final VariableCommand v = generator.getVariable(id);
-			if (v == null)
-				throw new SAXParseException(
-						"Variable \"" + id + "\" not found", locator);
-			final Command fr = context.parse(text.toString(), SyntaxFactory
-					.getInstance().getFunctionSyntax());
-			if (fr.getType() != v.getType()) {
-				throw new SAXParseException("Update function return a " + id
-						+ "\" not found", locator);
-			}
-			v.setUpdateFunction(fr);
-		} catch (final FunctionParserException e) {
-			throw new SAXParseException(e.getMessage(), locator, e);
-		}
-	}
-
-	/**
-	 * 
-	 * @throws SAXParseException
-	 */
-	private void parseVariable() throws SAXParseException {
-		try {
-			final Command fr = context.parse(text.toString(), SyntaxFactory
-					.getInstance().getFunctionSyntax());
-			final AbstractVariableCommand variable = AbstractVariableCommand.create(
-					id, fr);
-			context.put(id, variable);
-			generator.add(id, variable);
-		} catch (final FunctionParserException e) {
-			throw new SAXParseException(e.getMessage(), locator, e);
-		}
 	}
 
 	/**
@@ -175,21 +248,26 @@ public class LeibnitzSaxHandler extends DefaultHandler {
 	}
 
 	/**
+	 * @see org.xml.sax.helpers.DefaultHandler#startDocument()
+	 */
+	@Override
+	public void startDocument() throws SAXException {
+		contentFound = false;
+	}
+
+	/**
 	 * @see org.xml.sax.helpers.DefaultHandler#startElement(java.lang.String,
 	 *      java.lang.String, java.lang.String, org.xml.sax.Attributes)
 	 */
 	@Override
-	public void startElement(final String uri, final String localName, final String qName,
-			final Attributes attributes) throws SAXException {
+	public void startElement(final String uri, final String localName,
+			final String qName, final Attributes attributes)
+			throws SAXException {
 		text.setLength(0);
 		if (!NAME_SPACE.equals(uri))
 			return;
-		if (VARIABLE_KEY.equals(localName)) {
-			parseId(attributes.getValue(ID_KEY));
-		} else if (UPDATE_KEY.equals(localName)) {
-			parseId(attributes.getValue(ID_KEY));
-		} else if (FUNCTION_KEY.equals(localName)) {
-			parseId(attributes.getValue(ID_KEY));
-		}
+		final StartHandler h = startHandler.get(localName);
+		if (h != null)
+			h.apply(attributes);
 	}
 }

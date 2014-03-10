@@ -8,10 +8,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.mmarini.fp.FPArrayList;
+import org.mmarini.fp.FPList;
 import org.mmarini.leibnitz.commands.Command;
 import org.mmarini.leibnitz.commands.Command.Type;
 import org.mmarini.leibnitz.commands.VariableCommand;
 import org.mmarini.leibnitz.commands.VariableSCommand;
+import org.mmarini.leibnitz.parser.CorpeDefs;
 import org.mmarini.leibnitz.parser.FunctionParserException;
 
 /**
@@ -29,11 +32,13 @@ public class FunctionGenerator {
 	private final Map<String, Command> functions;
 	private final List<VariableCommand> variables;
 	private Map<String, VariableCommand> variableTable = new HashMap<String, VariableCommand>();
+	private FPList<CorpeDefs> corpes;
 
 	/**
 	 * 
 	 */
 	public FunctionGenerator() {
+		corpes = new FPArrayList<>();
 		commandProcessor = new CommandProcessor();
 		functions = new HashMap<String, Command>();
 		variables = new ArrayList<VariableCommand>();
@@ -99,7 +104,8 @@ public class FunctionGenerator {
 	 * @return
 	 * @throws FunctionParserException
 	 */
-	public Quaternion getQuaternion(final String id) throws FunctionParserException {
+	public Quaternion getQuaternion(final String id)
+			throws FunctionParserException {
 		final Command cmd = getFunction(id);
 		if (cmd.getType() != Type.QUATERNION)
 			throw new FunctionParserException("check for type " + cmd.getType());
@@ -176,5 +182,19 @@ public class FunctionGenerator {
 		if (type != Type.SCALAR)
 			throw new FunctionParserException("check for type " + type);
 		((VariableSCommand) var).setValue(value);
+	}
+
+	/**
+	 * @return
+	 */
+	public FPList<CorpeDefs> getCorpes() {
+		return corpes;
+	}
+
+	/**
+	 * @param corpeDefs
+	 */
+	public void add(CorpeDefs corpeDefs) {
+		corpes.add(corpeDefs);
 	}
 }

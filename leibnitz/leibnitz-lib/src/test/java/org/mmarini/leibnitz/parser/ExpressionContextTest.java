@@ -1,8 +1,9 @@
 package org.mmarini.leibnitz.parser;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
@@ -27,122 +28,114 @@ public class ExpressionContextTest {
 	@Test
 	public void testChar() throws FunctionParserException {
 		ctx.init("(");
-		assertEquals("(", ctx.getToken());
-		assertFalse(ctx.isInteger());
-		assertFalse(ctx.isNumber());
+		assertThat(ctx, hasProperty("token", equalTo("(")));
+		assertThat(ctx.isInteger(), equalTo(false));
+		assertThat(ctx.isNumber(), equalTo(false));
 	}
 
 	@Test
 	public void testIdentifier() throws FunctionParserException {
 		ctx.init("identifier");
-		assertEquals("identifier", ctx.getToken());
-		assertFalse(ctx.isInteger());
-		assertFalse(ctx.isNumber());
+		assertThat(ctx, hasProperty("token", equalTo("identifier")));
+		assertThat(ctx.isInteger(), equalTo(false));
+		assertThat(ctx.isNumber(), equalTo(false));
 	}
 
 	@Test
 	public void testIsNumber1() throws FunctionParserException {
 		ctx.init("123");
-		assertEquals("123", ctx.getToken());
-		assertTrue(ctx.isNumber());
-		assertTrue(ctx.isInteger());
+		assertThat(ctx, hasProperty("token", equalTo("123")));
+		assertThat(ctx.isInteger(), equalTo(true));
+		assertThat(ctx.isNumber(), equalTo(true));
 	}
 
 	@Test
 	public void testIsNumber10() throws FunctionParserException {
 		ctx.init("1.1e+1");
-		assertEquals("1.1e+1", ctx.getToken());
-		assertTrue(ctx.isNumber());
-		assertFalse(ctx.isInteger());
+		assertThat(ctx, hasProperty("token", equalTo("1.1e+1")));
+		assertThat(ctx.isInteger(), equalTo(false));
+		assertThat(ctx.isNumber(), equalTo(true));
 	}
 
 	@Test
 	public void testIsNumber11() throws FunctionParserException {
 		ctx.init("1.1e-1");
-		assertEquals("1.1e-1", ctx.getToken());
-		assertTrue(ctx.isNumber());
-		assertFalse(ctx.isInteger());
+		assertThat(ctx, hasProperty("token", equalTo("1.1e-1")));
+		assertThat(ctx.isInteger(), equalTo(false));
+		assertThat(ctx.isNumber(), equalTo(true));
 	}
 
 	@Test
 	public void testIsNumber2() throws FunctionParserException {
 		ctx.init("123.");
-		assertEquals("123.", ctx.getToken());
-		assertTrue(ctx.isNumber());
-		assertFalse(ctx.isInteger());
-	}
-
-	@Test
-	public void testIsNumber3() throws FunctionParserException {
-		ctx.init("123.");
-		assertEquals("123.", ctx.getToken());
-		assertTrue(ctx.isNumber());
-		assertFalse(ctx.isInteger());
+		assertThat(ctx, hasProperty("token", equalTo("123.")));
+		assertThat(ctx.isInteger(), equalTo(false));
+		assertThat(ctx.isNumber(), equalTo(true));
 	}
 
 	@Test
 	public void testIsNumber4() throws FunctionParserException {
 		ctx.init("123.123");
-		assertEquals("123.123", ctx.getToken());
-		assertTrue(ctx.isNumber());
-		assertFalse(ctx.isInteger());
+		assertThat(ctx, hasProperty("token", equalTo("123.123")));
+		assertThat(ctx.isInteger(), equalTo(false));
+		assertThat(ctx.isNumber(), equalTo(true));
 	}
 
 	@Test
 	public void testIsNumber5() throws FunctionParserException {
 		ctx.init(".123");
-		assertEquals(".123", ctx.getToken());
-		assertTrue(ctx.isNumber());
-		assertFalse(ctx.isInteger());
+		assertThat(ctx, hasProperty("token", equalTo(".123")));
+		assertThat(ctx.isInteger(), equalTo(false));
+		assertThat(ctx.isNumber(), equalTo(true));
 	}
 
 	@Test
 	public void testIsNumber6() throws FunctionParserException {
 		ctx.init("1e1");
-		assertEquals("1e1", ctx.getToken());
-		assertTrue(ctx.isNumber());
-		assertFalse(ctx.isInteger());
+		assertThat(ctx, hasProperty("token", equalTo("1e1")));
+		assertThat(ctx.isInteger(), equalTo(false));
+		assertThat(ctx.isNumber(), equalTo(true));
 	}
 
 	@Test
 	public void testIsNumber7() throws FunctionParserException {
 		ctx.init("1.e1");
-		assertEquals("1.e1", ctx.getToken());
-		assertTrue(ctx.isNumber());
-		assertFalse(ctx.isInteger());
+		assertThat(ctx, hasProperty("token", equalTo("1.e1")));
+		assertThat(ctx.isInteger(), equalTo(false));
+		assertThat(ctx.isNumber(), equalTo(true));
 	}
 
 	@Test
 	public void testIsNumber8() throws FunctionParserException {
 		ctx.init(".1e1");
-		assertEquals(".1e1", ctx.getToken());
-		assertTrue(ctx.isNumber());
-		assertFalse(ctx.isInteger());
+		assertThat(ctx, hasProperty("token", equalTo(".1e1")));
+		assertThat(ctx.isInteger(), equalTo(false));
+		assertThat(ctx.isNumber(), equalTo(true));
 	}
 
 	@Test
 	public void testIsNumber9() throws FunctionParserException {
 		ctx.init("1.1e1");
-		assertEquals("1.1e1", ctx.getToken());
-		assertTrue(ctx.isNumber());
-		assertFalse(ctx.isInteger());
+		assertThat(ctx, hasProperty("token", equalTo("1.1e1")));
+		assertThat(ctx.isInteger(), equalTo(false));
+		assertThat(ctx.isNumber(), equalTo(true));
 	}
 
 	@Test
 	public void testNextToken() throws FunctionParserException {
 		ctx.init("a b c");
-		assertEquals("a", ctx.getToken());
+		assertThat(ctx, hasProperty("token", equalTo("a")));
 		ctx.nextToken();
-		assertEquals("b", ctx.getToken());
+		assertThat(ctx, hasProperty("token", equalTo("b")));
 		ctx.nextToken();
-		assertEquals("c", ctx.getToken());
+		assertThat(ctx, hasProperty("token", equalTo("c")));
 		ctx.nextToken();
-		assertNull(ctx.getToken());
+		assertThat(ctx, hasProperty("token", nullValue()));
 	}
 
 	@Test
 	public void testSkipWhitespaces() throws FunctionParserException {
 		ctx.init("   a");
-		assertEquals("a", ctx.getToken());
+		assertThat(ctx, hasProperty("token", equalTo("a")));
 	}
 }

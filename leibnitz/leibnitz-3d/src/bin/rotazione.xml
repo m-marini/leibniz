@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <l:definitions xmlns:l="http://www.mmarini.org/leibnitz-1-0-0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.mmarini.org/leibnitz-1-0-0 ../Leibnitz/res/leibnitz-1-0-0.xsd ">
+	xsi:schemaLocation="http://www.mmarini.org/leibnitz-1-0-0 ../main/resources/leibnitz-2-0-0.xsd ">
 
 	<l:function id="dt">0.01</l:function>
 

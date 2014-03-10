@@ -15,23 +15,19 @@ import javax.media.j3d.WakeupOnElapsedFrames;
 import javax.media.j3d.WakeupOr;
 
 import org.mmarini.leibnitz.FunctionGenerator;
-import org.mmarini.leibnitz.parser.FunctionParserException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author US00852
  * 
  */
 public class LeibnitzBehaviour extends Behavior {
-	private static Logger log = LoggerFactory.getLogger(LeibnitzBehaviour.class);
 
 	private final WakeupOr activeCriterion;
 	private final WakeupCriterion inactiveCriterion;
-	private long last;
-	private FunctionGenerator generator;
 	private final List<Corpe> list;
+	private FunctionGenerator generator;
 	private long dt;
+	private long last;
 
 	/**
 	 * 
@@ -48,7 +44,7 @@ public class LeibnitzBehaviour extends Behavior {
 	 * @param string
 	 * @param particle
 	 */
-	public void add(final Corpe particle) {
+	public void addCorpe(final Corpe particle) {
 		list.add(particle);
 	}
 
@@ -66,30 +62,30 @@ public class LeibnitzBehaviour extends Behavior {
 	private void processLocation() {
 		final long now = System.nanoTime();
 		long elapsed = now - last;
-		if (elapsed < dt)
+		if (generator != null && elapsed >= dt) {
 			/*
-			 * if it has not past more then the time differential between
-			 * previous update skip the new state computing
+			 * if it has past more then the time differential between previous
+			 * update, compute the new state
 			 */
-			return;
-		/*
-		 * Iterate the computing to match the elapsed time
-		 */
-
-		while (elapsed >= dt) {
-			generator.apply();
-			elapsed -= dt;
-			last += dt;
+			/*
+			 * Iterate the computing to match the elapsed time
+			 */
+			while (elapsed >= dt) {
+				generator.apply();
+				elapsed -= dt;
+				last += dt;
+			}
+			for (final Corpe particle : list)
+				particle.apply();
 		}
-		for (final Corpe particle : list)
-			particle.apply();
 	}
 
 	/**
 	 * @see javax.media.j3d.Behavior#processStimulus(java.util.Enumeration)
 	 */
 	@Override
-	public void processStimulus(@SuppressWarnings("rawtypes") final Enumeration conds) {
+	public void processStimulus(
+			@SuppressWarnings("rawtypes") final Enumeration conds) {
 		while (conds.hasMoreElements()) {
 			final Object el = conds.nextElement();
 			if (el instanceof WakeupOnActivation) {
@@ -110,10 +106,20 @@ public class LeibnitzBehaviour extends Behavior {
 	 */
 	public void setGenerator(final FunctionGenerator generator) {
 		this.generator = generator;
-		try {
-			dt = Math.round(generator.getScalar("dt") * 1e9);
-		} catch (final FunctionParserException e) {
-			log.error(e.getMessage(), e);
-		}
+	}
+
+	/**
+	 * 
+	 */
+	public void clearCorpes() {
+		list.clear();
+	}
+
+	/**
+	 * @param dt
+	 *            the dt to set
+	 */
+	public void setDt(long dt) {
+		this.dt = dt;
 	}
 }

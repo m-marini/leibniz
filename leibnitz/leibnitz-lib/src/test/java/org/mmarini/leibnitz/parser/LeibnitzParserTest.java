@@ -1,13 +1,16 @@
 package org.mmarini.leibnitz.parser;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.*;
 
 import java.io.IOException;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
+import org.mmarini.leibnitz.FunctionGenerator;
 import org.xml.sax.SAXException;
 
 public class LeibnitzParserTest {
@@ -22,7 +25,10 @@ public class LeibnitzParserTest {
 	@Test
 	public void testParse() {
 		try {
-			parser.parse("src/test/resources/org/mmarini/leibnitz/parser/test1.xml");
+
+			FunctionGenerator fg = parser.parse("src/test/resources/test1.xml");
+			assertThat(fg, hasProperty("corpes", contains(corpe("R", "Rot"))));
+
 		} catch (final ParserConfigurationException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
@@ -33,6 +39,26 @@ public class LeibnitzParserTest {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
+	}
+
+	/**
+	 * @param loc
+	 * @param rot
+	 * @return
+	 */
+	private static Matcher<CorpeDefs> corpe(String loc, String rot) {
+		return corpe(equalTo(loc), equalTo(rot));
+	}
+
+	/**
+	 * @param loc
+	 * @param rot
+	 * @return
+	 */
+	private static Matcher<CorpeDefs> corpe(Matcher<String> loc,
+			Matcher<String> rot) {
+		return allOf(instanceOf(CorpeDefs.class), hasProperty("location", loc),
+				hasProperty("rotation", rot));
 	}
 
 }
