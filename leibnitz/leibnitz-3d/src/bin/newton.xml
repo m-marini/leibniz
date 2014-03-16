@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.mmarini.org/leibnitz-2-0-0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mmarini.org/leibnitz-2-0-0 ../../../leibnitz-lib/src/main/resources/leibnitz-2-0-0.xsd ">
+	<function id="dt">0.01</function>
+	<function id="m1">100</function>
+	<function id="m2">300</function>
+	<function id="K">10e-3</function>
+	<function id="v">0.5</function>
+	<function id="vv">e0+0*e1+e2</function>
+	
+	
+	<variable id="P1">1 * e0 + 0 * e1 + 0 * e2</variable>
+	<variable id="P2">-1 * e0 + 0 * e1 + 0 * e2</variable>
+	<variable id="V1">v * n(vv)</variable>
+	<variable id="V2">v * n(-vv)</variable>
+
+	<function id="G12">K * n(P2 - P1) / tr(P2 - P1)</function>
+	<function id="A1">m2 * G12</function>
+	<function id="A2">-m1 * G12</function>
+
+	<update id="V1">V1 + A1 * dt</update>
+	<update id="V2">V2 + A2 * dt</update>
+	<update id="P1">P1 + V1 * dt</update>
+	<update id="P2">P2 + V2 * dt</update>
+
+	<corpe location="P1" />
+	<corpe location="P2" />
+</definitions>
