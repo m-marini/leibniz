@@ -18,19 +18,46 @@
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>src/bin</directory>
+			<directory>src/bin32</directory>
 			<includes>
 				<include>*.sh</include>
 				<include>*.cmd</include>
 				<include>*.xml</include>
 			</includes>
-			<outputDirectory>bin</outputDirectory>
+			<outputDirectory>bin32</outputDirectory>
 			<filtered>true</filtered>
 		</fileSet>
 		<fileSet>
-			<directory>src/bin</directory>
+			<directory>src/samples</directory>
+			<includes>
+				<include>*.xml</include>
+			</includes>
+			<outputDirectory>samples</outputDirectory>
+			<filtered>true</filtered>
+		</fileSet>
+		<fileSet>
+			<directory>src/bin32</directory>
 			<includes>
 				<include>*.dll</include>
+				<include>*.so</include>
+			</includes>
+			<outputDirectory>bin32</outputDirectory>
+		</fileSet>
+		<fileSet>
+			<directory>src/bin64</directory>
+			<includes>
+				<include>*.sh</include>
+				<include>*.cmd</include>
+				<include>*.xml</include>
+			</includes>
+			<outputDirectory>bin64</outputDirectory>
+			<filtered>true</filtered>
+		</fileSet>
+		<fileSet>
+			<directory>src/bin64</directory>
+			<includes>
+				<include>*.dll</include>
+				<include>*.so</include>
 			</includes>
 			<outputDirectory>bin</outputDirectory>
 		</fileSet>

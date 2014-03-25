@@ -64,17 +64,17 @@
 		<dependency>
 			<groupId>org.mmarini.java3d</groupId>
 			<artifactId>vecmath</artifactId>
-			<version>1.5</version>
+			<version>1.5.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.mmarini.java3d</groupId>
 			<artifactId>j3dutils</artifactId>
-			<version>1.5</version>
+			<version>1.5.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.mmarini.java3d</groupId>
 			<artifactId>j3dcore</artifactId>
-			<version>1.5</version>
+			<version>1.5.2</version>
 		</dependency>
 
 		<dependency>
