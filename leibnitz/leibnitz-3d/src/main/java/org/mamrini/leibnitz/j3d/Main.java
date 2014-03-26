@@ -118,7 +118,7 @@ public class Main {
 				"file", openAction, null, exitAction, "options", "lookAndFeel"//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ 
 		));
 		SwingTools.centerOnScreen(frame);
-		fileChooser.setCurrentDirectory(new File("."));
+		fileChooser.setCurrentDirectory(new File("../samples"));
 		final Container c = frame.getContentPane();
 		c.setLayout(new BorderLayout());
 		createScene();

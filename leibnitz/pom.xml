@@ -18,6 +18,6 @@
 		</repository>
 	</repositories>
 	<properties>
-		<leibnitz-version>${pom.version}</leibnitz-version>
+		<leibnitz-version>${project.version}</leibnitz-version>
 	</properties>
 </project>
