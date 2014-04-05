@@ -17,14 +17,12 @@
 	<function id="Q1">m1 * V1</function>
 	<function id="Q2">-Q1</function>
 
-	<function id="M">m1 * r</function>
-
-	<variable id="R2">-n(R1) * M / m2</variable>
+	<variable id="R2">-R1 * m1 / m2</variable>
 	<variable id="V2">Q2 /m2</variable>
 
 	<function id="R12">R2 - R1</function>
-	<function id="A1">n(R12) * K * m2 / tr(R12)</function>
-	<function id="A2">-n(R12) * K * m1 / tr(R12)</function>
+	<function id="A1">n(R12) * K * m2 / (R12 * R12)</function>
+	<function id="A2">-n(R12) * K * m1 / (R12 * R12)</function>
 
 	<update id="V1">V1 + A1 * dt</update>
 	<update id="V2">V2 + A2 * dt</update>
