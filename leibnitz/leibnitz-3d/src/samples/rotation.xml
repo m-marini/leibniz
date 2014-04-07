@@ -9,7 +9,7 @@
 	<l:function id="axis">1 * e0 + 0 * e1 - 1 * e2</l:function>
 	<l:function id="w">omega * n(axis)</l:function>
 
-	<l:function id="dt">0.01</l:function>
+	<l:function id="dt">1e-3</l:function>
 	<l:function id="q0">qrot(0 * PI/2 * n(e1 + 0*e2))</l:function>
 	<l:variable id="qr">q0</l:variable>
 	<l:update id="qr">qr * qrot(w * dt)</l:update>

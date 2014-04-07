@@ -2,7 +2,7 @@
 <definitions xmlns="http://www.mmarini.org/leibnitz-2-0-0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.mmarini.org/leibnitz-2-0-0 ../../../leibnitz-lib/src/main/resources/leibnitz-2-0-0.xsd ">
-	<function id="dt">0.01</function>
+	<function id="dt">1e-3</function>
 	<function id="m1">100</function>
 	<function id="m2">300</function>
 	<function id="K">10e-3</function>
