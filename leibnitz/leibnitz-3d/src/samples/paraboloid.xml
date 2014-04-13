@@ -12,11 +12,11 @@
 	<function id="q2_0">0</function>
 
 	<function id="qv1_0">0</function>
-	<function id="qv2_0">2*PI</function>
+	<function id="qv2_0">sqrt(-2*a*g)*1.5</function>
 
 	<function id="b0">(e0 + 0 * e1)</function>
 	<function id="b1">e1</function>
-	
+
 	<variable id="q">q1_0 * e0 + q2_0 * e1</variable>
 	<variable id="qv">qv1_0 * e0 + qv2_0 * e1</variable>
 
@@ -30,7 +30,7 @@
 	<function id="qa1">q1 * (2 * a * g - 4 * qv1^2 * a^2 + qv2^2) / (4 * q1^2 * a^2 + 1)</function>
 
 	<function id="qa">qa1 * e0 + qa2 * e1</function>
-	
+
 	<function id="x">q1 * cos(q2)</function>
 	<function id="z">-q1^2 * a</function>
 	<function id="y">q1 * sin(q2)</function>
