@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.mmarini.org/leibnitz-2-0-0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mmarini.org/leibnitz-2-0-0 ../../../leibnitz-lib/src/main/resources/leibnitz-2-0-0.xsd ">
+	<function id="dt">1e-3</function>
+	<function id="m1">100</function>
+	<function id="m2">300</function>
+	<function id="K">10e-3</function>
+	<function id="v">1</function>
+	<function id="r">1</function>
+	<function id="R">e0 + 0 * e2</function>
+	<function id="V">e2</function>
+
+	<variable id="R1">r * n(R)</variable>
+	<variable id="V1">v * n(V)</variable>
+
+	<function id="Q1">m1 * V1</function>
+	<function id="Q2">-Q1</function>
+
+	<variable id="R2">-R1 * m1 / m2</variable>
+	<variable id="V2">Q2 /m2</variable>
+
+	<function id="R12">R2 - R1</function>
+	<function id="A1">n(R12) * K * m2 / (R12 * R12)</function>
+	<function id="A2">-n(R12) * K * m1 / (R12 * R12)</function>
+
+	<update id="V1">V1 + A1 * dt</update>
+	<update id="V2">V2 + A2 * dt</update>
+	<update id="R1">R1 + V1 * dt</update>
+	<update id="R2">R2 + V2 * dt</update>
+
+	<corpe location="R1" />
+	<corpe location="R2" />
+</definitions>
