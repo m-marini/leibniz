@@ -8,6 +8,7 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
+import java.io.File;
 import java.io.IOException;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -64,7 +65,21 @@ public class LeibnitzParserTest {
 		} catch (final IOException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
+		} catch (final FunctionParserException e) {
+			e.printStackTrace();
+			fail(e.getMessage());
 		}
 	}
 
+	@Test
+	public void testParseJson() {
+		try {
+			final FunctionGenerator fg = new LeibnitzJsonHandler()
+					.parse(new File("src/test/resources/test1.json"));
+			assertThat(fg, hasProperty("corpes", contains(corpe("R", "Rot"))));
+		} catch (IOException | FunctionParserException e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
+	}
 }

@@ -110,7 +110,7 @@ public class Main {
 		}, "exit"); //$NON-NLS-1$
 
 		fileChooser.setFileFilter(new FileNameExtensionFilter("Leibnitz file",
-				"xml"));
+				"xml", "json"));
 		frame.setTitle(Messages.getString("Main.title")); //$NON-NLS-1$
 		frame.setSize(800, 600);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

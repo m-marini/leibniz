@@ -1,0 +1,89 @@
+{
+	"defs" : [ {
+		"id" : "dt",
+		"type" : "func",
+		"exp" : "1e-3"
+	}, {
+		"id" : "m1",
+		"type" : "func",
+		"exp" : "100"
+	}, {
+		"id" : "m2",
+		"type" : "func",
+		"exp" : "300"
+	}, {
+		"id" : "K",
+		"type" : "func",
+		"exp" : "10e-3"
+	}, {
+		"id" : "v",
+		"type" : "func",
+		"exp" : "1"
+	}, {
+		"id" : "r",
+		"type" : "func",
+		"exp" : "1"
+	}, {
+		"id" : "R",
+		"type" : "func",
+		"exp" : "e0 + 0 * e2"
+	}, {
+		"id" : "V",
+		"type" : "func",
+		"exp" : "e2"
+	}, {
+		"id" : "R1",
+		"type" : "var",
+		"exp" : "r * n(R)"
+	}, {
+		"id" : "V1",
+		"type" : "var",
+		"exp" : "v * n(V)"
+	}, {
+		"id" : "Q1",
+		"type" : "func",
+		"exp" : "m1 * V1"
+	}, {
+		"id" : "Q2",
+		"type" : "func",
+		"exp" : "-Q1"
+	}, {
+		"id" : "R2",
+		"type" : "var",
+		"exp" : "-R1 * m1 / m2"
+	}, {
+		"id" : "V2",
+		"type" : "var",
+		"exp" : "Q2 /m2"
+	}, {
+		"id" : "R12",
+		"type" : "func",
+		"exp" : "R2 - R1"
+	}, {
+		"id" : "A1",
+		"type" : "func",
+		"exp" : "n(R12) * K * m2 / (R12 * R12)"
+	}, {
+		"id" : "A2",
+		"type" : "func",
+		"exp" : "-n(R12) * K * m1 / (R12 * R12)"
+	} ],
+	"update" : [ {
+		"id" : "V1",
+		"exp" : "V1 + A1 * dt"
+	}, {
+		"id" : "V2",
+		"exp" : "V2 + A2 * dt"
+	}, {
+		"id" : "R1",
+		"exp" : "R1 + V1 * dt"
+	}, {
+		"id" : "R2",
+		"exp" : "R2 + V2 * dt"
+	} ],
+	"corpe" : [ {
+		"location" : "R1"
+	}, {
+		"location" : "R2"
+	} ]
+}

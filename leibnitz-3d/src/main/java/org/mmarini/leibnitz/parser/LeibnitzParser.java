@@ -54,14 +54,19 @@ public class LeibnitzParser {
 	 * @throws SAXException
 	 * @throws ParserConfigurationException
 	 * @throws IOException
+	 * @throws FunctionParserException
 	 */
 	public FunctionGenerator parse(final File f) throws SAXException,
-			IOException, ParserConfigurationException {
+			IOException, ParserConfigurationException, FunctionParserException {
 		log.debug("Parsing {} ...", f);
-		createFactory();
-		final LeibnitzSaxHandler handler = new LeibnitzSaxHandler();
-		factory.newSAXParser().parse(f, handler);
-		return handler.getGenerator();
+		if (f.getName().endsWith(".xml")) {
+			createFactory();
+			final LeibnitzSaxHandler handler = new LeibnitzSaxHandler();
+			factory.newSAXParser().parse(f, handler);
+			return handler.getGenerator();
+		} else {
+			return new LeibnitzJsonHandler().parse(f);
+		}
 	}
 
 	/**
@@ -71,9 +76,11 @@ public class LeibnitzParser {
 	 * @throws SAXException
 	 * @throws ParserConfigurationException
 	 * @throws IOException
+	 * @throws FunctionParserException
 	 */
 	public FunctionGenerator parse(final String file)
-			throws ParserConfigurationException, SAXException, IOException {
+			throws ParserConfigurationException, SAXException, IOException,
+			FunctionParserException {
 		return parse(new File(file));
 	}
 }

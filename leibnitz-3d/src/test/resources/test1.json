@@ -1,0 +1,57 @@
+ {
+	"defs" : [ {
+		"id" : "t",
+		"type" : "var",
+		"exp" : "0.0"
+	}, {
+		"id" : "dt",
+		"type" : "var",
+		"exp" : "0.1"
+	}, {
+		"id" : "q",
+		"type" : "var",
+		"exp" : "10 * e1 + 0 * e2"
+	}, {
+		"id" : "q1",
+		"type" : "var",
+		"exp" : "10 * e0 + 0 * e2"
+	}, {
+		"id" : "R",
+		"type" : "func",
+		"exp" : "q"
+	}, {
+		"id" : "D",
+		"type" : "func",
+		"exp" : "q + R"
+	}, {
+		"id" : "F",
+		"type" : "func",
+		"exp" : "e0 * t"
+	}, {
+		"id" : "A",
+		"type" : "func",
+		"exp" : "I3"
+	}, {
+		"id" : "q2",
+		"type" : "func",
+		"exp" : "-A * (D - F)"
+	}, {
+		"id" : "Rot",
+		"type" : "func",
+		"exp" : "qrot(e2)"
+	} ],
+	"update" : [ {
+		"id" : "q1",
+		"exp" : "q1 + q2 * dt"
+	}, {
+		"id" : "q",
+		"exp" : "q + q1 * dt"
+	}, {
+		"id" : "t",
+		"exp" : "t + dt"
+	} ],
+	"corpe" : [ {
+		"location" : "R",
+		"rotation" : "Rot"
+	} ]
+}
