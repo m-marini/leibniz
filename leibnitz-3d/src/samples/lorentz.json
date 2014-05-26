@@ -1,0 +1,113 @@
+{
+	"defs" : [ {
+		"id" : "dt",
+		"type" : "func",
+		"exp" : "1e-3"
+	}, {
+		"id" : "s",
+		"type" : "func",
+		"exp" : "10"
+	}, {
+		"id" : "r",
+		"type" : "func",
+		"exp" : "28"
+	}, {
+		"id" : "b",
+		"type" : "func",
+		"exp" : "8/3"
+	}, {
+		"id" : "Tx",
+		"type" : "func",
+		"exp" : "-s*e0+s*e1+0*e2"
+	}, {
+		"id" : "Ty",
+		"type" : "func",
+		"exp" : "r*e0-e1+0*e2"
+	}, {
+		"id" : "Tz",
+		"type" : "func",
+		"exp" : "-b*e2"
+	}, {
+		"id" : "My",
+		"type" : "func",
+		"exp" : "-e2/2;0*e2;-e0/2+0*e2"
+	}, {
+		"id" : "Mz",
+		"type" : "func",
+		"exp" : "e1/2+0*e2;e0/2+0*e2;0*e2"
+	}, {
+		"id" : "R1",
+		"type" : "var",
+		"exp" : "e0+e1+e2"
+	}, {
+		"id" : "dR1dt",
+		"type" : "func",
+		"exp" : "(Tx*R1)*e0 + (R1*(My*R1)+Ty*R1)*e1 + (R1*(Mz*R1)+Tz*R1)*e2"
+	}, {
+		"id" : "R2",
+		"type" : "var",
+		"exp" : "e0+e1+1.001*e2"
+	}, {
+		"id" : "dR2dt",
+		"type" : "func",
+		"exp" : "(Tx*R2)*e0 + (R2*(My*R2)+Ty*R2)*e1 + (R2*(Mz*R2)+Tz*R2)*e2"
+	}, {
+		"id" : "R3",
+		"type" : "var",
+		"exp" : "e0+1.001*e1+e2"
+	}, {
+		"id" : "dR3dt",
+		"type" : "func",
+		"exp" : "(Tx*R3)*e0 + (R3*(My*R3)+Ty*R3)*e1 + (R3*(Mz*R3)+Tz*R3)*e2"
+	}, {
+		"id" : "R4",
+		"type" : "var",
+		"exp" : "1.0001*e0+e1+e2"
+	}, {
+		"id" : "dR4dt",
+		"type" : "func",
+		"exp" : "(Tx*R4)*e0 + (R4*(My*R4)+Ty*R4)*e1 + (R4*(Mz*R4)+Tz*R4)*e2"
+	}, {
+		"id" : "zoom",
+		"type" : "func",
+		"exp" : "50e-3"
+	}, {
+		"id" : "P1",
+		"type" : "func",
+		"exp" : "zoom*R1"
+	}, {
+		"id" : "P2",
+		"type" : "func",
+		"exp" : "zoom*R2"
+	}, {
+		"id" : "P3",
+		"type" : "func",
+		"exp" : "zoom*R3"
+	}, {
+		"id" : "P4",
+		"type" : "func",
+		"exp" : "zoom*R4"
+	} ],
+	"update" : [ {
+		"id" : "R1",
+		"exp" : "R1 + dR1dt * dt"
+	}, {
+		"id" : "R2",
+		"exp" : "R2 + dR2dt * dt"
+	}, {
+		"id" : "R3",
+		"exp" : "R3 + dR3dt * dt"
+	}, {
+		"id" : "R4",
+		"exp" : "R4 + dR4dt * dt"
+	} ],
+	"corpe" : [ {
+		"location" : "P1"
+	}, {
+		"location" : "P2"
+	}, {
+		"location" : "P3"
+	}, {
+		"location" : "P4"
+	} ]
+}
