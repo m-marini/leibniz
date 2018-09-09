@@ -1,6 +1,4 @@
-'use strict';
-
-import 'lodash';
+import { default as _ } from 'lodash';
 
 function assert(condition, message) {
     if (!condition) {
@@ -567,7 +565,7 @@ const OpTreeBuilder = {
     createNegateMatrix: createNegateMatrix,
     createProduct: createProduct,
     createScaleVector: createScaleVector,
-    createScaleMatrix, createScaleMatrix,
+    createScaleMatrix: createScaleMatrix,
     createScalarProduct: createScalarProduct,
     createMatrixVectorProduct: createMatrixVectorProduct,
     createMatrixProduct: createMatrixProduct,

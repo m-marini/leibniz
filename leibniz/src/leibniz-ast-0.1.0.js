@@ -1,8 +1,6 @@
-'use strict';
-
 import * as Lexer from 'flex-js';
-import 'lodash';
-import { Quaternion, Matrix, OpTreeBuilder } from './tensor-0.1.2';
+import { default as _ } from 'lodash';
+import { OpTreeBuilder } from './tensor-0.1.2';
 
 const NumberToken = 'Number';
 const IdToken = 'Identifier';
@@ -461,8 +459,6 @@ class UnaryNode extends ASTNode {
 }
 
 class NegNode extends UnaryNode {
-    constructor(arg) { super(arg); }
-
     build(builder) {
         const op = this.arg.build(builder)
         switch (op.type) {
@@ -478,8 +474,6 @@ class NegNode extends UnaryNode {
 }
 
 class ModNode extends UnaryNode {
-    constructor(arg) { super(arg); }
-
     build(context) {
         const op = this.arg.build(context);
         switch (op.type) {
@@ -494,8 +488,6 @@ class ModNode extends UnaryNode {
 }
 
 class TransposeNode extends UnaryNode {
-    constructor(arg) { super(arg); }
-
     build(context) {
         const op = this.arg.build(context);
         switch (op.type) {
@@ -510,12 +502,9 @@ class TransposeNode extends UnaryNode {
 }
 
 class SqrtNode extends UnaryNode {
-    constructor(arg) { super(arg); }
 }
 
 class ExpNode extends UnaryNode {
-    constructor(arg) { super(arg); }
-
     build(context) {
         const op = this.arg.build(context);
         switch (op.type) {
@@ -530,7 +519,6 @@ class ExpNode extends UnaryNode {
 }
 
 class SinNode extends UnaryNode {
-    constructor(arg) { super(arg); }
 
     build(context) {
         const op = this.arg.build(context);
@@ -546,9 +534,6 @@ class SinNode extends UnaryNode {
 }
 
 class CosNode extends UnaryNode {
-    constructor(arg) { super(arg); }
-
-
     build(context) {
         const op = this.arg.build(context);
         switch (op.type) {
@@ -562,40 +547,30 @@ class CosNode extends UnaryNode {
     }
 }
 class TanNode extends UnaryNode {
-    constructor(arg) { super(arg); }
 }
 
 class AsinNode extends UnaryNode {
-    constructor(arg) { super(arg); }
 }
 
 class AcosNode extends UnaryNode {
-    constructor(arg) { super(arg); }
 }
 
 class AtanNode extends UnaryNode {
-    constructor(arg) { super(arg); }
 }
 
 class SinhNode extends UnaryNode {
-    constructor(arg) { super(arg); }
 }
 
 class CoshNode extends UnaryNode {
-    constructor(arg) { super(arg); }
 }
 
 class TanhNode extends UnaryNode {
-    constructor(arg) { super(arg); }
 }
 
 class LogNode extends UnaryNode {
-    constructor(arg) { super(arg); }
 }
 
 class QrotNode extends UnaryNode {
-    constructor(arg) { super(arg); }
-
     build(context) {
         const op = this.arg.build(context);
         switch (op.type) {
@@ -628,7 +603,6 @@ class BinaryNode extends ASTNode {
 }
 
 class PwrNode extends BinaryNode {
-    constructor(arg1, arg2) { super(arg1, arg2); }
     build(context) {
         const op1 = this.arg1.build(context);
         const op2 = this.arg2.build(context);
@@ -666,7 +640,7 @@ class PwrNode extends BinaryNode {
 }
 
 class CatNode extends BinaryNode {
-    constructor(arg1, arg2) { super(arg1, arg2); }
+
     build(context) {
         const op1 = this.arg1.build(context);
         const op2 = this.arg2.build(context);
@@ -727,7 +701,7 @@ class CatNode extends BinaryNode {
 }
 
 class AddNode extends BinaryNode {
-    constructor(arg1, arg2) { super(arg1, arg2); }
+
     build(context) {
         const op1 = this.arg1.build(context);
         const op2 = this.arg2.build(context);
@@ -781,7 +755,6 @@ class AddNode extends BinaryNode {
 }
 
 class SubNode extends BinaryNode {
-    constructor(arg1, arg2) { super(arg1, arg2); }
 
     build(context) {
         const op1 = this.arg1.build(context);
@@ -835,7 +808,7 @@ class SubNode extends BinaryNode {
 }
 
 class MulNode extends BinaryNode {
-    constructor(arg1, arg2) { super(arg1, arg2); }
+
     build(context) {
         const op1 = this.arg1.build(context);
         const op2 = this.arg2.build(context);
@@ -884,7 +857,7 @@ class MulNode extends BinaryNode {
 }
 
 class DivNode extends BinaryNode {
-    constructor(arg1, arg2) { super(arg1, arg2); }
+
     build(context) {
         const op1 = this.arg1.build(context);
         const op2 = this.arg2.build(context);
@@ -945,7 +918,7 @@ class ParserAst {
     constructor() {
         this._errors = [];
         const lexer = new Lexer();
-        lexer.addRule(/\d+\.?\d*[eE][\+\-]?\d+/, k =>
+        lexer.addRule(/\d+\.?\d*[eE][+-]?\d+/, k =>
             this._token = {
                 text: k.text,
                 type: NumberToken
@@ -1098,11 +1071,11 @@ class ParserAst {
         function handleId(id) {
             const baseExp = id.match(/^e([0-9]+)$/);
             if (baseExp) {
-                return new BaseNode(parseInt(baseExp[1]));
+                return new BaseNode(parseInt(baseExp[1], 10));
             }
             const identExp = id.match(/^I([0-9]+)$/);
             if (identExp) {
-                return new IdentityNode(parseInt(identExp[1]));
+                return new IdentityNode(parseInt(identExp[1], 10));
             }
             return new RefNode(id);
         }
@@ -1169,8 +1142,8 @@ class ParserAst {
                             this.discard();
                             return handleId(token.text);
                     }
+                default:
             }
-
         }
     }
 
