@@ -111,7 +111,30 @@ class App extends Component {
   render() {
     return (
       <div>
-        <Test />
+        <Navbar inverse collapseOnSelect>
+          <Navbar.Header>
+            <Navbar.Brand>
+              <a href="#brand">Leibniz</a>
+            </Navbar.Brand>
+            <Navbar.Toggle />
+          </Navbar.Header>
+          <Navbar.Collapse>
+          </Navbar.Collapse>
+        </Navbar>
+        <Grid>
+          <Tabs id="Tab" defaultActiveKey={1}>
+            <Tab eventKey={1} title="Home">
+              <BabylonScene onSceneMount={ev => this.onSceneMount(ev)}
+                canvasClass="graphCanvas" />
+            </Tab>
+            <Tab eventKey={2} title="Editor">
+              <Editor result={this.state.result.parserState} onChange={conf => this.onChange(conf)} />
+            </Tab>
+            <Tab eventKey={2} title="Test">
+              <Test />
+            </Tab>
+          </Tabs>
+        </Grid>
       </div >
     );
   }
