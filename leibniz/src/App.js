@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
-import { Grid, Navbar, Tabs, Tab, Jumbotron } from 'react-bootstrap';
+import { Grid, Navbar, Tabs, Tab, Nav, NavItem } from 'react-bootstrap';
 import * as Cookies from 'js-cookie';
 import './App.css';
 import { BabylonScene } from './SceneComponent';
 import { Editor } from './Editor';
-import { SystemParser } from './leibniz-ast-0.1.0';
-import { Leibniz } from './leibniz-0.1.2';
-
+import { SystemParser } from './leibniz-ast-0.1.1';
+import { Leibniz } from './leibniz-0.1.3';
+import { Test } from './Test';
+import {default as conf} from './conf';
 
 const conf1 = {
   bodies: [{
@@ -15,51 +16,6 @@ const conf1 = {
   funcs: {},
   vars: {},
   update: {}
-};
-
-const conf = {
-  "funcs": {
-    "r": "1",
-    "omega00": "2*PI",
-    "omega01": "2*PI/2",
-    "omega02": "2*PI/4",
-    "omega10": "2*PI/0.3",
-    "omega11": "2*PI/0.5",
-    "omega12": "2*PI/0.7",
-    "axis0": "ex",
-    "axis1": "ey",
-    "axis2": "ez"
-  },
-  "vars": {
-    "theta0": "0",
-    "theta1": "0.1",
-    "theta2": "0.2",
-    "phi0": "0",
-    "phi1": "0",
-    "phi2": "0"
-  },
-  "update": {
-    "phi0": "phi0 + omega00 * dt",
-    "phi1": "phi1 + omega01 * dt",
-    "phi2": "phi2 + omega02 * dt",
-    "theta0": "theta0 + omega10 * dt",
-    "theta1": "theta1 + omega11 * dt",
-    "theta2": "theta2 + omega12 * dt",
-  },
-  "bodies": [
-    {
-      "position": "r * (cos(phi0) * ex + sin(phi0) * ey)",
-      "rotation": "qrot(axis0 * theta0)"
-    },
-    {
-      "position": "r * (cos(phi1) * ex + sin(phi1) * ey)",
-      "rotation": "qrot(axis1 * theta1)"
-    },
-    {
-      "position": "r * (cos(phi2) * ex + sin(phi2) * ey)",
-      "rotation": "qrot(axis2 * theta2)"
-    }
-  ]
 };
 
 class App extends Component {
@@ -108,6 +64,11 @@ class App extends Component {
     this.setState(this.processConf(this.state.initialConf));
   }
 
+  onReset() {
+    console.log('Reset');
+    this.setState(this.processConf(conf));
+  }
+
   render() {
     return (
       <div>
@@ -119,6 +80,11 @@ class App extends Component {
             <Navbar.Toggle />
           </Navbar.Header>
           <Navbar.Collapse>
+            <Nav>
+              <NavItem eventKey={1} onClick={() => this.onReset()}>
+                Reset
+              </NavItem>
+            </Nav>
           </Navbar.Collapse>
         </Navbar>
         <Grid>
@@ -129,6 +95,9 @@ class App extends Component {
             </Tab>
             <Tab eventKey={2} title="Editor">
               <Editor result={this.state.result.parserState} onChange={conf => this.onChange(conf)} />
+            </Tab>
+            <Tab eventKey={3} title="Test">
+              <Test initialConf={conf} />
             </Tab>
           </Tabs>
         </Grid>

@@ -30,18 +30,31 @@ class Quaternion {
         return new Quaternion(values);
     }
 
+    /* Returns the quaternion by adding a real value */
+    addValue(other) {
+        return new Quaternion([this.i, this.j, this.k, this.w + other]);
+    }
+
+    /* Returns the quaternion by subtracting a real value */
+    subtractValue(other) {
+        return new Quaternion([this.i, this.j, this.k, this.w - other]);
+    }
+
+    /* Returns the quaternion by subtracting a real value from this */
+    subtractFromValue(other) {
+        return new Quaternion([-this.i, -this.j, -this.k, other - this.w]);
+    }
+
     /* Returns the quaternion by subtracting another quaternion */
     subtract(other) {
         const values = _(this.values).zip(other.values).map(ary => ary[0] - ary[1]).value();
         return new Quaternion(values);
     }
 
-    exp() {
-        const ew = new Quaternion([0, 0, 0, Math.exp(this.w)]);
-        const ei = new Quaternion([Math.sin(this.i), 0, 0, Math.cos(this.i)]);
-        const ej = new Quaternion([0, Math.sin(this.j), 0, Math.cos(this.j)]);
-        const ek = new Quaternion([0, 0, Math.sin(this.k), Math.cos(this.k)]);
-        return ew.multiply(ei.multiply(ej.multiply(ek)));
+    /* Returns the quaternion by multipling a real */
+    scale(scale) {
+        const values = _.map(this.values, x => x * scale);
+        return new Quaternion(values);
     }
 
     /* Returns the quaternion by multipling another quaternion */
@@ -96,16 +109,14 @@ class Quaternion {
         return new Quaternion([ci, cj, ck, cw]);
     }
 
-    sin() {
-        return new Quaternion([0, 0, 0, Math.sin(this.w)]);
-    }
-
-    cos() {
-        return new Quaternion([0, 0, 0, Math.cos(this.w)]);
+    module() {
+        const ai = this.i;
+        const aj = this.j;
+        const ak = this.k;
+        const aw = this.w;
+        return Math.sqrt(ai * ai + aj * aj + ak * ak + aw * aw);
     }
 }
-
-const Zero = new Quaternion([0, 0, 0, 0]);
 
 class Matrix {
     constructor(values) {
@@ -125,8 +136,7 @@ class Matrix {
 
     /* Returns the negate matrix */
     negate() {
-        return this.map(a =>
-            a.negate());
+        return this.map(a => -a);
     }
 
     zipMap(other, f) {
@@ -145,28 +155,24 @@ class Matrix {
 
     /* Returns the matrix by adding the paramter */
     add(other) {
-        return this.zipMap(other, (a, b) =>
-            a.add(b));
+        return this.zipMap(other, _.add);
     }
 
     /* Returns the matrix by subtracting the paramter */
     subtract(other) {
-        return this.zipMap(other, (a, b) =>
-            a.subtract(b));
+        return this.zipMap(other, _.subtract);
     }
 
     /* Returns a scaled matrix */
     scale(scale) {
-        return this.map(a =>
-            a.multiply(scale)
-        );
+        return this.map(a => {
+            return a * scale
+        });
     }
 
     /* Returns a scaled matrix */
     divide(scale) {
-        return this.map(a =>
-            a.divide(scale)
-        );
+        return this.map(a => a / scale);
     }
 
     /* Returns a resized Matrix the filler element is 0 */
@@ -176,13 +182,15 @@ class Matrix {
         const partRows = _(this.values)
             .take(Math.min(n, rows))
             .map(row => {
-                const col = _.take(row, Math.min(m, cols))
-                return (cols <= m) ? col
-                    : _.concat(col, _.map(_.range(cols - m), () => Zero));
+                const col = _.take(row, Math.min(m, cols));
+                for (var i = 0; i < cols - m; i++) {
+                    col.push(0);
+                }
+                return col;
             }).value();
-        const appendRows = rows > n
-            ? _.map(_.range(rows - n), () =>
-                _.map(_.range(cols), () => Zero))
+        const appendRows = rows > n ?
+            _.map(_.range(rows - n), () =>
+                _.map(_.range(cols), () => 0))
             : [];
         const res = _.concat(partRows, appendRows);
         return new Matrix(res);
@@ -213,9 +221,9 @@ class Matrix {
         for (var i = 0; i < n; i++) {
             v[i] = Array(m);
             for (var j = 0; j < m; j++) {
-                var acc = Zero;
+                var acc = 0;
                 for (var k = 0; k < l; k++) {
-                    acc = acc.add(this.values[i][k].multiply(other.values[k][j]));
+                    acc += this.values[i][k] * other.values[k][j];
                 }
                 v[i][j] = acc;
             }
@@ -262,9 +270,9 @@ class Matrix {
         assert(this.rows === 3 && this.cols === 1,
             'Assert failed: ((this.rows === 3 && this.cols === 1), this.rows=' + this.rows
             + ',this.cols=' + this.cols);
-        const x = this.values[0][0].w;
-        const y = this.values[1][0].w;
-        const z = this.values[2][0].w;
+        const x = this.values[0][0];
+        const y = this.values[1][0];
+        const z = this.values[2][0];
         const len = Math.sqrt(x * x + y * y + z * z);
         if (len > Number.MIN_VALUE) {
             const hphi = len / 2.;
@@ -279,26 +287,31 @@ class Matrix {
         }
     }
 }
+
 function createField(value) {
     return {
-        apply: () => new Quaternion(value),
+        apply: () => value,
         code: ["value " + value]
     };
 }
+
+function createQuaternion(value) {
+    return {
+        apply: () => new Quaternion(value),
+        code: ["quat " + value]
+    };
+}
+
 function createVector(values) {
-    const v = _.map(values, x => [new Quaternion(x)]);
+    const v = _.map(values, x => [x]);
     return {
         apply: () => new Matrix(v),
         code: ['vector ' + values]
     };
 }
 function createMatrix(values) {
-    const mtx = _.map(values, row =>
-        _.map(row, x =>
-            new Quaternion(x)
-        ));
     return {
-        apply: () => new Matrix(mtx),
+        apply: () => new Matrix(values),
         code: ['matrix ' + values]
     };
 }
@@ -314,10 +327,22 @@ function createQrot(code) {
         code: _.concat(code.code, ['qrot'])
     };
 }
+function createField2Quat(code) {
+    return {
+        apply: (context) => new Quaternion([0, 0, 0, code.apply(context)]),
+        code: _.concat(code.code, ['value to quat'])
+    };
+}
 function createNegateField(code) {
     return {
-        apply: (context) => code.apply(context).negate(),
+        apply: (context) => -code.apply(context),
         code: _.concat(code.code, ['negate value'])
+    };
+}
+function createNegateQuat(code) {
+    return {
+        apply: (context) => code.apply(context).negate(),
+        code: _.concat(code.code, ['negate quaternion'])
     };
 }
 function createNegateVector(code) {
@@ -334,9 +359,28 @@ function createNegateMatrix(code) {
 }
 function createProduct(op1, op2) {
     return {
+        apply: (context) => op1.apply(context) * op2.apply(context),
+        code: _.concat(op1.code, op2.code, ['multiply values'])
+    };
+}
+function createProductQuat(op1, op2) {
+    return {
         apply: (context) =>
             op1.apply(context).multiply(op2.apply(context)),
-        code: _.concat(op1.code, op2.code, ['multiply values'])
+        code: _.concat(op1.code, op2.code, ['multiply quat'])
+    };
+}
+function createQuatModule(code) {
+    return {
+        apply: (context) => code.apply(context).module(),
+        code: _.concat(code.code, ['quat module'])
+    };
+}
+function createScaleQuat(quat, scale) {
+    return {
+        apply: (context) =>
+            quat.apply(context).scale(scale.apply(context)),
+        code: _.concat(quat.code, scale.code, ['scale quat'])
     };
 }
 function createScaleVector(vec, scale) {
@@ -392,7 +436,7 @@ function createVectorModule(op) {
     return {
         apply: (context) => {
             const v = op.apply(context);
-            return v.transpose().multiply(v);
+            return Math.sqrt(v.transpose().multiply(v).values[0][0]);
         },
         code: _.concat(op.code, ['module'])
     };
@@ -400,7 +444,7 @@ function createVectorModule(op) {
 function createDivideField(op1, op2) {
     return {
         apply: (context) =>
-            op1.apply(context).divide(op2.apply(context)),
+            op1.apply(context) / op2.apply(context),
         code: _.concat(op1.code, op2.code, ['divide value'])
     };
 }
@@ -421,10 +465,46 @@ function createDivideMatrix(op1, op2) {
 function createSumField(op1, op2) {
     return {
         apply: (context) =>
-            op1.apply(context).add(op2.apply(context)),
+            op1.apply(context) + op2.apply(context),
         code: _.concat(op1.code, op2.code, ['add value'])
     };
 }
+function createSumQuatField(op1, op2) {
+    return {
+        apply: (context) =>
+            op1.apply(context).addValue(op2.apply(context)),
+        code: _.concat(op1.code, op2.code, ['add quat value'])
+    };
+}
+function createSumQuat(op1, op2) {
+    return {
+        apply: (context) =>
+            op1.apply(context).add(op2.apply(context)),
+        code: _.concat(op1.code, op2.code, ['add quat'])
+    };
+}
+function createSubFieldQuat(op1, op2) {
+    return {
+        apply: (context) =>
+            op2.apply(context).subtractFromValue(op1.apply(context)),
+        code: _.concat(op1.code, op2.code, ['sub value quat'])
+    };
+}
+function createSubQuatField(op1, op2) {
+    return {
+        apply: (context) =>
+            op1.apply(context).subtractValue(op2.apply(context)),
+        code: _.concat(op1.code, op2.code, ['sub quat value'])
+    };
+}
+function createSubQuat(op1, op2) {
+    return {
+        apply: (context) =>
+            op1.apply(context).subtract(op2.apply(context)),
+        code: _.concat(op1.code, op2.code, ['sub quat'])
+    };
+}
+
 function createSumVector(op1, op2) {
     return {
         apply: (context) =>
@@ -441,7 +521,7 @@ function createSumMatrix(op1, op2) {
 }
 function createSubField(op1, op2) {
     return {
-        apply: (context) => op1.apply(context).subtract(op2.apply(context)),
+        apply: (context) => op1.apply(context) - op2.apply(context),
         code: _.concat(op1.code, op2.code, ['subtrac value'])
     };
 }
@@ -459,7 +539,7 @@ function createSubMatrix(op1, op2) {
 }
 function createPower(op1, op2) {
     return {
-        apply: (context) => op1.apply(context).power(op2.apply(context)),
+        apply: (context) => Math.pow(op1.apply(context), op2.apply(context)),
         code: _.concat(op1.code, op2.code, ['power'])
     };
 }
@@ -534,33 +614,52 @@ function createTransposeMatrix(op1) {
 }
 function createSin(code) {
     return {
-        apply: (context) =>
-            code.apply(context).sin(),
+        apply: (context) => Math.sin(code.apply(context)),
         code: _.concat(code.code, ['sin'])
     };
 }
 function createCos(code) {
     return {
-        apply: (context) =>
-            code.apply(context).cos(),
+        apply: (context) => Math.cos(code.apply(context)),
         code: _.concat(code.code, ['cos'])
     };
 }
 function createExp(code) {
     return {
-        apply: (context) =>
-            code.apply(context).exp(),
-        code: _.concat(code.code, ['cos'])
+        apply: (context) => Math.exp(code.apply(context)),
+        code: _.concat(code.code, ['exp'])
+    };
+}
+function createDivQuatField(op1, op2) {
+    return {
+        apply: (context) => {
+            const a = op1.apply(context);
+            const b = op2.apply(context);
+            return a.scale(1 / b);
+        },
+        code: _.concat(op1.code, op2.code, ['div quat value'])
+    };
+}
+function createDivQuat(op1, op2) {
+    return {
+        apply: (context) => {
+            const a = op1.apply(context);
+            const b = op2.apply(context);
+            return a.divide(b)
+        },
+        code: _.concat(op1.code, op2.code, ['div quat'])
     };
 }
 
 const OpTreeBuilder = {
     createField: createField,
+    createQuaternion: createQuaternion,
     createVector: createVector,
     createMatrix: createMatrix,
     createRef: createRef,
     createQrot: createQrot,
     createNegateField: createNegateField,
+    createNegateQuat: createNegateQuat,
     createNegateVector: createNegateVector,
     createNegateMatrix: createNegateMatrix,
     createProduct: createProduct,
@@ -584,14 +683,25 @@ const OpTreeBuilder = {
     createPower: createPower,
     createCatField: createCatField,
     createInsertFieldAt: createInsertFieldAt,
-    createCatVectorcreateCatVector: createCatVector,
+    createCatVector: createCatVector,
     createInsertVector: createInsertVector,
     createAppendVector: createAppendVector,
     createAppendMatrix: createAppendMatrix,
     createTransposeMatrix: createTransposeMatrix,
     createSin: createSin,
     createCos: createCos,
-    createExp: createExp
+    createExp: createExp,
+    createQuatModule: createQuatModule,
+    createSumQuatField: createSumQuatField,
+    createSumQuat: createSumQuat,
+    createSubFieldQuat: createSubFieldQuat,
+    createSubQuatField: createSubQuatField,
+    createSubQuat: createSubQuat,
+    createField2Quat: createField2Quat,
+    createScaleQuat: createScaleQuat,
+    createProductQuat: createProductQuat,
+    createDivQuatField: createDivQuatField,
+    createDivQuat: createDivQuat
 };
 
 export {

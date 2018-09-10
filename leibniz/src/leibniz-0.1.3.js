@@ -2,6 +2,7 @@ import * as BABYLON from 'babylonjs';
 import { default as _ } from 'lodash';
 import * as hsb from './hsb-color-1.1.0';
 
+
 const Octahedron = 1;
 const ElongatedSquareDipyramid = 12;
 
@@ -17,10 +18,9 @@ function createCamera(scene, options) {
             break;
         case 'ac':
             camera = new BABYLON.AnaglyphArcRotateCamera('aar_cam', -Math.PI / 2, Math.PI / 4, 20, new BABYLON.Vector3.Zero(), 0.033, scene);
-            return camera;
             camera.target = BABYLON.Vector3.Zero();
             camera.setPosition(options.cameraPosition);
-            break;
+            return camera;
         case 'vr':
             camera = new BABYLON.VRDeviceOrientationArcRotateCamera('Camera', Math.PI / 2, Math.PI / 4, 25, new BABYLON.Vector3(0, 0, 0), scene);
             camera.target = BABYLON.Vector3.Zero();
@@ -150,9 +150,9 @@ class Leibniz {
 
     updateShape(shape, body) {
         const pos = new BABYLON.Vector3(
-            body.position.values[0][0].w,
-            body.position.values[1][0].w,
-            body.position.values[2][0].w);
+            body.position.values[0][0],
+            body.position.values[1][0],
+            body.position.values[2][0]);
         shape.position = pos;
         if (body.rotation) {
             const rot = new BABYLON.Quaternion.FromArray(body.rotation.values);

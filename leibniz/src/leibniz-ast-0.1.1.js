@@ -1,13 +1,13 @@
 import * as Lexer from 'flex-js';
 import { default as _ } from 'lodash';
-import { OpTreeBuilder } from './tensor-0.1.2';
+import { OpTreeBuilder } from './tensor-0.1.3';
 
 const NumberToken = 'Number';
 const IdToken = 'Identifier';
 const SymbolToken = 'Symbol';
 
 function createMissingReferenceResult(id) {
-    return new CodeResult(FieldType, 0, 0, [OpTreeBuilder.createField(ZeroValue)], ['Unresolved reference ' + id]);
+    return new CodeResult(FieldType, 0, 0, [OpTreeBuilder.createField(0)], ['Unresolved reference ' + id]);
 }
 
 class Builder {
@@ -90,7 +90,7 @@ class System {
     }
 
     next(dt) {
-        this._funcs.dt = OpTreeBuilder.createField([0, 0, 0, dt]);
+        this._funcs.dt = OpTreeBuilder.createField(dt);
         const vars = _.mapValues(this._vars, (value, ref) => {
             const update = this._update[ref];
             return update ? update.apply(this) : value;
@@ -220,7 +220,7 @@ class SystemParser {
             }
             if (data.rotation) {
                 const rotType = data.rotation.result;
-                if (!(rotType.type === FieldType)) {
+                if (!(rotType.type === QuaternionType)) {
                     data.rotation.errors.push('Rotation must be a quaternion');
                 }
             }
@@ -264,7 +264,11 @@ class SystemParser {
                 position: posCode1
             }
             if (data.rotation) {
-                result.rotation = data.rotation.result.code
+                if (data.rotation.result.type === QuaternionType) {
+                    result.rotation = data.rotation.result.code;
+                } else {
+                    result.rotation = OpTreeBuilder.createField2Quat(data.rotation.result.code);
+                }
             }
             return result;
         });
@@ -335,6 +339,7 @@ class SystemParser {
 }
 
 const FieldType = "Field";
+const QuaternionType = "Quaternion";
 const VectorType = "Vector";
 const MatrixType = "Matrix";
 
@@ -371,10 +376,7 @@ class CodeResult {
     }
 }
 
-const ZeroValue = [0, 0, 0, 0];
-const OneValue = [0, 0, 0, 1];
-
-const CircularResferenceResult = new CodeResult(FieldType, 0, 0, [OpTreeBuilder.createField(ZeroValue)], ["Circular reference"]);
+const CircularResferenceResult = new CodeResult(FieldType, 0, 0, [OpTreeBuilder.createField(0)], ["Circular reference"]);
 
 class ASTNode {
     get dependencies() { return []; }
@@ -384,13 +386,24 @@ class ASTNode {
     build() { throw new Error('Not implemented'); }
 }
 
+/* Constant real value */
 class ConstantNode extends ASTNode {
     constructor(value) {
         super();
-        this._value = Array.isArray(value) ? value : [0, 0, 0, value];
+        this._value = value;
     }
     get value() { return this._value; }
     build(context) { return new CodeResult(FieldType, 0, 0, OpTreeBuilder.createField(this.value)); }
+}
+
+/* Constant Quaternion value */
+class ConstantQuatNode extends ASTNode {
+    constructor(value) {
+        super();
+        this._value = value;
+    }
+    get value() { return this._value; }
+    build(context) { return new CodeResult(QuaternionType, 0, 0, OpTreeBuilder.createQuaternion(this.value)); }
 }
 
 class BaseNode extends ASTNode {
@@ -400,7 +413,7 @@ class BaseNode extends ASTNode {
     }
     get size() { return this._size; }
     build(builder) {
-        const value = _.map(_.range(this.size + 1), i => i === this.size ? OneValue : ZeroValue);
+        const value = _.map(_.range(this.size + 1), i => i === this.size ? 1 : 0);
         return new CodeResult(VectorType, this.size + 1, 0, OpTreeBuilder.createVector(value));
     }
 
@@ -415,7 +428,7 @@ class IdentityNode extends ASTNode {
     build(builder) {
         const value = _.map(_.range(this.size), i =>
             _.map(_.range(this.size), j =>
-                i === j ? OneValue : ZeroValue
+                i === j ? 1 : 0
             ));
         return new CodeResult(MatrixType, this.size, this.size, OpTreeBuilder.createMatrix(value));
     }
@@ -464,6 +477,8 @@ class NegNode extends UnaryNode {
         switch (op.type) {
             case FieldType:
                 return op.withCode(OpTreeBuilder.createNegateField(op.code));
+            case QuaternionType:
+                return op.withCode(OpTreeBuilder.createNegateQuat(op.code));
             case VectorType:
                 return op.withCode(OpTreeBuilder.createNegateVector(op.code));
             default:
@@ -479,6 +494,8 @@ class ModNode extends UnaryNode {
         switch (op.type) {
             case FieldType:
                 return op;
+            case QuaternionType:
+                return op.withType(FieldType).withCode(OpTreeBuilder.createQuatModule(op.code));
             case VectorType:
                 return op.withType(FieldType).withCode(OpTreeBuilder.createVectorModule(op.code));
             default:
@@ -493,6 +510,8 @@ class TransposeNode extends UnaryNode {
         switch (op.type) {
             case FieldType:
                 return op.withMoreErrors(['Invalid transpose operation on value']);
+            case QuaternionType:
+                return op.withMoreErrors(['Invalid transpose operation on quaternion']);
             case VectorType:
                 return op.withMoreErrors(['Invalid transpose operation on vector']);
             default:
@@ -510,6 +529,8 @@ class ExpNode extends UnaryNode {
         switch (op.type) {
             case FieldType:
                 return op.withCode(OpTreeBuilder.createExp(op.code));
+            case QuaternionType:
+                return op.withMoreErrors(['Invalid exp operation on quaterion']);
             case VectorType:
                 return op.withMoreErrors(['Invalid exp operation on vector']);
             default:
@@ -525,6 +546,8 @@ class SinNode extends UnaryNode {
         switch (op.type) {
             case FieldType:
                 return op.withCode(OpTreeBuilder.createSin(op.code));
+            case QuaternionType:
+                return op.withMoreErrors(['Invalid sin operation on quaternion']);
             case VectorType:
                 return op.withMoreErrors(['Invalid sin operation on vector']);
             default:
@@ -539,6 +562,8 @@ class CosNode extends UnaryNode {
         switch (op.type) {
             case FieldType:
                 return op.withCode(OpTreeBuilder.createCos(op.code));
+            case QuaternionType:
+                return op.withMoreErrors(['Invalid cos operation on quaternion']);
             case VectorType:
                 return op.withMoreErrors(['Invalid cos operation on vector']);
             default:
@@ -576,9 +601,11 @@ class QrotNode extends UnaryNode {
         switch (op.type) {
             case FieldType:
                 return op.withMoreErrors(['Invalid qrot operation on value']);
+            case QuaternionType:
+                return op.withMoreErrors(['Invalid qrot operation on quaternion']);
             case VectorType:
                 const c1 = (op.rows !== 3) ? OpTreeBuilder.createResizeVector(op.code, 3) : op.code;
-                return op.withType(FieldType).withCode(OpTreeBuilder.createQrot(c1));
+                return op.withType(QuaternionType).withCode(OpTreeBuilder.createQrot(c1));
             default:
                 return op.withMoreErrors(['Invalid qrot operation on matrix']);
         }
@@ -612,29 +639,19 @@ class PwrNode extends BinaryNode {
                 switch (op2.type) {
                     case FieldType:
                         return op1.withMoreErrors(op2.errors).withCode(OpTreeBuilder.createPower(op1.code, op2.code));
+                    case QuaternionType:
+                        return op1.withMoreErrors(op2.errors, ['Invalid power value and quaternion']);
                     case VectorType:
-                        return op1.withMoreErrors(op2.errors, ['Invalid power Value and Vector']);
+                        return op1.withMoreErrors(op2.errors, ['Invalid power value and vector']);
                     default:
-                        return op1.withMoreErrors(op2.errors, ['Invalid power Value and Matrix']);
+                        return op1.withMoreErrors(op2.errors, ['Invalid power value and matrix']);
                 }
+            case QuaternionType:
+                return op1.withMoreErrors(op2.errors, ['Invalid power quaternion and anything']);
             case VectorType:
-                switch (op2.type) {
-                    case FieldType:
-                        return op1.withMoreErrors(op2.errors, ['Invalid power vector and value']);
-                    case VectorType:
-                        return op1.withMoreErrors(op2.errors, ['Invalid power vector and vector']);
-                    default:
-                        return op1.withMoreErrors(op2.errors, ['Invalid power vector and matrix']);
-                }
+                return op1.withMoreErrors(op2.errors, ['Invalid power vector and anything']);
             default:
-                switch (op2.type) {
-                    case FieldType:
-                        return op1.withMoreErrors(op2.errors, ['Invalid power matrix and value']);
-                    case VectorType:
-                        return op1.withMoreErrors(op2.errors, ['Invalid power matrix and vector']);
-                    default:
-                        return op1.withMoreErrors(op2.errors, ['Invalid power matrix and matrix']);
-                }
+                return op1.withMoreErrors(op2.errors, ['Invalid power matrix and anything']);
         }
     }
 }
@@ -651,17 +668,23 @@ class CatNode extends BinaryNode {
                     case FieldType:
                         return op1.withMoreErrors(op2.errors).withType(VectorType)
                             .withRows(2).withCode(OpTreeBuilder.createCatField(op1.code, op2.code));
+                    case QuaternionType:
+                        return op1.withMoreErrors(op2.errors, ['Invalid append value and quaternion']);
                     case VectorType:
                         return op1.withMoreErrors(op2.errors).withType(VectorType)
                             .withRows(op2.rows + 1).withCode(OpTreeBuilder.createInsertFieldAt(op2.code, op1.code, 0));
                     default:
-                        return op1.withMoreErrors(op2.errors, ['Invalid append Value and Matrix']);
+                        return op1.withMoreErrors(op2.errors, ['Invalid append value and matrix']);
                 }
+            case QuaternionType:
+                return op1.withMoreErrors(op2.errors, ['Invalid append quaternion and anything']);
             case VectorType:
                 switch (op2.type) {
                     case FieldType:
                         return op1.withMoreErrors(op2.errors).withRows(op1.rows + 1)
                             .withCode(OpTreeBuilder.createInsertFieldAt(op1.code, op2.code, op1.rows));
+                    case QuaternionType:
+                        return op1.withMoreErrors(op2.errors, ['Invalid append vector and quaternion']);
                     case VectorType: {
                         //Resize
                         const c1 = op1.rows < op2.rows ? OpTreeBuilder.createResizeVector(op1.code, op2.rows) : op1.code;
@@ -681,6 +704,8 @@ class CatNode extends BinaryNode {
                 switch (op2.type) {
                     case FieldType:
                         return op1.withMoreErrors(op2.errors, ['Invalid append matrix and value']);
+                    case QuaternionType:
+                        return op1.withMoreErrors(op2.errors, ['Invalid append matrix and quaternion']);
                     case VectorType: {
                         //Resize
                         const c1 = op1.rows < op2.rows ? OpTreeBuilder.createResizeMatrix(op1.code, op2.rows, op1.cols) : op1.code;
@@ -711,43 +736,59 @@ class AddNode extends BinaryNode {
                 switch (op2.type) {
                     case FieldType:
                         return op1.withMoreErrors(op2.errors).withCode(OpTreeBuilder.createSumField(op1.code, op2.code));
+                    case QuaternionType:
+                        return op1.withMoreErrors(op2.errors).withType(QuaternionType).withCode(OpTreeBuilder.createSumQuatField(op2.code, op1.code));
                     case VectorType:
-                        return op1.withMoreErrors(op2.errors, ['Invalid sum Value and Vector']);
+                        return op1.withMoreErrors(op2.errors, ['Invalid sum value and vector']);
                     default:
-                        return op1.withMoreErrors(op2.errors, ['Invalid sum Value and Matrix']);
+                        return op1.withMoreErrors(op2.errors, ['Invalid sum value and matrix']);
+                }
+            case QuaternionType:
+                switch (op2.type) {
+                    case FieldType:
+                        return op1.withMoreErrors(op2.errors).withCode(OpTreeBuilder.createSumQuatField(op1.code, op2.code));
+                    case QuaternionType:
+                        return op1.withMoreErrors(op2.errors).withCode(OpTreeBuilder.createSumQuat(op1.code, op2.code));
+                    case VectorType:
+                        return op1.withMoreErrors(op2.errors, ['Invalid sum quaternion and vector']);
+                    default:
+                        return op1.withMoreErrors(op2.errors, ['Invalid sum quaternion and matrix']);
                 }
             case VectorType:
                 switch (op2.type) {
                     case FieldType:
-                        return op1.withMoreErrors(op2.errors, ['Invalid sum Vector and Value']);
+                        return op1.withMoreErrors(op2.errors, ['Invalid sum vector and value']);
+                    case QuaternionType:
+                        return op1.withMoreErrors(op2.errors, ['Invalid sum vector and quaternion']);
                     case VectorType: {
                         //Resize
                         const c1 = op1.rows < op2.rows ? OpTreeBuilder.createResizeVector(op1.code, op2.rows) : op1.code;
                         const c2 = op1.rows > op2.rows ? OpTreeBuilder.createResizeVector(op2.code, op1.rows) : op2.code;
-                        return op1.withMoreErrors(op2.errors).withCode(OpTreeBuilder.createSumVector(c1, c2));
+                        return op1.withMoreErrors(op2.errors).withRows(Math.max(op1.rows, op2.rows)).withCode(OpTreeBuilder.createSumVector(c1, c2));
                     }
                     default:
-                        return op1.withMoreErrors(op2.errors, ['Invalid sum Vector and Matrix']);
+                        return op1.withMoreErrors(op2.errors, ['Invalid sum vector and matrix']);
                 }
             default:
                 switch (op2.type) {
                     case FieldType:
-                        return op1.withMoreErrors(op2.errors, ['Invalid sum Matrix and Value']);
+                        return op1.withMoreErrors(op2.errors, ['Invalid sum matrix and value']);
+                    case QuaternionType:
+                        return op1.withMoreErrors(op2.errors, ['Invalid sum matrix and quaternion']);
                     case VectorType:
-                        return op1.withMoreErrors(op2.errors, ['Invalid sum Matrix and Vector']);
+                        return op1.withMoreErrors(op2.errors, ['Invalid sum matrix and vector']);
                     default: {
                         // Resize
-                        const c1 = (op1.rows < op2.rows || op1.cols < op2.cols)
-                            ? OpTreeBuilder.createResizeMatrix(op1.code,
-                                Math.max(op1.rows, op2.rows),
-                                Math.max(op1.cols, op2.cols))
-                            : op1.code;
-                        const c2 = (op1.rows > op2.rows || op1.cols > op2.cols)
-                            ? OpTreeBuilder.createResizeMatrix(op2.code,
-                                Math.max(op1.rows, op2.rows),
-                                Math.max(op1.cols, op2.cols))
-                            : op2.code;
-                        return op1.withMoreErrors(op2.errors).withCode(OpTreeBuilder.createSumMatrix(c1, c2));
+                        const n = Math.max(op1.rows, op2.rows);
+                        const m = Math.max(op1.cols, op2.cols);
+                        const c1 = (op1.rows < op2.rows || op1.cols < op2.cols) ?
+                            OpTreeBuilder.createResizeMatrix(op1.code, n, m) :
+                            op1.code;
+                        const c2 = (op1.rows > op2.rows || op1.cols > op2.cols) ?
+                            OpTreeBuilder.createResizeMatrix(op2.code, n, m) :
+                            op2.code;
+                        return op1.withMoreErrors(op2.errors).withSize(n, m).
+                            withCode(OpTreeBuilder.createSumMatrix(c1, c2));
                     }
                 }
         }
@@ -764,43 +805,60 @@ class SubNode extends BinaryNode {
                 switch (op2.type) {
                     case FieldType:
                         return op1.withMoreErrors(op2.errors).withCode(OpTreeBuilder.createSubField(op1.code, op2.code));
+                    case QuaternionType:
+                        return op1.withMoreErrors(op2.errors).withType(QuaternionType).withCode(OpTreeBuilder.createSubFieldQuat(op1.code, op2.code));
                     case VectorType:
-                        return op1.withMoreErrors(op2.errors, ['Invalid sub Value and Vector']);
+                        return op1.withMoreErrors(op2.errors, ['Invalid sub value and vector']);
                     default:
-                        return op1.withMoreErrors(op2.errors, ['Invalid sub Value and Matrix']);
+                        return op1.withMoreErrors(op2.errors, ['Invalid sub value and matrix']);
+                }
+            case QuaternionType:
+                switch (op2.type) {
+                    case FieldType:
+                        return op1.withMoreErrors(op2.errors).withCode(OpTreeBuilder.createSubQuatField(op1.code, op2.code));
+                    case QuaternionType:
+                        return op1.withMoreErrors(op2.errors).withCode(OpTreeBuilder.createSubQuat(op1.code, op2.code));
+                    case VectorType:
+                        return op1.withMoreErrors(op2.errors, ['Invalid sub quaternion and vector']);
+                    default:
+                        return op1.withMoreErrors(op2.errors, ['Invalid sub quaternion and matrix']);
                 }
             case VectorType:
                 switch (op2.type) {
                     case FieldType:
-                        return op1.withMoreErrors(op2.errors, ['Invalid sub Vector and Value']);
+                        return op1.withMoreErrors(op2.errors, ['Invalid sub vector and value']);
+                    case QuaternionType:
+                        return op1.withMoreErrors(op2.errors, ['Invalid sub vector and quaternion']);
                     case VectorType: {
                         //Resize
                         const c1 = op1.rows < op2.rows ? OpTreeBuilder.createResizeVector(op1.code, op2.rows) : op1.code;
                         const c2 = op1.rows > op2.rows ? OpTreeBuilder.createResizeVector(op2.code, op1.rows) : op2.code;
-                        return op1.withMoreErrors(op2.errors).withCode(OpTreeBuilder.createSubVector(c1, c2));
+                        return op1.withMoreErrors(op2.errors).withRows(Math.max(op1.rows, op2.rows)).
+                            withCode(OpTreeBuilder.createSubVector(c1, c2));
                     }
                     default:
-                        return op1.withMoreErrors(op2.errors, ['Invalid sub Vector and Matrix']);
+                        return op1.withMoreErrors(op2.errors, ['Invalid sub vector and matrix']);
                 }
             default:
                 switch (op2.type) {
                     case FieldType:
-                        return op1.withMoreErrors(op2.errors, ['Invalid sub Matrix and Value']);
+                        return op1.withMoreErrors(op2.errors, ['Invalid sub matrix and value']);
+                    case QuaternionType:
+                        return op1.withMoreErrors(op2.errors, ['Invalid sub matrix and quaternion']);
                     case VectorType:
-                        return op1.withMoreErrors(op2.errors, ['Invalid sub Matrix and Vector']);
+                        return op1.withMoreErrors(op2.errors, ['Invalid sub matrix and vector']);
                     default: {
+                        const n = Math.max(op1.rows, op2.rows);
+                        const m = Math.max(op1.cols, op2.cols);
                         // Resize
-                        const c1 = (op1.rows < op2.rows || op1.cols < op2.cols)
-                            ? OpTreeBuilder.createResizeMatrix(op1.code,
-                                Math.max(op1.rows, op2.rows),
-                                Math.max(op1.cols, op2.cols))
-                            : op1.code;
-                        const c2 = (op1.rows > op2.rows || op1.cols > op2.cols)
-                            ? OpTreeBuilder.createResizeMatrix(op2.code,
-                                Math.max(op1.rows, op2.rows),
-                                Math.max(op1.cols, op2.cols))
-                            : op2.code;
-                        return op1.withMoreErrors(op2.errors).withCode(OpTreeBuilder.createSubMatrix(c1, c2));
+                        const c1 = (op1.rows < op2.rows || op1.cols < op2.cols) ?
+                            OpTreeBuilder.createResizeMatrix(op1.code, n, m) :
+                            op1.code;
+                        const c2 = (op1.rows > op2.rows || op1.cols > op2.cols) ?
+                            OpTreeBuilder.createResizeMatrix(op2.code, n, m) :
+                            op2.code;
+                        return op1.withMoreErrors(op2.errors).withSize(n, m).
+                            withCode(OpTreeBuilder.createSubMatrix(c1, c2));
                     }
                 }
         }
@@ -818,27 +876,44 @@ class MulNode extends BinaryNode {
                 switch (op2.type) {
                     case FieldType:
                         return op1.withMoreErrors(op2.errors).withCode(OpTreeBuilder.createProduct(op1.code, op2.code));
+                    case QuaternionType:
+                        return op1.withTypeOf(op2).withMoreErrors(op2.errors).withType(QuaternionType).withCode(OpTreeBuilder.createScaleQuat(op2.code, op1.code));
                     case VectorType:
                         return op1.withTypeOf(op2).withMoreErrors(op2.errors).withCode(OpTreeBuilder.createScaleVector(op2.code, op1.code));
                     default:
                         return op1.withTypeOf(op2).withMoreErrors(op2.errors).withCode(OpTreeBuilder.createScaleMatrix(op2.code, op1.code));
                 }
+            case QuaternionType:
+                switch (op2.type) {
+                    case FieldType:
+                        return op1.withMoreErrors(op2.errors).withType(QuaternionType).withCode(OpTreeBuilder.createScaleQuat(op1.code, op2.code));
+                    case QuaternionType:
+                        return op1.withTypeOf(op2).withMoreErrors(op2.errors).withType(QuaternionType).withCode(OpTreeBuilder.createProductQuat(op1.code, op2.code));
+                    case VectorType:
+                        return op1.withMoreErrors(op2.errors, ['Invalid multiplication quaternion by vector']);
+                    default:
+                        return op1.withMoreErrors(op2.errors, ['Invalid multiplication quaternion by matrix']);
+                }
             case VectorType:
                 switch (op2.type) {
                     case FieldType:
                         return op1.withMoreErrors(op2.errors).withCode(OpTreeBuilder.createScaleVector(op1.code, op2.code));
+                    case QuaternionType:
+                        return op1.withMoreErrors(op2.errors, ['Invalid multiplication vector by quaternion']);
                     case VectorType: {
                         const c1 = op1.rows > op2.rows ? OpTreeBuilder.createResizeVector(op1.code, op2.rows) : op1.code;
                         const c2 = op1.rows < op2.rows ? OpTreeBuilder.createResizeVector(op2.code, op1.rows) : op2.code;
                         return op1.withType(FieldType).withMoreErrors(op2.errors).withCode(OpTreeBuilder.createScalarProduct(c1, c2));
                     }
                     default:
-                        return op1.withMoreErrors(op2.errors, ['Invalid multiplication Vector by Matrix']);
+                        return op1.withMoreErrors(op2.errors, ['Invalid multiplication vector by matrix']);
                 }
             default:
                 switch (op2.type) {
                     case FieldType:
                         return op1.withMoreErrors(op2.errors).withCode(OpTreeBuilder.createScaleMatrix(op1.code, op2.code));
+                    case QuaternionType:
+                        return op1.withMoreErrors(op2.errors, ['Invalid multiplication matrix by quaternion']);
                     case VectorType: {
                         const c1 = op1.cols > op2.rows ? OpTreeBuilder.createResizeMatrix(op1.code, op1.rows, op2.rows) : op1.code;
                         const c2 = op1.cols < op2.rows ? OpTreeBuilder.createResizeVector(op2.code, op1.cols) : op2.code;
@@ -867,15 +942,30 @@ class DivNode extends BinaryNode {
                 switch (op2.type) {
                     case FieldType:
                         return op1.withMoreErrors(op2.errors).withCode(OpTreeBuilder.createDivideField(op1.code, op2.code));
+                    case QuaternionType:
+                        return op1.withMoreErrors(op2.errors, ['Invalid division value by quaternion']);
                     case VectorType:
-                        return op1.withMoreErrors(op2.errors, ['Invalid division field by vector']);
+                        return op1.withMoreErrors(op2.errors, ['Invalid division value by vector']);
                     default:
-                        return op1.withMoreErrors(op2.errors, ['Invalid division field by matrix']);
+                        return op1.withMoreErrors(op2.errors, ['Invalid division value by matrix']);
+                }
+            case QuaternionType:
+                switch (op2.type) {
+                    case FieldType:
+                        return op1.withMoreErrors(op2.errors).withCode(OpTreeBuilder.createDivQuatField(op1.code, op2.code));
+                    case QuaternionType:
+                        return op1.withMoreErrors(op2.errors).withCode(OpTreeBuilder.createDivQuat(op1.code, op2.code));
+                    case VectorType:
+                        return op1.withMoreErrors(op2.errors, ['Invalid division quaternion by vector']);
+                    default:
+                        return op1.withMoreErrors(op2.errors, ['Invalid division quaternion by matrix']);
                 }
             case VectorType:
                 switch (op2.type) {
                     case FieldType:
                         return op1.withMoreErrors(op2.errors).withCode(OpTreeBuilder.createDivideVector(op1.code, op2.code));
+                    case QuaternionType:
+                        return op1.withMoreErrors(op2.errors, ['Invalid division vector by quaternion']);
                     case VectorType:
                         return op1.withMoreErrors(op2.errors, ['Invalid division vector by vector']);
                     default:
@@ -885,6 +975,8 @@ class DivNode extends BinaryNode {
                 switch (op2.type) {
                     case FieldType:
                         return op1.withMoreErrors(op2.errors).withCode(OpTreeBuilder.createDivideMatrix(op1.code, op2.code));
+                    case QuaternionType:
+                        return op1.withMoreErrors(op2.errors, ['Invalid division matrix by quaternion']);
                     case VectorType:
                         return op1.withMoreErrors(op2.errors, ['Invalid division matrix by vector']);
                     default:
@@ -1119,13 +1211,13 @@ class ParserAst {
                             return new ConstantNode(Math.E);
                         case 'i':
                             this.discard();
-                            return new ConstantNode([1, 0, 0, 0]);
+                            return new ConstantQuatNode([1, 0, 0, 0]);
                         case 'j':
                             this.discard();
-                            return new ConstantNode([0, 1, 0, 0]);
+                            return new ConstantQuatNode([0, 1, 0, 0]);
                         case 'k':
                             this.discard();
-                            return new ConstantNode([0, 0, 1, 0]);
+                            return new ConstantQuatNode([0, 0, 1, 0]);
                         case 'dt':
                             this.discard();
                             return new DtRefNode();
