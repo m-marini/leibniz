@@ -11,7 +11,7 @@ class Test extends Component {
   constructor(props) {
     super(props);
     this.state = this.createNewState(
-      JSON.stringify(
+      JSON.stringify(props.initialConf ||
         {
           vars: {
             a: "0"

@@ -90,7 +90,7 @@ class System {
     }
 
     next(dt) {
-        this._funcs.dt = OpTreeBuilder.createField([0, 0, 0, dt]);
+        this._funcs.dt = OpTreeBuilder.createField(dt);
         const vars = _.mapValues(this._vars, (value, ref) => {
             const update = this._update[ref];
             return update ? update.apply(this) : value;
@@ -266,7 +266,7 @@ class SystemParser {
             if (data.rotation) {
                 if (data.rotation.result.type === QuaternionType) {
                     result.rotation = data.rotation.result.code;
-                }else{
+                } else {
                     result.rotation = OpTreeBuilder.createField2Quat(data.rotation.result.code);
                 }
             }
@@ -764,7 +764,7 @@ class AddNode extends BinaryNode {
                         //Resize
                         const c1 = op1.rows < op2.rows ? OpTreeBuilder.createResizeVector(op1.code, op2.rows) : op1.code;
                         const c2 = op1.rows > op2.rows ? OpTreeBuilder.createResizeVector(op2.code, op1.rows) : op2.code;
-                        return op1.withMoreErrors(op2.errors).withCode(OpTreeBuilder.createSumVector(c1, c2));
+                        return op1.withMoreErrors(op2.errors).withRows(Math.max(op1.rows, op2.rows)).withCode(OpTreeBuilder.createSumVector(c1, c2));
                     }
                     default:
                         return op1.withMoreErrors(op2.errors, ['Invalid sum vector and matrix']);
@@ -779,17 +779,16 @@ class AddNode extends BinaryNode {
                         return op1.withMoreErrors(op2.errors, ['Invalid sum matrix and vector']);
                     default: {
                         // Resize
-                        const c1 = (op1.rows < op2.rows || op1.cols < op2.cols)
-                            ? OpTreeBuilder.createResizeMatrix(op1.code,
-                                Math.max(op1.rows, op2.rows),
-                                Math.max(op1.cols, op2.cols))
-                            : op1.code;
-                        const c2 = (op1.rows > op2.rows || op1.cols > op2.cols)
-                            ? OpTreeBuilder.createResizeMatrix(op2.code,
-                                Math.max(op1.rows, op2.rows),
-                                Math.max(op1.cols, op2.cols))
-                            : op2.code;
-                        return op1.withMoreErrors(op2.errors).withCode(OpTreeBuilder.createSumMatrix(c1, c2));
+                        const n = Math.max(op1.rows, op2.rows);
+                        const m = Math.max(op1.cols, op2.cols);
+                        const c1 = (op1.rows < op2.rows || op1.cols < op2.cols) ?
+                            OpTreeBuilder.createResizeMatrix(op1.code, n, m) :
+                            op1.code;
+                        const c2 = (op1.rows > op2.rows || op1.cols > op2.cols) ?
+                            OpTreeBuilder.createResizeMatrix(op2.code, n, m) :
+                            op2.code;
+                        return op1.withMoreErrors(op2.errors).withSize(n, m).
+                            withCode(OpTreeBuilder.createSumMatrix(c1, c2));
                     }
                 }
         }
@@ -834,7 +833,8 @@ class SubNode extends BinaryNode {
                         //Resize
                         const c1 = op1.rows < op2.rows ? OpTreeBuilder.createResizeVector(op1.code, op2.rows) : op1.code;
                         const c2 = op1.rows > op2.rows ? OpTreeBuilder.createResizeVector(op2.code, op1.rows) : op2.code;
-                        return op1.withMoreErrors(op2.errors).withCode(OpTreeBuilder.createSubVector(c1, c2));
+                        return op1.withMoreErrors(op2.errors).withRows(Math.max(op1.rows, op2.rows)).
+                            withCode(OpTreeBuilder.createSubVector(c1, c2));
                     }
                     default:
                         return op1.withMoreErrors(op2.errors, ['Invalid sub vector and matrix']);
@@ -848,18 +848,17 @@ class SubNode extends BinaryNode {
                     case VectorType:
                         return op1.withMoreErrors(op2.errors, ['Invalid sub matrix and vector']);
                     default: {
+                        const n = Math.max(op1.rows, op2.rows);
+                        const m = Math.max(op1.cols, op2.cols);
                         // Resize
-                        const c1 = (op1.rows < op2.rows || op1.cols < op2.cols)
-                            ? OpTreeBuilder.createResizeMatrix(op1.code,
-                                Math.max(op1.rows, op2.rows),
-                                Math.max(op1.cols, op2.cols))
-                            : op1.code;
-                        const c2 = (op1.rows > op2.rows || op1.cols > op2.cols)
-                            ? OpTreeBuilder.createResizeMatrix(op2.code,
-                                Math.max(op1.rows, op2.rows),
-                                Math.max(op1.cols, op2.cols))
-                            : op2.code;
-                        return op1.withMoreErrors(op2.errors).withCode(OpTreeBuilder.createSubMatrix(c1, c2));
+                        const c1 = (op1.rows < op2.rows || op1.cols < op2.cols) ?
+                            OpTreeBuilder.createResizeMatrix(op1.code, n, m) :
+                            op1.code;
+                        const c2 = (op1.rows > op2.rows || op1.cols > op2.cols) ?
+                            OpTreeBuilder.createResizeMatrix(op2.code, n, m) :
+                            op2.code;
+                        return op1.withMoreErrors(op2.errors).withSize(n, m).
+                            withCode(OpTreeBuilder.createSubMatrix(c1, c2));
                     }
                 }
         }

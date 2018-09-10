@@ -166,10 +166,8 @@ class Matrix {
     /* Returns a scaled matrix */
     scale(scale) {
         return this.map(a => {
-            console.log(a, scale);
             return a * scale
-        }
-        );
+        });
     }
 
     /* Returns a scaled matrix */
@@ -685,7 +683,7 @@ const OpTreeBuilder = {
     createPower: createPower,
     createCatField: createCatField,
     createInsertFieldAt: createInsertFieldAt,
-    createCatVectorcreateCatVector: createCatVector,
+    createCatVector: createCatVector,
     createInsertVector: createInsertVector,
     createAppendVector: createAppendVector,
     createAppendMatrix: createAppendMatrix,
