@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Grid, Navbar, Tabs, Tab, Nav, NavItem } from 'react-bootstrap';
+import { Grid, Navbar, Tabs, Tab, Nav, NavItem, Modal, Button } from 'react-bootstrap';
 import * as Cookies from 'js-cookie';
 import './App.css';
 import { BabylonScene } from './SceneComponent';
@@ -7,7 +7,7 @@ import { Editor } from './Editor';
 import { SystemParser } from './leibniz-ast-0.1.1';
 import { Leibniz } from './leibniz-0.1.3';
 import { Test } from './Test';
-import {default as conf} from './conf';
+import { default as conf } from './conf';
 
 const conf1 = {
   bodies: [{
@@ -27,6 +27,7 @@ class App extends Component {
     const cfg = cfgCookie ? JSON.parse(cfgCookie) : conf;
 
     this.state = {
+      modalShown: false,
       initialConf: cfg,
       result: {
         parserState: {
@@ -64,9 +65,31 @@ class App extends Component {
     this.setState(this.processConf(this.state.initialConf));
   }
 
+
   onReset() {
-    console.log('Reset');
-    this.setState(this.processConf(conf));
+    this.setState({
+      modalShown: true,
+      modalTitle: 'Reset definitions ?',
+      modalMessage: 'The definitions will be resetted to default value.'
+    });
+  }
+
+  onHideModal() {
+    this.setState({ modalShown: false });
+  }
+
+  onConfirmModal() {
+    const state = this.processConf(conf);
+    state.modalShown = false;
+    this.setState(state);
+  }
+
+  test() {
+    return (
+      <Tab eventKey={3} title="Test">
+        <Test initialConf={conf} />
+      </Tab>
+    );
   }
 
   render() {
@@ -96,10 +119,17 @@ class App extends Component {
             <Tab eventKey={2} title="Editor">
               <Editor result={this.state.result.parserState} onChange={conf => this.onChange(conf)} />
             </Tab>
-            <Tab eventKey={3} title="Test">
-              <Test initialConf={conf} />
-            </Tab>
           </Tabs>
+          <Modal bsSize="small" show={this.state.modalShown} onHide={() => this.onHideModal()}>
+            <Modal.Header closeButton>
+              <Modal.Title>{this.state.modalTitle}</Modal.Title>
+              <Modal.Body>{this.state.modalMessage}</Modal.Body>
+              <Modal.Footer>
+                <Button bsStyle="primary" onClick={() => this.onHideModal()}>Cancel</Button>
+                <Button bsStyle="danger" onClick={() => this.onConfirmModal()}>Reset</Button>
+              </Modal.Footer>
+            </Modal.Header>
+          </Modal>
         </Grid>
       </div >
     );
