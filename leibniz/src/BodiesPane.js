@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { Modal, Panel, Button, Glyphicon, Table } from 'react-bootstrap';
+import { Panel, Button, Glyphicon, Table } from 'react-bootstrap';
 import { default as _ } from 'lodash';
 import { BodyRow } from './BodyRow';
+import { OptionPanel } from './OptionPanel';
 
 class BodiesPanel extends Component {
 
@@ -10,6 +11,21 @@ class BodiesPanel extends Component {
     this.state = {
       modalShown: false
     };
+  }
+
+  showOptionPanel(title, message, action) {
+    this.setState({
+      modalShown: true,
+      modalTitle: title,
+      modalMessage: message,
+      confirmAction: action
+    });
+  }
+
+  hideOptionPanel() {
+    this.setState({
+      modalShown: false
+    });
   }
 
   onAdd() {
@@ -23,31 +39,20 @@ class BodiesPanel extends Component {
   }
 
   onDelete(idx) {
-    this.setState({
-      modalShown: true,
-      deletingRow: idx,
-      modalTitle: 'Remove body #' + (idx + 1),
-      modalMessage: 'Body #' + (idx + 1) + ' will be removed from the list.'
-    });
+    this.showOptionPanel(
+      'Remove body #' + (idx + 1),
+      'Body #' + (idx + 1) + ' will be removed from the list.',
+      () => this.deleteBody(idx)
+    );
   }
 
-  onModalClose() {
-    this.setState({
-      modalShown: false
-    });
-  }
-
-  onModalConfirm() {
-    this.setState({
-      modalShown: false
-    });
+  deleteBody(idx) {
     if (this.props.onChange) {
-      const idx = this.state.deletingRow;
       const bodies = this.createBodies();
       bodies.splice(idx, 1);
-      console.log('Delete ' + idx, bodies);
       this.props.onChange(bodies);
     }
+    this.hideOptionPanel();
   }
 
   createBodies() {
@@ -110,16 +115,13 @@ class BodiesPanel extends Component {
                 {rows}
               </thead>
             </Table>
-            <Modal bsSize="small" show={this.state.modalShown} onHide={() => this.onModalClose()}>
-              <Modal.Header closeButton>
-                <Modal.Title>{this.state.modalTitle}</Modal.Title>
-                <Modal.Body>{this.state.modalMessage}</Modal.Body>
-                <Modal.Footer>
-                  <Button bsStyle="primary" onClick={() => this.onModalClose()}>Cancel</Button>
-                  <Button bsStyle="danger" onClick={() => this.onModalConfirm()}>Remove</Button>
-                </Modal.Footer>
-              </Modal.Header>
-            </Modal>
+            <OptionPanel show={this.state.modalShown}
+              title={this.state.modalTitle}
+              message={this.state.modalMessage}
+              confirmButton="Remove"
+              onConfirm={() => this.state.confirmAction()}
+              onCancel={() => this.hideOptionPanel()}
+            />
           </Panel.Body >
         </Panel.Collapse>
       </Panel >

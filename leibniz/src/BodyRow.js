@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Button, Glyphicon, Modal } from 'react-bootstrap';
 import { ExprField } from './ExprField';
+import { OptionPanel } from './OptionPanel';
 
 class BodyRow extends Component {
 
@@ -15,28 +16,28 @@ class BodyRow extends Component {
     if (this.props.onChange) {
       const body = {
         position: this.props.body.position.exp,
-        rotation: '1'
+        rotation: '1+0*i'
       };
       this.props.onChange(body);
     }
   }
 
-  onDeleteRotation() {
+  showOptionPanel() {
     this.setState({ modalShown: true });
   }
 
-  onCloseModal() {
+  hideOptionPanel() {
     this.setState({ modalShown: false });
   }
 
   deleteRotation() {
-    this.setState({ modalShown: false });
     if (this.props.onChange) {
       const body = {
         position: this.props.body.position.exp
       };
       this.props.onChange(body);
     }
+    this.hideOptionPanel();
   }
 
   onDeleteRow() {
@@ -73,18 +74,15 @@ class BodyRow extends Component {
       <div>
         <ExprField name="Position" expr={this.props.body.rotation.exp} errors={this.props.body.rotation.errors}
           onChange={(value) => this.onChangeRotation(value)}
-          onDelete={() => this.onDeleteRotation()}
+          onDelete={() => this.showOptionPanel()}
         />
-        <Modal bsSize="small" show={this.state.modalShown} onHide={() => this.onCloseModal()}>
-          <Modal.Header closeButton>
-            <Modal.Title>Remove rotation ?</Modal.Title>
-            <Modal.Body>The rotation will be removed from body</Modal.Body>
-            <Modal.Footer>
-              <Button bsStyle="primary" onClick={() => this.onCloseModal()}>Cancel</Button>
-              <Button bsStyle="danger" onClick={() => this.deleteRotation()}>Remove</Button>
-            </Modal.Footer>
-          </Modal.Header>
-        </Modal>
+        <OptionPanel show={this.state.modalShown}
+          title="Remove rotation ?"
+          message="The rotation will be removed from body"
+          confirmButton="Remove"
+          onConfirm={() => this.deleteRotation()}
+          onCancel={() => this.hideOptionPanel()}
+        />
       </div>
     ) : (
         <Button bsSize="small" bsStyle="danger" onClick={() => this.onAddRotation()}>
