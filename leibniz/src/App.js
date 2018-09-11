@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Grid, Navbar, Tabs, Tab, Nav, NavItem, Modal, Button } from 'react-bootstrap';
+import { Alert, Grid, Navbar, Tabs, Tab, Nav, NavItem, Modal, Button } from 'react-bootstrap';
 import * as Cookies from 'js-cookie';
 import './App.css';
 import { BabylonScene } from './SceneComponent';
@@ -8,6 +8,8 @@ import { SystemParser } from './leibniz-ast-0.1.1';
 import { Leibniz } from './leibniz-0.1.3';
 import { Test } from './Test';
 import { default as conf } from './conf';
+import { ImportFile } from './ImportFile';
+import { OptionPanel } from './OptionPanel';
 
 const conf1 = {
   bodies: [{
@@ -27,7 +29,9 @@ class App extends Component {
     const cfg = cfgCookie ? JSON.parse(cfgCookie) : conf;
 
     this.state = {
+      alertShow: false,
       modalShown: false,
+      importModalShown: false,
       initialConf: cfg,
       result: {
         parserState: {
@@ -65,23 +69,45 @@ class App extends Component {
     this.setState(this.processConf(this.state.initialConf));
   }
 
-
   onReset() {
+    this.showOptionPanel(
+      'Reset definitions ?',
+      'The definitions will be resetted to default value.',
+      'Reset',
+      () => this.reset()
+    );
+  }
+
+  showOptionPanel(title, message, confirmButton, confirmAction) {
     this.setState({
-      modalShown: true,
-      modalTitle: 'Reset definitions ?',
-      modalMessage: 'The definitions will be resetted to default value.'
+      optionShow: true,
+      optionTitle: title,
+      optionMessage: message,
+      optionConfirmBtn: confirmButton,
+      optionConfirm: confirmAction
     });
   }
 
-  onHideModal() {
-    this.setState({ modalShown: false });
+  hideOptionPanel() {
+    this.setState({ optionShow: false });
   }
 
-  onConfirmModal() {
+  showAlert(title, message) {
+    this.setState({
+      alertShow: true,
+      alertTitle: title,
+      alertMessage: message
+    });
+  }
+
+  hideAlert() {
+    this.setState({ alertShow: false });
+  }
+
+  reset() {
     const state = this.processConf(conf);
-    state.modalShown = false;
     this.setState(state);
+    this.hideOptionPanel();
   }
 
   test() {
@@ -92,7 +118,39 @@ class App extends Component {
     );
   }
 
+  showImportPane() {
+    this.setState({ importModalShown: true });
+  }
+
+  hideImportPane() {
+    this.setState({ importModalShown: false });
+  }
+
+  importFile(content) {
+    try {
+      const state = this.processConf(JSON.parse(content));
+      this.setState(state);
+      this.hideAlert();
+      this.hideImportPane();
+    } catch (e) {
+      console.error('Error parsing', content);
+      this.onError(e);
+    }
+  }
+
+  onError(e) {
+    this.showAlert('Error', 'Error parsing file ' + e);
+    this.hideImportPane();
+  }
+
   render() {
+    const alert = this.state.alertShow ?
+      (
+        <Alert bsStyle="danger" onDismiss={() => this.hideAlert()}>
+          <h4>{this.state.alertTitle}</h4>
+          <p>{this.state.alertMessage}</p>
+        </Alert>
+      ) : '';
     return (
       <div>
         <Navbar inverse collapseOnSelect>
@@ -107,9 +165,13 @@ class App extends Component {
               <NavItem eventKey={1} onClick={() => this.onReset()}>
                 Reset
               </NavItem>
+              <NavItem eventKey={2} onClick={() => this.showImportPane()}>
+                Import
+              </NavItem>
             </Nav>
           </Navbar.Collapse>
         </Navbar>
+        {alert}
         <Grid>
           <Tabs id="Tab" defaultActiveKey={1}>
             <Tab eventKey={1} title="Home">
@@ -120,16 +182,16 @@ class App extends Component {
               <Editor result={this.state.result.parserState} onChange={conf => this.onChange(conf)} />
             </Tab>
           </Tabs>
-          <Modal bsSize="small" show={this.state.modalShown} onHide={() => this.onHideModal()}>
-            <Modal.Header closeButton>
-              <Modal.Title>{this.state.modalTitle}</Modal.Title>
-              <Modal.Body>{this.state.modalMessage}</Modal.Body>
-              <Modal.Footer>
-                <Button bsStyle="primary" onClick={() => this.onHideModal()}>Cancel</Button>
-                <Button bsStyle="danger" onClick={() => this.onConfirmModal()}>Reset</Button>
-              </Modal.Footer>
-            </Modal.Header>
-          </Modal>
+          <ImportFile show={this.state.importModalShown}
+            onCancel={() => this.hideImportPane()}
+            onFileRead={file => this.importFile(file)}
+            onError={e => this.onError(e)} />
+          <OptionPanel show={this.state.optionShow}
+            title={this.state.optionTitle}
+            message={this.state.optionMessage}
+            confirmButton={this.state.optionConfirmBtn}
+            onCancel={() => this.hideOptionPanel()}
+            onConfirm={() => this.state.optionConfirm()} />
         </Grid>
       </div >
     );

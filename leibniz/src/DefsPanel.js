@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { Modal, FormGroup, FormControl, InputGroup, HelpBlock, Panel, Button, Glyphicon } from 'react-bootstrap';
+import { FormGroup, FormControl, InputGroup, HelpBlock, Panel, Button, Glyphicon } from 'react-bootstrap';
 import { ExprField } from './ExprField';
 import { default as _ } from 'lodash';
+import { OptionPanel } from './OptionPanel';
 const uuidv5 = require('uuid/v5');
 
 const ns = uuidv5('http://www.mmarini.org', uuidv5.URL);
@@ -31,26 +32,31 @@ class DefsPanel extends Component {
   }
 
   onDelete(id) {
+    this.showOptionPanel(
+      'Remove "' + id + '" definition ?',
+      'The definition "' + id + '" will be removed from the list.',
+      () => this.deleteDefs(id));
+  }
+
+  showOptionPanel(title, message, action) {
     this.setState({
       deleteModalShown: true,
-      modalTitle: 'Remove "' + id + '" definition ?',
-      modalMessage: 'The definition "' + id + '" will be removed from the list.',
-      deletingId: id
+      modalTitle: title,
+      modalMessage: message,
+      optionAction: action
     });
   }
 
-  deleteDefs() {
-    this.setState({
-      deleteModalShown: false
-    });
+  deleteDefs(id) {
     if (this.props.onChange) {
       const newConf = this.createDefs()
-      delete newConf[this.state.deletingId];
+      delete newConf[id];
       this.props.onChange(this.props.panelKey, newConf);
     }
+    this.hideOptionPanel();
   }
 
-  abortDelete() {
+  hideOptionPanel() {
     this.setState({
       deleteModalShown: false
     });
@@ -127,16 +133,13 @@ class DefsPanel extends Component {
             </FormGroup>
             <hr></hr>
             {fieldList}
-            <Modal bsSize="small" show={this.state.deleteModalShown} onHide={() => this.abortDelete()}>
-              <Modal.Header closeButton>
-                <Modal.Title>{this.state.modalTitle}</Modal.Title>
-                <Modal.Body>{this.state.modalMessage}</Modal.Body>
-                <Modal.Footer>
-                  <Button bsStyle="primary" onClick={() => this.abortDelete()}>Cancel</Button>
-                  <Button bsStyle="danger" onClick={() => this.deleteDefs()}>Remove</Button>
-                </Modal.Footer>
-              </Modal.Header>
-            </Modal>
+            <OptionPanel show={this.state.deleteModalShown}
+              title={this.state.modalTitle}
+              message={this.state.modalMessage}
+              confirmButton="Remove"
+              onCancel={() => this.hideOptionPanel()}
+              onConfirm={() => this.state.optionAction()}
+            />
           </Panel.Body >
         </Panel.Collapse>
       </Panel >
