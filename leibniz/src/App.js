@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Alert, Grid, Navbar, Tabs, Tab, Nav, NavItem, Modal, Button } from 'react-bootstrap';
 import * as Cookies from 'js-cookie';
+import { saveAs } from 'file-saver/FileSaver';
 import './App.css';
 import { BabylonScene } from './SceneComponent';
 import { Editor } from './Editor';
@@ -47,6 +48,7 @@ class App extends Component {
   processConf(conf) {
     const result = new SystemParser(conf).parse();
     const state = {
+      conf: conf,
       result: result
     };
     Cookies.set('leibniz', JSON.stringify(conf));
@@ -118,11 +120,11 @@ class App extends Component {
     );
   }
 
-  showImportPane() {
+  showImportPanel() {
     this.setState({ importModalShown: true });
   }
 
-  hideImportPane() {
+  hideImportPanel() {
     this.setState({ importModalShown: false });
   }
 
@@ -131,7 +133,7 @@ class App extends Component {
       const state = this.processConf(JSON.parse(content));
       this.setState(state);
       this.hideAlert();
-      this.hideImportPane();
+      this.hideImportPanel();
     } catch (e) {
       console.error('Error parsing', content);
       this.onError(e);
@@ -140,7 +142,23 @@ class App extends Component {
 
   onError(e) {
     this.showAlert('Error', 'Error parsing file ' + e);
-    this.hideImportPane();
+    this.hideImportPanel();
+  }
+
+  showExportPanel() {
+    this.showOptionPanel(
+      'Export definitions ?',
+      'The definitions will be exported into a local file.',
+      'Export',
+      () => this.exportFile()
+    );
+  }
+
+  exportFile() {
+    const text = JSON.stringify(this.state.conf, null, '  ');
+    const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+    saveAs(blob, "test.json");
+    this.hideOptionPanel();
   }
 
   render() {
@@ -162,11 +180,14 @@ class App extends Component {
           </Navbar.Header>
           <Navbar.Collapse>
             <Nav>
-              <NavItem eventKey={1} onClick={() => this.onReset()}>
+              <NavItem eventKey="navItem.1" onClick={() => this.onReset()}>
                 Reset
               </NavItem>
-              <NavItem eventKey={2} onClick={() => this.showImportPane()}>
+              <NavItem eventKey="navItem.2" onClick={() => this.showImportPanel()}>
                 Import
+              </NavItem>
+              <NavItem eventKey="navItem.3" onClick={() => this.showExportPanel()}>
+                Export
               </NavItem>
             </Nav>
           </Navbar.Collapse>
@@ -183,7 +204,7 @@ class App extends Component {
             </Tab>
           </Tabs>
           <ImportFile show={this.state.importModalShown}
-            onCancel={() => this.hideImportPane()}
+            onCancel={() => this.hideImportPanel()}
             onFileRead={file => this.importFile(file)}
             onError={e => this.onError(e)} />
           <OptionPanel show={this.state.optionShow}
