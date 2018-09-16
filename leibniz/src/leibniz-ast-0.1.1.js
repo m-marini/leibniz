@@ -1223,6 +1223,25 @@ class InverseNode extends UnaryNode {
     }
 }
 
+class DetNode extends UnaryNode {
+    build(builder) {
+        const op = this.arg.build(builder)
+        switch (op.type) {
+            case FieldType:
+                return op.withErrors(['Invalid det on value']);
+            case QuaternionType:
+                return op.withErrors(['Invalid det on quaternion']);
+            case VectorType:
+                return op.withErrors(['Invalid det on vector']);
+            default:
+                if (op.rows !== op.cols)
+                    return op.withErrors(['Invalid det on not square matrix']);
+                else
+                    return op.withCode(OpTreeBuilder.createDet(op.code));
+        }
+    }
+}
+
 const DefaultNode = new ConstantNode('0');
 
 const UnaryFunctions = {
@@ -1246,7 +1265,8 @@ const UnaryFunctions = {
     sphere: (arg) => new SphereNode(arg),
     cyl1: (arg) => new Cyl1Node(arg),
     sphere1: (arg) => new Sphere1Node(arg),
-    inv: (arg) => new InverseNode(arg)
+    inv: (arg) => new InverseNode(arg),
+    det: (arg) => new DetNode(arg)
 }
 
 class ParserAst {

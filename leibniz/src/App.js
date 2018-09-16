@@ -115,7 +115,7 @@ class App extends Component {
   test() {
     return (
       <Tab eventKey={3} title="Test">
-        <Test initialConf={{ vars: { "a": "inv(T((1,2),(3,4)))" }, funcs: {}, bodies: [], update: {} }} />
+        <Test initialConf={{ vars: { "a": "inv(T((8,1,6),(3,5,7),(4,9,2)))" }, funcs: {}, bodies: [], update: {} }} />
       </Tab>
     );
   }

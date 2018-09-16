@@ -378,6 +378,18 @@ class Matrix {
     }
 
     inverse() {
+        const { enchelon, det } = this.gaussJordan();
+        const n = this.rows;
+        const inv = _.map(enchelon, row => _.drop(row, n));
+        return new Matrix(inv);
+    }
+
+    det() {
+        const { enchelon, det } = this.gaussJordan();
+        return det;
+    }
+
+    gaussJordan() {
         assert(this.rows === this.cols,
             'Assert failed: (this.rows === this.cols), this.rows=' + this.rows
             + ', this.cols=' + this.cols);
@@ -392,7 +404,7 @@ class Matrix {
                 mtx[i][j + n] = i === j ? 1 : 0;
             }
         }
-        console.log('before reduction', mtx);
+        var det = 1;
         var h = 0; // pivot row
         var k = 0; // pivot col
         while (h < n && k < n) {
@@ -414,6 +426,8 @@ class Matrix {
                 const tr = mtx[imax];
                 mtx[imax] = mtx[h];
                 mtx[h] = tr;
+                det = -det;
+
                 for (var i = h + 1; i < n; i++) {
                     const f = mtx[i][k] / mtx[h][k];
                     mtx[i][k] = 0;
@@ -425,10 +439,32 @@ class Matrix {
                 h++;
                 k++;
             }
-            console.log('after reduction', mtx);
         }
-
-        return this;
+        // Inverse matrix does not exist
+        assert(h === k, 'Inverse matrix does not exist');
+        // Reverse
+        for (var h = n - 1; h >= 0; h--) {
+            for (var i = 0; i < h; i++) {
+                // mtx[i][j] = mtx[i][j] + mtx[h][j] * f;
+                // mtx[i][h] + mtx[h][h] * f = 0
+                //f = -mtx[i][h]/mtx[h][h];
+                const f = mtx[i][h] / mtx[h][h];
+                mtx[i][h] = 0;
+                for (var j = h + 1; j < 2 * n; j++) {
+                    // mtx[i][h] = 0 = mtx[i][h] - mtx[h][j] * f;
+                    mtx[i][j] -= mtx[h][j] * f;
+                }
+            }
+            for (var j = h + 1; j < 2 * n; j++) {
+                mtx[h][j] /= mtx[h][h];
+            }
+            det *= mtx[h][h];
+            mtx[h][h] = 1;
+        }
+        return {
+            enchelon: mtx,
+            det: det
+        };
     }
 }
 
@@ -928,7 +964,14 @@ function createMatrixInverse(code) {
         code: _.concat(code.code, ['matrix inv'])
     };
 }
+function createDet(code) {
+    return {
+        apply: (context) => code.apply(context).det(),
+        code: _.concat(code.code, ['det'])
+    };
+}
 const OpTreeBuilder = {
+    createDet: createDet,
     createMatrixInverse: createMatrixInverse,
     createQuatInverse: createQuatInverse,
     createValueInverse: createValueInverse,
