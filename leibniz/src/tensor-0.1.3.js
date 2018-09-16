@@ -291,8 +291,8 @@ class Matrix {
 
     qrot() {
         assert(this.rows === 3 && this.cols === 1,
-            'Assert failed: ((this.rows === 3 && this.cols === 1), this.rows=' + this.rows
-            + ',this.cols=' + this.cols);
+            'Assert failed: (this.rows === 3 && this.cols === 1), this.rows=' + this.rows
+            + ', this.cols=' + this.cols);
         const x = this.values[0][0];
         const y = this.values[1][0];
         const z = this.values[2][0];
@@ -308,6 +308,127 @@ class Matrix {
         } else {
             return new Quaternion([0, 0, 0, 1]);
         }
+    }
+
+    cyl() {
+        assert(this.rows === 3 && this.cols === 1,
+            'Assert failed: (this.rows === 3 && this.cols === 1), this.rows=' + this.rows
+            + ', this.cols=' + this.cols);
+        const r = this.values[0][0];
+        const phi = this.values[1][0];
+        const z = this.values[2][0];
+        return new Matrix([
+            [r * Math.sin(phi)],
+            [r * Math.cos(phi)],
+            [z]
+        ]);
+    }
+
+    sphere() {
+        assert(this.rows === 3 && this.cols === 1,
+            'Assert failed: ((this.rows === 3 && this.cols === 1), this.rows=' + this.rows
+            + ',this.cols=' + this.cols);
+        const r = this.values[0][0];
+        const theta = this.values[1][0];
+        const phi = this.values[2][0];
+        const rr = r * Math.sin(theta);
+        return new Matrix([
+            [rr * Math.cos(phi)],
+            [rr * Math.sin(phi)],
+            [r * Math.cos(theta)]
+        ]);
+    }
+
+    cyl1() {
+        assert(this.rows === 3 && this.cols === 1,
+            'Assert failed: (this.rows === 3 && this.cols === 1), this.rows=' + this.rows
+            + ', this.cols=' + this.cols);
+        const r = this.values[0][0];
+        const phi = this.values[1][0];
+        const z = this.values[2][0];
+        const sin = Math.sin(phi);
+        const cos = Math.cos(phi);
+        return new Matrix([
+            [cos, -r * sin, 0],
+            [sin, r * cos, 0],
+            [0, 0, 1]
+        ]);
+    }
+
+    sphere1() {
+        assert(this.rows === 3 && this.cols === 1,
+            'Assert failed: (this.rows === 3 && this.cols === 1), this.rows=' + this.rows
+            + ', this.cols=' + this.cols);
+
+        const r = this.values[0][0];
+        const theta = this.values[1][0];
+        const phi = this.values[2][0];
+        const sint = Math.sin(theta);
+        const cost = Math.cos(theta);
+        const sinp = Math.sin(phi);
+        const cosp = Math.cos(phi);
+        const sincos = sint * cosp;
+        const sinsin = sint * sinp;
+        const coscos = cost * cosp;
+        return new Matrix([
+            [sincos, r * coscos, -r * sinsin],
+            [sinsin, r * cost * cosp, r * sincos],
+            [cost, -r * sint, 0]
+        ]);
+    }
+
+    inverse() {
+        assert(this.rows === this.cols,
+            'Assert failed: (this.rows === this.cols), this.rows=' + this.rows
+            + ', this.cols=' + this.cols);
+        const n = this.rows;
+        const mtx = Array(n);
+        for (var i = 0; i < n; i++) {
+            mtx[i] = Array(2 * n);
+        }
+        for (var i = 0; i < n; i++) {
+            for (var j = 0; j < n; j++) {
+                mtx[i][j] = this.values[i][j];
+                mtx[i][j + n] = i === j ? 1 : 0;
+            }
+        }
+        console.log('before reduction', mtx);
+        var h = 0; // pivot row
+        var k = 0; // pivot col
+        while (h < n && k < n) {
+            // Find pivot row
+            var imax = h;
+            var max = Math.abs(mtx[h][k]);
+            for (var i = h + 1; i < n; i++) {
+                const mx = Math.abs(mtx[i][k]);
+                if (mx > max) {
+                    imax = i;
+                    max = mx;
+                }
+            }
+            if (max === 0) {
+                /* No pivot in this column, pass to next column */
+                k++;
+            } else {
+                //Swap row imax, h
+                const tr = mtx[imax];
+                mtx[imax] = mtx[h];
+                mtx[h] = tr;
+                for (var i = h + 1; i < n; i++) {
+                    const f = mtx[i][k] / mtx[h][k];
+                    mtx[i][k] = 0;
+                    /* Do for all remaining elements in current row: */
+                    for (var j = k + 1; j < 2 * n; j++) {
+                        mtx[i][j] -= mtx[h][j] * f;
+                    }
+                }
+                h++;
+                k++;
+            }
+            console.log('after reduction', mtx);
+        }
+
+        return this;
     }
 }
 
@@ -755,7 +876,66 @@ function createVectNorma(code) {
         code: _.concat(code.code, ['vecNorma'])
     };
 }
+function createVectNorma(code) {
+    return {
+        apply: (context) => {
+            const v = code.apply(context);
+            const mod = Math.sqrt(v.transpose().multiply(v).values[0][0]);
+            return v.divide(mod);
+        },
+        code: _.concat(code.code, ['vecNorma'])
+    };
+}
+function createCyl(code) {
+    return {
+        apply: (context) => code.apply(context).cyl(),
+        code: _.concat(code.code, ['cyl'])
+    };
+}
+function createSphere(code) {
+    return {
+        apply: (context) => code.apply(context).sphere(),
+        code: _.concat(code.code, ['sphere'])
+    };
+}
+function createCyl1(code) {
+    return {
+        apply: (context) => code.apply(context).cyl1(),
+        code: _.concat(code.code, ['cyl1'])
+    };
+}
+function createSphere1(code) {
+    return {
+        apply: (context) => code.apply(context).sphere1(),
+        code: _.concat(code.code, ['sphere1'])
+    };
+}
+function createValueInverse(code) {
+    return {
+        apply: (context) => 1 / code.apply(context),
+        code: _.concat(code.code, ['inv'])
+    };
+}
+function createQuatInverse(code) {
+    return {
+        apply: (context) => code.apply(context).inverse(),
+        code: _.concat(code.code, ['quat inv'])
+    };
+}
+function createMatrixInverse(code) {
+    return {
+        apply: (context) => code.apply(context).inverse(),
+        code: _.concat(code.code, ['matrix inv'])
+    };
+}
 const OpTreeBuilder = {
+    createMatrixInverse: createMatrixInverse,
+    createQuatInverse: createQuatInverse,
+    createValueInverse: createValueInverse,
+    createSphere1: createSphere1,
+    createCyl1: createCyl1,
+    createSphere: createSphere,
+    createCyl: createCyl,
     createValueNorma: createValueNorma,
     createQuatNorma: createQuatNorma,
     createVectNorma: createVectNorma,

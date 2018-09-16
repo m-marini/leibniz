@@ -1136,6 +1136,93 @@ class NormaNode extends UnaryNode {
     }
 }
 
+class CylNode extends UnaryNode {
+    build(builder) {
+        const op = this.arg.build(builder)
+        switch (op.type) {
+            case FieldType:
+                return op.withErrors(['Invalid cyl on value']);
+            case QuaternionType:
+                return op.withErrors(['Invalid cyl on quaternion']);
+            case VectorType:
+                const c1 = op.rows !== 3 ? OpTreeBuilder.createResizeVector(op.code, 3) : op.code;
+                return op.withCode(OpTreeBuilder.createCyl(c1));
+            default:
+                return op.withErrors(['Invalid cyl on matrix']);
+        }
+    }
+}
+
+class SphereNode extends UnaryNode {
+    build(builder) {
+        const op = this.arg.build(builder)
+        switch (op.type) {
+            case FieldType:
+                return op.withErrors(['Invalid sphere on value']);
+            case QuaternionType:
+                return op.withErrors(['Invalid sphere on quaternion']);
+            case VectorType:
+                const c1 = op.rows !== 3 ? OpTreeBuilder.createResizeVector(op.code, 3) : op.code;
+                return op.withCode(OpTreeBuilder.createSphere(c1));
+            default:
+                return op.withErrors(['Invalid sphere on matrix']);
+        }
+    }
+}
+
+class Cyl1Node extends UnaryNode {
+    build(builder) {
+        const op = this.arg.build(builder)
+        switch (op.type) {
+            case FieldType:
+                return op.withErrors(['Invalid cyl on value']);
+            case QuaternionType:
+                return op.withErrors(['Invalid cyl on quaternion']);
+            case VectorType:
+                const c1 = op.rows !== 3 ? OpTreeBuilder.createResizeVector(op.code, 3) : op.code;
+                return op.withType(MatrixType).withSize(3, 3).withCode(OpTreeBuilder.createCyl1(c1));
+            default:
+                return op.withErrors(['Invalid cyl on matrix']);
+        }
+    }
+}
+
+class Sphere1Node extends UnaryNode {
+    build(builder) {
+        const op = this.arg.build(builder)
+        switch (op.type) {
+            case FieldType:
+                return op.withErrors(['Invalid cyl on value']);
+            case QuaternionType:
+                return op.withErrors(['Invalid cyl on quaternion']);
+            case VectorType:
+                const c1 = op.rows !== 3 ? OpTreeBuilder.createResizeVector(op.code, 3) : op.code;
+                return op.withType(MatrixType).withSize(3, 3).withCode(OpTreeBuilder.createSphere1(c1));
+            default:
+                return op.withErrors(['Invalid cyl on matrix']);
+        }
+    }
+}
+
+class InverseNode extends UnaryNode {
+    build(builder) {
+        const op = this.arg.build(builder)
+        switch (op.type) {
+            case FieldType:
+                return op.withCode(OpTreeBuilder.createValueInverse(op.code));
+            case QuaternionType:
+                return op.withCode(OpTreeBuilder.createQuatInverse(op.code));
+            case VectorType:
+                return op.withErrors(['Invalid inv on vector']);
+            default:
+                if (op.rows !== op.cols)
+                    return op.withErrors(['Invalid inv on not square matrix']);
+                else
+                    return op.withCode(OpTreeBuilder.createMatrixInverse(op.code));
+        }
+    }
+}
+
 const DefaultNode = new ConstantNode('0');
 
 const UnaryFunctions = {
@@ -1154,7 +1241,12 @@ const UnaryFunctions = {
     T: (arg) => new TransposeNode(arg),
     qrot: (arg) => new QrotNode(arg),
     tr: (arg) => new TraceNode(arg),
-    n: (arg) => new NormaNode(arg)
+    n: (arg) => new NormaNode(arg),
+    cyl: (arg) => new CylNode(arg),
+    sphere: (arg) => new SphereNode(arg),
+    cyl1: (arg) => new Cyl1Node(arg),
+    sphere1: (arg) => new Sphere1Node(arg),
+    inv: (arg) => new InverseNode(arg)
 }
 
 class ParserAst {
