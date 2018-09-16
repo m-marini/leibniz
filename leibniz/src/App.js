@@ -115,7 +115,7 @@ class App extends Component {
   test() {
     return (
       <Tab eventKey={3} title="Test">
-        <Test initialConf={conf} />
+        <Test initialConf={{ vars: { "a": "0" }, funcs: {}, bodies: [], update: {} }} />
       </Tab>
     );
   }
@@ -202,6 +202,7 @@ class App extends Component {
             <Tab eventKey={2} title="Editor">
               <Editor result={this.state.result.parserState} onChange={conf => this.onChange(conf)} />
             </Tab>
+            {this.test()}
           </Tabs>
           <ImportFile show={this.state.importModalShown}
             onCancel={() => this.hideImportPanel()}

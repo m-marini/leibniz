@@ -521,6 +521,19 @@ class TransposeNode extends UnaryNode {
 }
 
 class SqrtNode extends UnaryNode {
+    build(context) {
+        const op = this.arg.build(context);
+        switch (op.type) {
+            case FieldType:
+                return op.withCode(OpTreeBuilder.createSqrt(op.code));
+            case QuaternionType:
+                return op.withMoreErrors(['Invalid sqrt operation on quaterion']);
+            case VectorType:
+                return op.withMoreErrors(['Invalid sqrt operation on vector']);
+            default:
+                return op.withMoreErrors(['Invalid sqrt operation on matrix']);
+        }
+    }
 }
 
 class ExpNode extends UnaryNode {
@@ -572,27 +585,131 @@ class CosNode extends UnaryNode {
     }
 }
 class TanNode extends UnaryNode {
+    build(context) {
+        const op = this.arg.build(context);
+        switch (op.type) {
+            case FieldType:
+                return op.withCode(OpTreeBuilder.createTan(op.code));
+            case QuaternionType:
+                return op.withMoreErrors(['Invalid tan operation on quaternion']);
+            case VectorType:
+                return op.withMoreErrors(['Invalid tan operation on vector']);
+            default:
+                return op.withMoreErrors(['Invalid tan operation on matrix']);
+        }
+    }
 }
 
 class AsinNode extends UnaryNode {
+    build(context) {
+        const op = this.arg.build(context);
+        switch (op.type) {
+            case FieldType:
+                return op.withCode(OpTreeBuilder.createAsin(op.code));
+            case QuaternionType:
+                return op.withMoreErrors(['Invalid asin operation on quaternion']);
+            case VectorType:
+                return op.withMoreErrors(['Invalid asin operation on vector']);
+            default:
+                return op.withMoreErrors(['Invalid asin operation on matrix']);
+        }
+    }
 }
 
 class AcosNode extends UnaryNode {
+    build(context) {
+        const op = this.arg.build(context);
+        switch (op.type) {
+            case FieldType:
+                return op.withCode(OpTreeBuilder.createAcos(op.code));
+            case QuaternionType:
+                return op.withMoreErrors(['Invalid acos operation on quaternion']);
+            case VectorType:
+                return op.withMoreErrors(['Invalid acos operation on vector']);
+            default:
+                return op.withMoreErrors(['Invalid acos operation on matrix']);
+        }
+    }
 }
 
 class AtanNode extends UnaryNode {
+    build(context) {
+        const op = this.arg.build(context);
+        switch (op.type) {
+            case FieldType:
+                return op.withCode(OpTreeBuilder.createAtan(op.code));
+            case QuaternionType:
+                return op.withMoreErrors(['Invalid atan operation on quaternion']);
+            case VectorType:
+                return op.withMoreErrors(['Invalid atan operation on vector']);
+            default:
+                return op.withMoreErrors(['Invalid atan operation on matrix']);
+        }
+    }
 }
 
 class SinhNode extends UnaryNode {
+    build(context) {
+        const op = this.arg.build(context);
+        switch (op.type) {
+            case FieldType:
+                return op.withCode(OpTreeBuilder.createSinh(op.code));
+            case QuaternionType:
+                return op.withMoreErrors(['Invalid sinh operation on quaternion']);
+            case VectorType:
+                return op.withMoreErrors(['Invalid sinh operation on vector']);
+            default:
+                return op.withMoreErrors(['Invalid sinh operation on matrix']);
+        }
+    }
 }
 
 class CoshNode extends UnaryNode {
+    build(context) {
+        const op = this.arg.build(context);
+        switch (op.type) {
+            case FieldType:
+                return op.withCode(OpTreeBuilder.createCosh(op.code));
+            case QuaternionType:
+                return op.withMoreErrors(['Invalid cosh operation on quaternion']);
+            case VectorType:
+                return op.withMoreErrors(['Invalid cosh operation on vector']);
+            default:
+                return op.withMoreErrors(['Invalid cosh operation on matrix']);
+        }
+    }
 }
 
 class TanhNode extends UnaryNode {
+    build(context) {
+        const op = this.arg.build(context);
+        switch (op.type) {
+            case FieldType:
+                return op.withCode(OpTreeBuilder.createTanh(op.code));
+            case QuaternionType:
+                return op.withMoreErrors(['Invalid tanh operation on quaternion']);
+            case VectorType:
+                return op.withMoreErrors(['Invalid tanh operation on vector']);
+            default:
+                return op.withMoreErrors(['Invalid tanh operation on matrix']);
+        }
+    }
 }
 
 class LogNode extends UnaryNode {
+    build(context) {
+        const op = this.arg.build(context);
+        switch (op.type) {
+            case FieldType:
+                return op.withCode(OpTreeBuilder.createLog(op.code));
+            case QuaternionType:
+                return op.withMoreErrors(['Invalid log operation on quaternion']);
+            case VectorType:
+                return op.withMoreErrors(['Invalid log operation on vector']);
+            default:
+                return op.withMoreErrors(['Invalid log operation on matrix']);
+        }
+    }
 }
 
 class QrotNode extends UnaryNode {
@@ -986,6 +1103,39 @@ class DivNode extends BinaryNode {
     }
 }
 
+class TraceNode extends UnaryNode {
+    build(builder) {
+        const op = this.arg.build(builder)
+        switch (op.type) {
+            case FieldType:
+                return op;
+            case QuaternionType:
+                return op.withErrors(['Invalid trace on quaternion']);
+            case VectorType:
+                return op.withErrors(['Invalid trace on vector']);
+            default:
+                return op.withType(FieldType).withCode(OpTreeBuilder.createTrace(op.code));
+
+        }
+    }
+}
+
+class NormaNode extends UnaryNode {
+    build(builder) {
+        const op = this.arg.build(builder)
+        switch (op.type) {
+            case FieldType:
+                return op.withCode(OpTreeBuilder.createValueNorma(op.code));
+            case QuaternionType:
+                return op.withCode(OpTreeBuilder.createQuatNorma(op.code));
+            case VectorType:
+                return op.withCode(OpTreeBuilder.createVectNorma(op.code));
+            default:
+                return op.withErrors(['Invalid norma on matrix']);
+        }
+    }
+}
+
 const DefaultNode = new ConstantNode('0');
 
 const UnaryFunctions = {
@@ -1002,7 +1152,9 @@ const UnaryFunctions = {
     log: (arg) => new LogNode(arg),
     sqrt: (arg) => new SqrtNode(arg),
     T: (arg) => new TransposeNode(arg),
-    qrot: (arg) => new QrotNode(arg)
+    qrot: (arg) => new QrotNode(arg),
+    tr: (arg) => new TraceNode(arg),
+    n: (arg) => new NormaNode(arg)
 }
 
 class ParserAst {

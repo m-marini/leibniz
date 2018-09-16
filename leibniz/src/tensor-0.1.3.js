@@ -116,6 +116,20 @@ class Quaternion {
         const aw = this.w;
         return Math.sqrt(ai * ai + aj * aj + ak * ak + aw * aw);
     }
+
+    norma() {
+        const ai = this.i;
+        const aj = this.j;
+        const ak = this.k;
+        const aw = this.w;
+        const mod = Math.sqrt(ai * ai + aj * aj + ak * ak + aw * aw);
+
+        if (mod > Number.MIN_VALUE) {
+            return new Quaternion([ai / mod, aj / mod, ak / mod, aw / mod]);
+        } else {
+            return new Quaternion([0, 0, 0, 1]);
+        }
+    }
 }
 
 class Matrix {
@@ -132,6 +146,15 @@ class Matrix {
                 f(value, i, j))
         );
         return new Matrix(v);
+    }
+
+    trace() {
+        const n = Math.min(this.rows, this.cols);
+        var trace = 0;
+        for (var i = 0; i < n; i++) {
+            trace += this.values[i][i];
+        }
+        return trace;
     }
 
     /* Returns the negate matrix */
@@ -630,6 +653,12 @@ function createExp(code) {
         code: _.concat(code.code, ['exp'])
     };
 }
+function createSqrt(code) {
+    return {
+        apply: (context) => Math.sqrt(code.apply(context)),
+        code: _.concat(code.code, ['sqrt'])
+    };
+}
 function createDivQuatField(op1, op2) {
     return {
         apply: (context) => {
@@ -650,8 +679,95 @@ function createDivQuat(op1, op2) {
         code: _.concat(op1.code, op2.code, ['div quat'])
     };
 }
-
+function createTan(code) {
+    return {
+        apply: (context) => Math.tan(code.apply(context)),
+        code: _.concat(code.code, ['tan'])
+    };
+}
+function createAsin(code) {
+    return {
+        apply: (context) => Math.asin(code.apply(context)),
+        code: _.concat(code.code, ['asin'])
+    };
+}
+function createAcos(code) {
+    return {
+        apply: (context) => Math.acos(code.apply(context)),
+        code: _.concat(code.code, ['acos'])
+    };
+}
+function createAtan(code) {
+    return {
+        apply: (context) => Math.atan(code.apply(context)),
+        code: _.concat(code.code, ['atan'])
+    };
+}
+function createLog(code) {
+    return {
+        apply: (context) => Math.log(code.apply(context)),
+        code: _.concat(code.code, ['log'])
+    };
+}
+function createSinh(code) {
+    return {
+        apply: (context) => Math.sinh(code.apply(context)),
+        code: _.concat(code.code, ['sinh'])
+    };
+}
+function createCosh(code) {
+    return {
+        apply: (context) => Math.cosh(code.apply(context)),
+        code: _.concat(code.code, ['cosh'])
+    };
+}
+function createTanh(code) {
+    return {
+        apply: (context) => Math.tanh(code.apply(context)),
+        code: _.concat(code.code, ['tanh'])
+    };
+}
+function createTrace(code) {
+    return {
+        apply: (context) => code.apply(context).trace(),
+        code: _.concat(code.code, ['trace'])
+    };
+}
+function createValueNorma(code) {
+    return {
+        apply: (context) => 1,
+        code: createField(1)
+    };
+}
+function createQuatNorma(code) {
+    return {
+        apply: (context) => code.apply(context).norma(),
+        code: _.concat(code.code, ['quatNorma'])
+    };
+}
+function createVectNorma(code) {
+    return {
+        apply: (context) => {
+            const v = code.apply(context);
+            const mod = Math.sqrt(v.transpose().multiply(v).values[0][0]);
+            return v.divide(mod);
+        },
+        code: _.concat(code.code, ['vecNorma'])
+    };
+}
 const OpTreeBuilder = {
+    createValueNorma: createValueNorma,
+    createQuatNorma: createQuatNorma,
+    createVectNorma: createVectNorma,
+    createTrace: createTrace,
+    createSinh: createSinh,
+    createCosh: createCosh,
+    createTanh: createTanh,
+    createLog: createLog,
+    createAtan: createAtan,
+    createAcos: createAcos,
+    createAsin: createAsin,
+    createTan: createTan,
     createField: createField,
     createQuaternion: createQuaternion,
     createVector: createVector,
@@ -701,7 +817,8 @@ const OpTreeBuilder = {
     createScaleQuat: createScaleQuat,
     createProductQuat: createProductQuat,
     createDivQuatField: createDivQuatField,
-    createDivQuat: createDivQuat
+    createDivQuat: createDivQuat,
+    createSqrt: createSqrt
 };
 
 export {
