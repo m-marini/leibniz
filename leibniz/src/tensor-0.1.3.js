@@ -246,8 +246,6 @@ class Matrix {
             for (var j = 0; j < m; j++) {
                 var acc = 0;
                 for (var k = 0; k < l; k++) {
-                    console.log('', i, ',', k, '*', k, ',', j);
-                    console.log(' ', this.values[i][k], '*', other.values[k][j]);
                     acc += this.values[i][k] * other.values[k][j];
                 }
                 v[i][j] = acc;
@@ -596,7 +594,7 @@ function createMatrixVectorProduct(mat, vec) {
 function createMatrixProduct(op1, op2) {
     return {
         apply: (context) =>
-            op1.apply(context).transpose().multiply(op2.apply(context)),
+            op1.apply(context).multiply(op2.apply(context)),
         code: _.concat(op1.code, op2.code, ['multiply matrix'])
     };
 }

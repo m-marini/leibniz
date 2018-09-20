@@ -8,14 +8,11 @@ import { Editor } from './Editor';
 import { SystemParser } from './leibniz-ast-0.1.1';
 import { Leibniz } from './leibniz-0.1.3';
 import { Test } from './Test';
-import { default as conf } from './conf';
 import { ImportFile } from './ImportFile';
 import { OptionPanel } from './OptionPanel';
 
 const conf1 = {
-  bodies: [{
-    position: '(0,0,0)'
-  }],
+  bodies: [],
   funcs: {},
   vars: {},
   update: {}
@@ -27,7 +24,7 @@ class App extends Component {
     super(props);
 
     const cfgCookie = Cookies.get('leibniz');
-    const cfg = cfgCookie ? JSON.parse(cfgCookie) : conf;
+    const cfg = cfgCookie ? JSON.parse(cfgCookie) : conf1;
 
     this.state = {
       alertShow: false,
@@ -107,7 +104,7 @@ class App extends Component {
   }
 
   reset() {
-    const state = this.processConf(conf);
+    const state = this.processConf(conf1);
     this.setState(state);
     this.hideOptionPanel();
   }
@@ -210,7 +207,6 @@ class App extends Component {
             <Tab eventKey={2} title="Editor">
               <Editor result={this.state.result.parserState} onChange={conf => this.onChange(conf)} />
             </Tab>
-            {this.test()}
           </Tabs>
           <ImportFile show={this.state.importModalShown}
             onCancel={() => this.hideImportPanel()}
