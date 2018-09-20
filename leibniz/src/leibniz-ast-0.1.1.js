@@ -324,18 +324,38 @@ class SystemParser {
      * between update and variable types
      */
     checkForUpdateTypeDefinition(conf) {
+
+        function typeName(varResult) {
+            switch (varResult.type) {
+                case FieldType:
+                    return 'scalar';
+                case QuaternionType:
+                    return 'quaternion';
+                case VectorType:
+                    return 'vector [' + varResult.rows + ']';
+                    break;
+                default:
+                    return 'matrix [' + varResult.rows + ', ' + varResult.cols + ']';
+            }
+        }
+
         _.each(conf.update, (data, ref) => {
             const varResult = conf.vars[ref] && conf.vars[ref].result;
             if (varResult) {
                 const upResult = data.result;
-                const sameSize = varResult.type === upResult.type && (
+                const wrongType = varResult.type === upResult.type && (
                     varResult.type === FieldType
                     || varResult.type === VectorType && varResult.rows === upResult.rows
                     || varResult.type === MatrixType
                     && varResult.rows === upResult.rows
                     && varResult.rows === upResult.rows);
-                if (!sameSize) {
-                    data.errors.push('Update type must be equal var type');
+                if (!wrongType) {
+
+                    var varTypeName = '';
+                    data.errors.push('Update ('
+                        + typeName(upResult)
+                        + ') must be the same of var ('
+                        + typeName(varResult) + ')');
                 }
             }
         });

@@ -149,4 +149,56 @@ describe('A SystemParser', function () {
     expect(result.system._vars.c.values[2][1]).toBeCloseTo(0);
     expect(result.system._vars.c.values[2][2]).toBeCloseTo(1);
   });
+
+  it('parses an update with a var scalar must result an error', function () {
+    const conf = {
+      vars: { a: '0' },
+      funcs: {},
+      update: { a: 'i' },
+      bodies: []
+    };
+    const result = new SystemParser(conf).parse();
+    expect(result.parserState.update.a.errors).toEqual([
+      'Update (quaternion) must be the same of var (scalar)'
+    ]);
+  });
+
+  it('parses an update with a var quaternion must result an error', function () {
+    const conf = {
+      vars: { a: 'i' },
+      funcs: {},
+      update: { a: 'ex' },
+      bodies: []
+    };
+    const result = new SystemParser(conf).parse();
+    expect(result.parserState.update.a.errors).toEqual([
+      'Update (vector [1]) must be the same of var (quaternion)'
+    ]);
+  });
+
+  it('parses an update with a var vector must result an error', function () {
+    const conf = {
+      vars: { a: 'ex' },
+      funcs: {},
+      update: { a: 'I2' },
+      bodies: []
+    };
+    const result = new SystemParser(conf).parse();
+    expect(result.parserState.update.a.errors).toEqual([
+      'Update (matrix [2, 2]) must be the same of var (vector [1])'
+    ]);
+  });
+
+  it('parses an update with a var matrix must result an error', function () {
+    const conf = {
+      vars: { a: 'I2' },
+      funcs: {},
+      update: { a: '0' },
+      bodies: []
+    };
+    const result = new SystemParser(conf).parse();
+    expect(result.parserState.update.a.errors).toEqual([
+      'Update (scalar) must be the same of var (matrix [2, 2])'
+    ]);
+  });
 });
