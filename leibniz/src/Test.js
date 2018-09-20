@@ -50,6 +50,7 @@ class Test extends Component {
         <FormGroup controlId="conf">
           <ControlLabel>Configuration</ControlLabel>
           <FormControl componentClass="textarea" placeholder="Configuration"
+            rows="5"
             value={this.state.conf}
             onInput={(ev) => this.onInput(ev.target.value)}
             onChange={() => { }} />

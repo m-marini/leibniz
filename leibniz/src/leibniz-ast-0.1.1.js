@@ -1,10 +1,12 @@
-import * as Lexer from 'flex-js';
+//import * as Lexer from 'flex-js';
+
 import { default as _ } from 'lodash';
 import { OpTreeBuilder } from './tensor-0.1.3';
 
 const NumberToken = 'Number';
 const IdToken = 'Identifier';
 const SymbolToken = 'Symbol';
+const Lexer = require('flex-js');
 
 function createMissingReferenceResult(id) {
     return new CodeResult(FieldType, 0, 0, [OpTreeBuilder.createField(0)], ['Unresolved reference ' + id]);
@@ -251,8 +253,11 @@ class SystemParser {
         const funcsCode = _.mapValues(conf.funcs, data => data.result.code);
         const varsCode = _.mapValues(conf.vars, data => data.result.code);
         const resolver = {
-            resolve: id =>
-                funcsCode[id] ? funcsCode[id].apply(resolver) : varsCode[id].apply(resolver)
+            resolve: id => {
+                const code = funcsCode[id] || varsCode[id];
+                const result = code.apply(resolver);
+                return result;
+            }
         }
         const vars = _.mapValues(conf.vars, data => data.result.code.apply(resolver));
 
@@ -319,18 +324,38 @@ class SystemParser {
      * between update and variable types
      */
     checkForUpdateTypeDefinition(conf) {
+
+        function typeName(varResult) {
+            switch (varResult.type) {
+                case FieldType:
+                    return 'scalar';
+                case QuaternionType:
+                    return 'quaternion';
+                case VectorType:
+                    return 'vector [' + varResult.rows + ']';
+                    break;
+                default:
+                    return 'matrix [' + varResult.rows + ', ' + varResult.cols + ']';
+            }
+        }
+
         _.each(conf.update, (data, ref) => {
             const varResult = conf.vars[ref] && conf.vars[ref].result;
             if (varResult) {
                 const upResult = data.result;
-                const sameSize = varResult.type === upResult.type && (
+                const wrongType = varResult.type === upResult.type && (
                     varResult.type === FieldType
                     || varResult.type === VectorType && varResult.rows === upResult.rows
                     || varResult.type === MatrixType
                     && varResult.rows === upResult.rows
                     && varResult.rows === upResult.rows);
-                if (!sameSize) {
-                    data.errors.push('Update type must be equal var type');
+                if (!wrongType) {
+
+                    var varTypeName = '';
+                    data.errors.push('Update ('
+                        + typeName(upResult)
+                        + ') must be the same of var ('
+                        + typeName(varResult) + ')');
                 }
             }
         });
@@ -521,6 +546,19 @@ class TransposeNode extends UnaryNode {
 }
 
 class SqrtNode extends UnaryNode {
+    build(context) {
+        const op = this.arg.build(context);
+        switch (op.type) {
+            case FieldType:
+                return op.withCode(OpTreeBuilder.createSqrt(op.code));
+            case QuaternionType:
+                return op.withMoreErrors(['Invalid sqrt operation on quaterion']);
+            case VectorType:
+                return op.withMoreErrors(['Invalid sqrt operation on vector']);
+            default:
+                return op.withMoreErrors(['Invalid sqrt operation on matrix']);
+        }
+    }
 }
 
 class ExpNode extends UnaryNode {
@@ -572,27 +610,131 @@ class CosNode extends UnaryNode {
     }
 }
 class TanNode extends UnaryNode {
+    build(context) {
+        const op = this.arg.build(context);
+        switch (op.type) {
+            case FieldType:
+                return op.withCode(OpTreeBuilder.createTan(op.code));
+            case QuaternionType:
+                return op.withMoreErrors(['Invalid tan operation on quaternion']);
+            case VectorType:
+                return op.withMoreErrors(['Invalid tan operation on vector']);
+            default:
+                return op.withMoreErrors(['Invalid tan operation on matrix']);
+        }
+    }
 }
 
 class AsinNode extends UnaryNode {
+    build(context) {
+        const op = this.arg.build(context);
+        switch (op.type) {
+            case FieldType:
+                return op.withCode(OpTreeBuilder.createAsin(op.code));
+            case QuaternionType:
+                return op.withMoreErrors(['Invalid asin operation on quaternion']);
+            case VectorType:
+                return op.withMoreErrors(['Invalid asin operation on vector']);
+            default:
+                return op.withMoreErrors(['Invalid asin operation on matrix']);
+        }
+    }
 }
 
 class AcosNode extends UnaryNode {
+    build(context) {
+        const op = this.arg.build(context);
+        switch (op.type) {
+            case FieldType:
+                return op.withCode(OpTreeBuilder.createAcos(op.code));
+            case QuaternionType:
+                return op.withMoreErrors(['Invalid acos operation on quaternion']);
+            case VectorType:
+                return op.withMoreErrors(['Invalid acos operation on vector']);
+            default:
+                return op.withMoreErrors(['Invalid acos operation on matrix']);
+        }
+    }
 }
 
 class AtanNode extends UnaryNode {
+    build(context) {
+        const op = this.arg.build(context);
+        switch (op.type) {
+            case FieldType:
+                return op.withCode(OpTreeBuilder.createAtan(op.code));
+            case QuaternionType:
+                return op.withMoreErrors(['Invalid atan operation on quaternion']);
+            case VectorType:
+                return op.withMoreErrors(['Invalid atan operation on vector']);
+            default:
+                return op.withMoreErrors(['Invalid atan operation on matrix']);
+        }
+    }
 }
 
 class SinhNode extends UnaryNode {
+    build(context) {
+        const op = this.arg.build(context);
+        switch (op.type) {
+            case FieldType:
+                return op.withCode(OpTreeBuilder.createSinh(op.code));
+            case QuaternionType:
+                return op.withMoreErrors(['Invalid sinh operation on quaternion']);
+            case VectorType:
+                return op.withMoreErrors(['Invalid sinh operation on vector']);
+            default:
+                return op.withMoreErrors(['Invalid sinh operation on matrix']);
+        }
+    }
 }
 
 class CoshNode extends UnaryNode {
+    build(context) {
+        const op = this.arg.build(context);
+        switch (op.type) {
+            case FieldType:
+                return op.withCode(OpTreeBuilder.createCosh(op.code));
+            case QuaternionType:
+                return op.withMoreErrors(['Invalid cosh operation on quaternion']);
+            case VectorType:
+                return op.withMoreErrors(['Invalid cosh operation on vector']);
+            default:
+                return op.withMoreErrors(['Invalid cosh operation on matrix']);
+        }
+    }
 }
 
 class TanhNode extends UnaryNode {
+    build(context) {
+        const op = this.arg.build(context);
+        switch (op.type) {
+            case FieldType:
+                return op.withCode(OpTreeBuilder.createTanh(op.code));
+            case QuaternionType:
+                return op.withMoreErrors(['Invalid tanh operation on quaternion']);
+            case VectorType:
+                return op.withMoreErrors(['Invalid tanh operation on vector']);
+            default:
+                return op.withMoreErrors(['Invalid tanh operation on matrix']);
+        }
+    }
 }
 
 class LogNode extends UnaryNode {
+    build(context) {
+        const op = this.arg.build(context);
+        switch (op.type) {
+            case FieldType:
+                return op.withCode(OpTreeBuilder.createLog(op.code));
+            case QuaternionType:
+                return op.withMoreErrors(['Invalid log operation on quaternion']);
+            case VectorType:
+                return op.withMoreErrors(['Invalid log operation on vector']);
+            default:
+                return op.withMoreErrors(['Invalid log operation on matrix']);
+        }
+    }
 }
 
 class QrotNode extends UnaryNode {
@@ -986,6 +1128,145 @@ class DivNode extends BinaryNode {
     }
 }
 
+class TraceNode extends UnaryNode {
+    build(builder) {
+        const op = this.arg.build(builder)
+        switch (op.type) {
+            case FieldType:
+                return op;
+            case QuaternionType:
+                return op.withErrors(['Invalid trace on quaternion']);
+            case VectorType:
+                return op.withErrors(['Invalid trace on vector']);
+            default:
+                return op.withType(FieldType).withCode(OpTreeBuilder.createTrace(op.code));
+
+        }
+    }
+}
+
+class NormaNode extends UnaryNode {
+    build(builder) {
+        const op = this.arg.build(builder)
+        switch (op.type) {
+            case FieldType:
+                return op.withCode(OpTreeBuilder.createValueNorma(op.code));
+            case QuaternionType:
+                return op.withCode(OpTreeBuilder.createQuatNorma(op.code));
+            case VectorType:
+                return op.withCode(OpTreeBuilder.createVectNorma(op.code));
+            default:
+                return op.withErrors(['Invalid norma on matrix']);
+        }
+    }
+}
+
+class CylNode extends UnaryNode {
+    build(builder) {
+        const op = this.arg.build(builder)
+        switch (op.type) {
+            case FieldType:
+                return op.withErrors(['Invalid cyl on value']);
+            case QuaternionType:
+                return op.withErrors(['Invalid cyl on quaternion']);
+            case VectorType:
+                const c1 = op.rows !== 3 ? OpTreeBuilder.createResizeVector(op.code, 3) : op.code;
+                return op.withCode(OpTreeBuilder.createCyl(c1));
+            default:
+                return op.withErrors(['Invalid cyl on matrix']);
+        }
+    }
+}
+
+class SphereNode extends UnaryNode {
+    build(builder) {
+        const op = this.arg.build(builder)
+        switch (op.type) {
+            case FieldType:
+                return op.withErrors(['Invalid sphere on value']);
+            case QuaternionType:
+                return op.withErrors(['Invalid sphere on quaternion']);
+            case VectorType:
+                const c1 = op.rows !== 3 ? OpTreeBuilder.createResizeVector(op.code, 3) : op.code;
+                return op.withCode(OpTreeBuilder.createSphere(c1));
+            default:
+                return op.withErrors(['Invalid sphere on matrix']);
+        }
+    }
+}
+
+class Cyl1Node extends UnaryNode {
+    build(builder) {
+        const op = this.arg.build(builder)
+        switch (op.type) {
+            case FieldType:
+                return op.withErrors(['Invalid cyl on value']);
+            case QuaternionType:
+                return op.withErrors(['Invalid cyl on quaternion']);
+            case VectorType:
+                const c1 = op.rows !== 3 ? OpTreeBuilder.createResizeVector(op.code, 3) : op.code;
+                return op.withType(MatrixType).withSize(3, 3).withCode(OpTreeBuilder.createCyl1(c1));
+            default:
+                return op.withErrors(['Invalid cyl on matrix']);
+        }
+    }
+}
+
+class Sphere1Node extends UnaryNode {
+    build(builder) {
+        const op = this.arg.build(builder)
+        switch (op.type) {
+            case FieldType:
+                return op.withErrors(['Invalid cyl on value']);
+            case QuaternionType:
+                return op.withErrors(['Invalid cyl on quaternion']);
+            case VectorType:
+                const c1 = op.rows !== 3 ? OpTreeBuilder.createResizeVector(op.code, 3) : op.code;
+                return op.withType(MatrixType).withSize(3, 3).withCode(OpTreeBuilder.createSphere1(c1));
+            default:
+                return op.withErrors(['Invalid cyl on matrix']);
+        }
+    }
+}
+
+class InverseNode extends UnaryNode {
+    build(builder) {
+        const op = this.arg.build(builder)
+        switch (op.type) {
+            case FieldType:
+                return op.withCode(OpTreeBuilder.createValueInverse(op.code));
+            case QuaternionType:
+                return op.withCode(OpTreeBuilder.createQuatInverse(op.code));
+            case VectorType:
+                return op.withErrors(['Invalid inv on vector']);
+            default:
+                if (op.rows !== op.cols)
+                    return op.withErrors(['Invalid inv on not square matrix']);
+                else
+                    return op.withCode(OpTreeBuilder.createMatrixInverse(op.code));
+        }
+    }
+}
+
+class DetNode extends UnaryNode {
+    build(builder) {
+        const op = this.arg.build(builder)
+        switch (op.type) {
+            case FieldType:
+                return op.withErrors(['Invalid det on value']);
+            case QuaternionType:
+                return op.withErrors(['Invalid det on quaternion']);
+            case VectorType:
+                return op.withErrors(['Invalid det on vector']);
+            default:
+                if (op.rows !== op.cols)
+                    return op.withErrors(['Invalid det on not square matrix']);
+                else
+                    return op.withCode(OpTreeBuilder.createDet(op.code));
+        }
+    }
+}
+
 const DefaultNode = new ConstantNode('0');
 
 const UnaryFunctions = {
@@ -1002,7 +1283,15 @@ const UnaryFunctions = {
     log: (arg) => new LogNode(arg),
     sqrt: (arg) => new SqrtNode(arg),
     T: (arg) => new TransposeNode(arg),
-    qrot: (arg) => new QrotNode(arg)
+    qrot: (arg) => new QrotNode(arg),
+    tr: (arg) => new TraceNode(arg),
+    n: (arg) => new NormaNode(arg),
+    cyl: (arg) => new CylNode(arg),
+    sphere: (arg) => new SphereNode(arg),
+    cyl1: (arg) => new Cyl1Node(arg),
+    sphere1: (arg) => new Sphere1Node(arg),
+    inv: (arg) => new InverseNode(arg),
+    det: (arg) => new DetNode(arg)
 }
 
 class ParserAst {

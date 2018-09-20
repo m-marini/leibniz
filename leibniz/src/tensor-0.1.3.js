@@ -116,6 +116,20 @@ class Quaternion {
         const aw = this.w;
         return Math.sqrt(ai * ai + aj * aj + ak * ak + aw * aw);
     }
+
+    norma() {
+        const ai = this.i;
+        const aj = this.j;
+        const ak = this.k;
+        const aw = this.w;
+        const mod = Math.sqrt(ai * ai + aj * aj + ak * ak + aw * aw);
+
+        if (mod > Number.MIN_VALUE) {
+            return new Quaternion([ai / mod, aj / mod, ak / mod, aw / mod]);
+        } else {
+            return new Quaternion([0, 0, 0, 1]);
+        }
+    }
 }
 
 class Matrix {
@@ -132,6 +146,15 @@ class Matrix {
                 f(value, i, j))
         );
         return new Matrix(v);
+    }
+
+    trace() {
+        const n = Math.min(this.rows, this.cols);
+        var trace = 0;
+        for (var i = 0; i < n; i++) {
+            trace += this.values[i][i];
+        }
+        return trace;
     }
 
     /* Returns the negate matrix */
@@ -268,8 +291,8 @@ class Matrix {
 
     qrot() {
         assert(this.rows === 3 && this.cols === 1,
-            'Assert failed: ((this.rows === 3 && this.cols === 1), this.rows=' + this.rows
-            + ',this.cols=' + this.cols);
+            'Assert failed: (this.rows === 3 && this.cols === 1), this.rows=' + this.rows
+            + ', this.cols=' + this.cols);
         const x = this.values[0][0];
         const y = this.values[1][0];
         const z = this.values[2][0];
@@ -285,6 +308,163 @@ class Matrix {
         } else {
             return new Quaternion([0, 0, 0, 1]);
         }
+    }
+
+    cyl() {
+        assert(this.rows === 3 && this.cols === 1,
+            'Assert failed: (this.rows === 3 && this.cols === 1), this.rows=' + this.rows
+            + ', this.cols=' + this.cols);
+        const r = this.values[0][0];
+        const phi = this.values[1][0];
+        const z = this.values[2][0];
+        return new Matrix([
+            [r * Math.sin(phi)],
+            [r * Math.cos(phi)],
+            [z]
+        ]);
+    }
+
+    sphere() {
+        assert(this.rows === 3 && this.cols === 1,
+            'Assert failed: ((this.rows === 3 && this.cols === 1), this.rows=' + this.rows
+            + ',this.cols=' + this.cols);
+        const r = this.values[0][0];
+        const theta = this.values[1][0];
+        const phi = this.values[2][0];
+        const rr = r * Math.sin(theta);
+        return new Matrix([
+            [rr * Math.cos(phi)],
+            [rr * Math.sin(phi)],
+            [r * Math.cos(theta)]
+        ]);
+    }
+
+    cyl1() {
+        assert(this.rows === 3 && this.cols === 1,
+            'Assert failed: (this.rows === 3 && this.cols === 1), this.rows=' + this.rows
+            + ', this.cols=' + this.cols);
+        const r = this.values[0][0];
+        const phi = this.values[1][0];
+        const z = this.values[2][0];
+        const sin = Math.sin(phi);
+        const cos = Math.cos(phi);
+        return new Matrix([
+            [cos, -r * sin, 0],
+            [sin, r * cos, 0],
+            [0, 0, 1]
+        ]);
+    }
+
+    sphere1() {
+        assert(this.rows === 3 && this.cols === 1,
+            'Assert failed: (this.rows === 3 && this.cols === 1), this.rows=' + this.rows
+            + ', this.cols=' + this.cols);
+
+        const r = this.values[0][0];
+        const theta = this.values[1][0];
+        const phi = this.values[2][0];
+        const sint = Math.sin(theta);
+        const cost = Math.cos(theta);
+        const sinp = Math.sin(phi);
+        const cosp = Math.cos(phi);
+        const sincos = sint * cosp;
+        const sinsin = sint * sinp;
+        const coscos = cost * cosp;
+        return new Matrix([
+            [sincos, r * coscos, -r * sinsin],
+            [sinsin, r * cost * cosp, r * sincos],
+            [cost, -r * sint, 0]
+        ]);
+    }
+
+    inverse() {
+        const { enchelon, det } = this.gaussJordan();
+        const n = this.rows;
+        const inv = _.map(enchelon, row => _.drop(row, n));
+        return new Matrix(inv);
+    }
+
+    det() {
+        const { enchelon, det } = this.gaussJordan();
+        return det;
+    }
+
+    gaussJordan() {
+        assert(this.rows === this.cols,
+            'Assert failed: (this.rows === this.cols), this.rows=' + this.rows
+            + ', this.cols=' + this.cols);
+        const n = this.rows;
+        const mtx = Array(n);
+        for (var i = 0; i < n; i++) {
+            mtx[i] = Array(2 * n);
+        }
+        for (var i = 0; i < n; i++) {
+            for (var j = 0; j < n; j++) {
+                mtx[i][j] = this.values[i][j];
+                mtx[i][j + n] = i === j ? 1 : 0;
+            }
+        }
+        var det = 1;
+        var h = 0; // pivot row
+        var k = 0; // pivot col
+        while (h < n && k < n) {
+            // Find pivot row
+            var imax = h;
+            var max = Math.abs(mtx[h][k]);
+            for (var i = h + 1; i < n; i++) {
+                const mx = Math.abs(mtx[i][k]);
+                if (mx > max) {
+                    imax = i;
+                    max = mx;
+                }
+            }
+            if (max === 0) {
+                /* No pivot in this column, pass to next column */
+                k++;
+            } else {
+                //Swap row imax, h
+                const tr = mtx[imax];
+                mtx[imax] = mtx[h];
+                mtx[h] = tr;
+                det = -det;
+
+                for (var i = h + 1; i < n; i++) {
+                    const f = mtx[i][k] / mtx[h][k];
+                    mtx[i][k] = 0;
+                    /* Do for all remaining elements in current row: */
+                    for (var j = k + 1; j < 2 * n; j++) {
+                        mtx[i][j] -= mtx[h][j] * f;
+                    }
+                }
+                h++;
+                k++;
+            }
+        }
+        // Inverse matrix does not exist
+        assert(h === k, 'Inverse matrix does not exist');
+        // Reverse
+        for (var h = n - 1; h >= 0; h--) {
+            for (var i = 0; i < h; i++) {
+                // mtx[i][j] = mtx[i][j] + mtx[h][j] * f;
+                // mtx[i][h] + mtx[h][h] * f = 0
+                //f = -mtx[i][h]/mtx[h][h];
+                const f = mtx[i][h] / mtx[h][h];
+                mtx[i][h] = 0;
+                for (var j = h + 1; j < 2 * n; j++) {
+                    // mtx[i][h] = 0 = mtx[i][h] - mtx[h][j] * f;
+                    mtx[i][j] -= mtx[h][j] * f;
+                }
+            }
+            for (var j = h + 1; j < 2 * n; j++) {
+                mtx[h][j] /= mtx[h][h];
+            }
+            det *= mtx[h][h];
+            mtx[h][h] = 1;
+        }
+        return {
+            enchelon: mtx,
+            det: det
+        };
     }
 }
 
@@ -414,7 +594,7 @@ function createMatrixVectorProduct(mat, vec) {
 function createMatrixProduct(op1, op2) {
     return {
         apply: (context) =>
-            op1.apply(context).transpose().multiply(op2.apply(context)),
+            op1.apply(context).multiply(op2.apply(context)),
         code: _.concat(op1.code, op2.code, ['multiply matrix'])
     };
 }
@@ -630,6 +810,12 @@ function createExp(code) {
         code: _.concat(code.code, ['exp'])
     };
 }
+function createSqrt(code) {
+    return {
+        apply: (context) => Math.sqrt(code.apply(context)),
+        code: _.concat(code.code, ['sqrt'])
+    };
+}
 function createDivQuatField(op1, op2) {
     return {
         apply: (context) => {
@@ -650,8 +836,161 @@ function createDivQuat(op1, op2) {
         code: _.concat(op1.code, op2.code, ['div quat'])
     };
 }
-
+function createTan(code) {
+    return {
+        apply: (context) => Math.tan(code.apply(context)),
+        code: _.concat(code.code, ['tan'])
+    };
+}
+function createAsin(code) {
+    return {
+        apply: (context) => Math.asin(code.apply(context)),
+        code: _.concat(code.code, ['asin'])
+    };
+}
+function createAcos(code) {
+    return {
+        apply: (context) => Math.acos(code.apply(context)),
+        code: _.concat(code.code, ['acos'])
+    };
+}
+function createAtan(code) {
+    return {
+        apply: (context) => Math.atan(code.apply(context)),
+        code: _.concat(code.code, ['atan'])
+    };
+}
+function createLog(code) {
+    return {
+        apply: (context) => Math.log(code.apply(context)),
+        code: _.concat(code.code, ['log'])
+    };
+}
+function createSinh(code) {
+    return {
+        apply: (context) => Math.sinh(code.apply(context)),
+        code: _.concat(code.code, ['sinh'])
+    };
+}
+function createCosh(code) {
+    return {
+        apply: (context) => Math.cosh(code.apply(context)),
+        code: _.concat(code.code, ['cosh'])
+    };
+}
+function createTanh(code) {
+    return {
+        apply: (context) => Math.tanh(code.apply(context)),
+        code: _.concat(code.code, ['tanh'])
+    };
+}
+function createTrace(code) {
+    return {
+        apply: (context) => code.apply(context).trace(),
+        code: _.concat(code.code, ['trace'])
+    };
+}
+function createValueNorma(code) {
+    return {
+        apply: (context) => 1,
+        code: createField(1)
+    };
+}
+function createQuatNorma(code) {
+    return {
+        apply: (context) => code.apply(context).norma(),
+        code: _.concat(code.code, ['quatNorma'])
+    };
+}
+function createVectNorma(code) {
+    return {
+        apply: (context) => {
+            const v = code.apply(context);
+            const mod = Math.sqrt(v.transpose().multiply(v).values[0][0]);
+            return v.divide(mod);
+        },
+        code: _.concat(code.code, ['vecNorma'])
+    };
+}
+function createVectNorma(code) {
+    return {
+        apply: (context) => {
+            const v = code.apply(context);
+            const mod = Math.sqrt(v.transpose().multiply(v).values[0][0]);
+            return v.divide(mod);
+        },
+        code: _.concat(code.code, ['vecNorma'])
+    };
+}
+function createCyl(code) {
+    return {
+        apply: (context) => code.apply(context).cyl(),
+        code: _.concat(code.code, ['cyl'])
+    };
+}
+function createSphere(code) {
+    return {
+        apply: (context) => code.apply(context).sphere(),
+        code: _.concat(code.code, ['sphere'])
+    };
+}
+function createCyl1(code) {
+    return {
+        apply: (context) => code.apply(context).cyl1(),
+        code: _.concat(code.code, ['cyl1'])
+    };
+}
+function createSphere1(code) {
+    return {
+        apply: (context) => code.apply(context).sphere1(),
+        code: _.concat(code.code, ['sphere1'])
+    };
+}
+function createValueInverse(code) {
+    return {
+        apply: (context) => 1 / code.apply(context),
+        code: _.concat(code.code, ['inv'])
+    };
+}
+function createQuatInverse(code) {
+    return {
+        apply: (context) => code.apply(context).inverse(),
+        code: _.concat(code.code, ['quat inv'])
+    };
+}
+function createMatrixInverse(code) {
+    return {
+        apply: (context) => code.apply(context).inverse(),
+        code: _.concat(code.code, ['matrix inv'])
+    };
+}
+function createDet(code) {
+    return {
+        apply: (context) => code.apply(context).det(),
+        code: _.concat(code.code, ['det'])
+    };
+}
 const OpTreeBuilder = {
+    createDet: createDet,
+    createMatrixInverse: createMatrixInverse,
+    createQuatInverse: createQuatInverse,
+    createValueInverse: createValueInverse,
+    createSphere1: createSphere1,
+    createCyl1: createCyl1,
+    createSphere: createSphere,
+    createCyl: createCyl,
+    createValueNorma: createValueNorma,
+    createQuatNorma: createQuatNorma,
+    createVectNorma: createVectNorma,
+    createTrace: createTrace,
+    createSinh: createSinh,
+    createCosh: createCosh,
+    createTanh: createTanh,
+    createLog: createLog,
+    createAtan: createAtan,
+    createAcos: createAcos,
+    createAsin: createAsin,
+    createTan: createTan,
     createField: createField,
     createQuaternion: createQuaternion,
     createVector: createVector,
@@ -701,7 +1040,8 @@ const OpTreeBuilder = {
     createScaleQuat: createScaleQuat,
     createProductQuat: createProductQuat,
     createDivQuatField: createDivQuatField,
-    createDivQuat: createDivQuat
+    createDivQuat: createDivQuat,
+    createSqrt: createSqrt
 };
 
 export {
