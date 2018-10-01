@@ -144,7 +144,7 @@ da cui
 \end{eqnarray}
 media geometrica.
 
-\section{Esempio}
+\section{Sistema terra-sole}
 
 Prendiamo il sistema formato da terra-sole e conoscendo la distanza del perielio e dell'afelio della terra, il periodo di rivoluzione e la massa della terra.
 \begin{align*}
@@ -167,6 +167,45 @@ Il valore ufficiale della massa solare è
 \[
 	K = 1,98892 \times 10^{30}
 \]
+
+\section{Simulazione}
+
+L'equazioni del moto risultano essere
+
+\begin{align*}
+    M & = m r^2 \frac{d}{dt} \varphi \\
+    d \varphi & = \frac{M}{m r^2} dt \\
+	E & = \frac{m}{2} \left( \frac{dr}{dt} \right) ^2 + \frac{M^2}{m r^2} - \frac{\alpha}{r}\\
+	dr & = \sqrt{\frac{2}{m} \left( E - \frac{M^2}{m r^2} + \frac{\alpha}{r} \right) } dt
+\end{align*}
+
+deve le costanti valgono
+
+\begin{align*}
+	E & = - \frac{2 \pi^2 a^2}{T^2} m \\
+	& = -2 \left( \frac{\pi \cdot 149,55 \times 10^9}{31.56 \times 10^6} \right)^2 \cdot 149,55 \times 10^9\\
+	& = -66.285 \times 10^{18} \\
+	M & = 2 \pi \frac{ab}{T} m \\
+	& = \frac{2 \cdot \pi \cdot 149,55 \times 10^9 \cdot 149,53 \times 10^9 \cdot 5,972 \times 10^{24}}{31.56 \times 10^6} \\
+	& = 25.587 \times 10^{39} \\
+	\alpha & = mKG \\
+	& = 5.972 \times 10^{24} \cdot 19.868 \times 10^{29} \cdot 6.67 \times 10^{-11} \\
+	& = 791,4 \times 10^{42}
+\end{align*}
+
+
+Simuliamo ora il sistema terra-sole.
+
+Vogliamo che il simulatore "acceleri" il tempo facendo si che il tempo di rivoluzione sia di $ 10 s $
+e che la distanza dell'afelio sia scalata a $1 m$ (Leibniz simulation).
+
+Quindi i fattori di scala spazio - tempo risultano essere
+
+\begin{align*}
+	dt & = \frac{31.56 \times 10^6}{10} dt_{sim} & = 31.56 \times 10^5 dt_{sim} \\
+	r_{sim} & = \frac{1}{152.1 \times 10^9} r & = 6.575 \times 10^{-12} r
+\end{align*}
+
 
 
 \end{document}

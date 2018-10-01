@@ -1,2 +1,5 @@
 /leibniz.old/node_modules/
 /leibniz.old/dist/
+/docs/*.aux
+/docs/*.log
+/docs/*.synctex.gz
