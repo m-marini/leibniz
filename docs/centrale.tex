@@ -1,0 +1,172 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{verbatim}
+\usepackage{amsmath}
+
+%opening
+\title{}
+\author{}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+	Moto in un campo gravitazionale centrale
+\end{abstract}
+
+\section{Il problema di Keplero}
+Sia $ p $ una particella di massa $ m $ che si muove in un campo gravitazionale prodotto da una massa equivalente $ K $.
+Il campo è descritto dall'equazione
+\begin{align*}
+	U(r) & = - \frac{\alpha}{r} \\
+	\alpha & = m K G \\
+	G & = 6.67 \times 10^{-11} \frac{m^3}{kg \, s^2} \\
+\end{align*}
+\begin{equation}
+ \label{alpha}	\alpha = m K G \\
+\end{equation}
+
+Per il principio di conservazione dell'energia e del momento d'inerzia abbiamo che
+\begin{align*}
+	E & = \frac{m}{2} \vec R \cdot \vec R + U(r)\\
+	M & = mr^2\dot \varphi
+\end{align*}
+sono costanti.
+
+Se $ E < 0 $ l'orbita descritta è un'ellisse con semiasse asse maggiore e minore rispettivamente $ a $ e $ b $ dati da
+\begin{eqnarray}
+ \label{a}	a  = \frac{\alpha}{2 |E|} \\
+ \label{b}  b  = \frac{M}{\sqrt{2 m |E|}}
+\end{eqnarray}
+
+Il tempo d percorrenza dell'intera orbita invece è dato da
+\begin{equation}
+\label{T}	T = \pi \alpha \sqrt{\frac{m}{2|E|^3}}
+\end{equation}
+
+Poniamo allora di conoscere $ a , b, T $ vediamo di trovare le relazioni con le altre costanti del moto.
+
+\section{Calcolo di $K$}
+
+Dalla \eqref{a} ricaviamo
+
+\begin{align*}
+	|E| = \frac{\alpha}{2 a}
+\end{align*}
+
+mentre dalla \eqref{T} otteniamo
+\begin{align*}
+	|E|^3 & = \frac{\pi^2}{2 T^2} m \alpha^2 \\
+	\frac{\alpha^3}{8 a^3} & = \frac{\pi^2}{2 T^2} m \alpha^2\\
+	\alpha & = \frac{4 \pi^2 a^3}{T^2} m
+\end{align*}
+e dalla \eqref{alpha}
+\begin{align*}
+	m K G & = \frac{4 \pi^2 a^3}{T^2} m
+\end{align*}
+da cui
+\begin{equation}
+\label{K} K = \frac{4 \pi^2 a^3}{G T^2}
+\end{equation}
+
+\section{Calcolo di $E$ in funzione di $m$}
+
+Dalla \eqref{alpha} e \eqref{a} otteniamo
+\begin{align*}
+ E & = - \frac{ K G}{2 a} m
+\end{align*}
+
+\begin{equation}
+\label{E} E = - \frac{ 2 \pi^2 a^2}{T^2} m
+\end{equation}
+
+\section{Calcolo di $M$ in funzione di $m$}
+
+Dalla \eqref{b} otteniamo
+\begin{align*}
+M^2 & = 2 b^2 |E| m\\
+ & = \frac{4 \pi^2 a^2 b^2}{T^2} m^2
+\end{align*}
+
+Da cui
+\begin{equation}
+\label{M} M = 2 \pi \frac{a b}{T} m
+\end{equation}
+
+\section{Calcolo di $r_{min}$ e $r_{max}$ }
+
+Una caratteristica geometrica dell'ellisse è che la somma delle distanze dai fuochi di ogni suo punto è costante e uguale all'asse maggiore $ 2 a $.
+
+\begin{align*}
+	 2a = |r - f_1| + |r - f_2| 
+\end{align*}
+
+Il semi asse maggiore dell'ellisse è
+\begin{align*}
+	a = \frac{r_{min} + r_{max}}{2} 
+\end{align*}
+media artimetica.
+
+La distanza dei due fuochi invece è
+\begin{align*}
+	(f2-f1) = r_{max} - r_{min}
+\end{align*}
+
+All'intersezione dell'ellisse con l'asse minore abbiamo
+
+\begin{align*}
+	2a & = |r - f_1| + |r - f_2| \\
+	 & = 2 |r - f_1| \\
+	a & = |r - f_1| \\
+	|r - f_1|^2&  = (\frac{|f_2 - f_1|}{2})^2 + b^2 \\
+	a^2&  = \frac{(r_{max} - r_{min})^2}{4} + b^2 \\
+	r_{max} - r_{min} & = 2\sqrt{(a^2-b^2)}
+	r_{max} + r_{min} & = 2a
+\end{align*}
+da cui
+\begin{eqnarray}
+	\label{rmax} r_{max} = a + \sqrt{a^2-b^2}\\
+	\label{rmin} r_{min} = a - \sqrt{a^2-b^2}
+\end{eqnarray}
+
+inversamente abbiamo
+\begin{align*}
+	b^2 & = a^2 - \frac{(r_{max} - r_{min})^2}{4} \\
+	 & = \frac{(r_{max} + r_{min})^2 - (r_{max} -r_{min})^2 }{4} \\
+	 & = \frac{(r_{max} + r_{min} + r_{max} -r_{min}) (r_{max} + r_{min} - r_{max} +r_{min})^2 }{4} \\
+	 & = \frac{2 r_{max} 2 r_{min} }{4} \\
+\end{align*}
+da cui
+\begin{eqnarray}
+\label{b1} b = \sqrt{r_{max} r_{min}}
+\end{eqnarray}
+media geometrica.
+
+\section{Esempio}
+
+Prendiamo il sistema formato da terra-sole e conoscendo la distanza del perielio e dell'afelio della terra, il periodo di rivoluzione e la massa della terra.
+\begin{align*}
+	r_{min} & = 147 \times 10^9 m \\
+	r_{max} & = 152,1 \times 10^9 m \\
+	T & = 365.2425 \cdot 24 \cdot 60 \cdot 60 = 31.56 \times 10^6 s\\
+	m & = 5,972 \times 10^{24} kg
+\end{align*}
+
+\begin{align*}
+	a & = 149,55 \times 10^9 \\
+	b & = 149,53 \times 10^9 \\
+	K & = \frac{4 \pi^2 a^3}{GT^2}\\
+	& = \frac{4 \pi^2 (149,55 \times 10^9)^3}{6.67 \times 10^{-11} (31.56 \times 10^6)^2}\\
+	& = \frac{132 \times 10^{33}}{6.644 \times 10^4}\\
+	& = 19,868 \times 10^{29}
+\end{align*}
+
+Il valore ufficiale della massa solare è
+\[
+	K = 1,98892 \times 10^{30}
+\]
+
+
+\end{document}
