@@ -15,3 +15,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Issue #5: Import file
 - Issue #6: Confirm panel to reset project
 - Issue #10: Context path
+- Solaris docs
+- Issue #13: Power exp bug
+- Issue #14: check for keyword for definitions

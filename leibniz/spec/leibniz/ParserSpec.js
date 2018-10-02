@@ -1,7 +1,22 @@
 
-import { SystemParser } from '../../src/leibniz-ast-0.1.1';
+import { SystemParser, checkForIdentifier } from '../../src/leibniz-ast-0.1.1';
 
 describe('A SystemParser', function () {
+  it('parses a invalid identifier', function () {
+    const result = checkForIdentifier('0a');
+    expect(result).toEqual('Name 0a must be an identifier');
+  });
+
+  it('parses a reserved keyword identifier', function () {
+    const result = checkForIdentifier('E');
+    expect(result).toEqual('Name E must not be a reserved keyword');
+  });
+
+  it('parses a I10 reserved keyword identifier', function () {
+    const result = checkForIdentifier('I10');
+    expect(result).toEqual('Name I10 must not be a reserved keyword');
+  });
+
   it('parses a value expression returning the constant code', function () {
     const conf = {
       vars: {
@@ -200,5 +215,119 @@ describe('A SystemParser', function () {
     expect(result.parserState.update.a.errors).toEqual([
       'Update (scalar) must be the same of var (matrix [2, 2])'
     ]);
+  });
+
+  it('parses a vars with simple power', function () {
+    const conf = {
+      vars: { a: '2^2' },
+      funcs: {},
+      update: {},
+      bodies: []
+    };
+    const result = new SystemParser(conf).parse();
+    expect(result.parserState.vars.a.errors).toEqual([]);
+    expect(result.parserState.vars.a.result.code.code).toEqual([
+      'value 2',
+      'value 2',
+      'power'
+    ]);
+    expect(result.system._vars.a).toBeCloseTo(4);
+  });
+
+  it('parses a vars with power of power', function () {
+    const conf = {
+      vars: { a: '2^2^2' },
+      funcs: {},
+      update: {},
+      bodies: []
+    };
+    const result = new SystemParser(conf).parse();
+    expect(result.parserState.vars.a.errors).toEqual([]);
+    expect(result.parserState.vars.a.result.code.code).toEqual([
+      'value 2',
+      'value 2',
+      'power',
+      'value 2',
+      'power'
+    ]);
+    expect(result.system._vars.a).toBeCloseTo(16);
+  });
+
+  it('parses a vars with sum of powers', function () {
+    const conf = {
+      vars: { a: '2^2+3^2' },
+      funcs: {},
+      update: {},
+      bodies: []
+    };
+    const result = new SystemParser(conf).parse();
+    expect(result.parserState.vars.a.errors).toEqual([]);
+    expect(result.parserState.vars.a.result.code.code).toEqual([
+      'value 2',
+      'value 2',
+      'power',
+      'value 3',
+      'value 2',
+      'power',
+      'add value'
+    ]);
+    expect(result.system._vars.a).toBeCloseTo(13);
+  });
+
+  it('parses a vars with prod of powers', function () {
+    const conf = {
+      vars: { a: '2^2*3^2' },
+      funcs: {},
+      update: {},
+      bodies: []
+    };
+    const result = new SystemParser(conf).parse();
+    expect(result.parserState.vars.a.errors).toEqual([]);
+    expect(result.parserState.vars.a.result.code.code).toEqual([
+      'value 2',
+      'value 2',
+      'power',
+      'value 3',
+      'value 2',
+      'power',
+      'multiply value'
+    ]);
+    expect(result.system._vars.a).toBeCloseTo(36);
+  });
+
+  it('parses a vars with powers of prod', function () {
+    const conf = {
+      vars: { a: '2^(3*4)' },
+      funcs: {},
+      update: {},
+      bodies: []
+    };
+    const result = new SystemParser(conf).parse();
+    expect(result.parserState.vars.a.errors).toEqual([]);
+    expect(result.parserState.vars.a.result.code.code).toEqual([
+      'value 2',
+      'value 3',
+      'value 4',
+      'multiply value',
+      'power'
+    ]);
+    expect(result.system._vars.a).toBeCloseTo(4096);
+  });
+
+  it('parses a vars with powers of macro', function () {
+    const conf = {
+      vars: { a: '2^b' },
+      funcs: {b:'2'},
+      update: {},
+      bodies: []
+    };
+    const result = new SystemParser(conf).parse();
+    expect(result.parserState.vars.a.errors).toEqual([]);
+    expect(result.parserState.vars.a.result.code.code).toEqual([
+      'value 2',
+      'ref b',
+      'power'
+    ]);
+    expect(result.system._vars.a).toBeCloseTo(4);
   });
 });

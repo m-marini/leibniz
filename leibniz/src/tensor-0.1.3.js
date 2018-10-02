@@ -540,7 +540,7 @@ function createNegateMatrix(code) {
 function createProduct(op1, op2) {
     return {
         apply: (context) => op1.apply(context) * op2.apply(context),
-        code: _.concat(op1.code, op2.code, ['multiply values'])
+        code: _.concat(op1.code, op2.code, ['multiply value'])
     };
 }
 function createProductQuat(op1, op2) {
