@@ -1443,7 +1443,7 @@ class ParserAst {
                 return baseNode;
             }
             this.discard();
-            const expNode = this.parseUnary();
+            const expNode = this.parseTerm();
             baseNode = new PwrNode(baseNode, expNode);
         }
     }

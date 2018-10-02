@@ -201,4 +201,118 @@ describe('A SystemParser', function () {
       'Update (scalar) must be the same of var (matrix [2, 2])'
     ]);
   });
+
+  it('parses a vars with simple power', function () {
+    const conf = {
+      vars: { a: '2^2' },
+      funcs: {},
+      update: {},
+      bodies: []
+    };
+    const result = new SystemParser(conf).parse();
+    expect(result.parserState.vars.a.errors).toEqual([]);
+    expect(result.parserState.vars.a.result.code.code).toEqual([
+      'value 2',
+      'value 2',
+      'power'
+    ]);
+    expect(result.system._vars.a).toBeCloseTo(4);
+  });
+
+  it('parses a vars with power of power', function () {
+    const conf = {
+      vars: { a: '2^2^2' },
+      funcs: {},
+      update: {},
+      bodies: []
+    };
+    const result = new SystemParser(conf).parse();
+    expect(result.parserState.vars.a.errors).toEqual([]);
+    expect(result.parserState.vars.a.result.code.code).toEqual([
+      'value 2',
+      'value 2',
+      'power',
+      'value 2',
+      'power'
+    ]);
+    expect(result.system._vars.a).toBeCloseTo(16);
+  });
+
+  it('parses a vars with sum of powers', function () {
+    const conf = {
+      vars: { a: '2^2+3^2' },
+      funcs: {},
+      update: {},
+      bodies: []
+    };
+    const result = new SystemParser(conf).parse();
+    expect(result.parserState.vars.a.errors).toEqual([]);
+    expect(result.parserState.vars.a.result.code.code).toEqual([
+      'value 2',
+      'value 2',
+      'power',
+      'value 3',
+      'value 2',
+      'power',
+      'add value'
+    ]);
+    expect(result.system._vars.a).toBeCloseTo(13);
+  });
+
+  it('parses a vars with prod of powers', function () {
+    const conf = {
+      vars: { a: '2^2*3^2' },
+      funcs: {},
+      update: {},
+      bodies: []
+    };
+    const result = new SystemParser(conf).parse();
+    expect(result.parserState.vars.a.errors).toEqual([]);
+    expect(result.parserState.vars.a.result.code.code).toEqual([
+      'value 2',
+      'value 2',
+      'power',
+      'value 3',
+      'value 2',
+      'power',
+      'multiply value'
+    ]);
+    expect(result.system._vars.a).toBeCloseTo(36);
+  });
+
+  it('parses a vars with powers of prod', function () {
+    const conf = {
+      vars: { a: '2^(3*4)' },
+      funcs: {},
+      update: {},
+      bodies: []
+    };
+    const result = new SystemParser(conf).parse();
+    expect(result.parserState.vars.a.errors).toEqual([]);
+    expect(result.parserState.vars.a.result.code.code).toEqual([
+      'value 2',
+      'value 3',
+      'value 4',
+      'multiply value',
+      'power'
+    ]);
+    expect(result.system._vars.a).toBeCloseTo(4096);
+  });
+
+  it('parses a vars with powers of macro', function () {
+    const conf = {
+      vars: { a: '2^b' },
+      funcs: {b:'2'},
+      update: {},
+      bodies: []
+    };
+    const result = new SystemParser(conf).parse();
+    expect(result.parserState.vars.a.errors).toEqual([]);
+    expect(result.parserState.vars.a.result.code.code).toEqual([
+      'value 2',
+      'ref b',
+      'power'
+    ]);
+    expect(result.system._vars.a).toBeCloseTo(4);
+  });
 });
