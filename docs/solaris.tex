@@ -157,10 +157,7 @@ Prendiamo il sistema formato da terra-sole e conoscendo la distanza del perielio
 \begin{align*}
 	a & = 149,55 \times 10^9 \\
 	b & = 149,53 \times 10^9 \\
-	K & = \frac{4 \pi^2 a^3}{GT^2}\\
-	& = \frac{4 \pi^2 (149,55 \times 10^9)^3}{6.67 \times 10^{-11} (31.56 \times 10^6)^2}\\
-	& = \frac{132 \times 10^{33}}{6.644 \times 10^4}\\
-	& = 19,868 \times 10^{29}
+	K & = \frac{4 \pi^2 a^3}{GT^2} = 1,988 \times 10^{30}
 \end{align*}
 
 Il valore ufficiale della massa solare è
@@ -173,26 +170,19 @@ Il valore ufficiale della massa solare è
 L'equazioni del moto risultano essere
 
 \begin{align*}
-    M & = m r^2 \frac{d}{dt} \varphi \\
+    M & = m r^2 \frac{d \varphi}{dt}  \\
     d \varphi & = \frac{M}{m r^2} dt \\
-	E & = \frac{m}{2} \left( \frac{dr}{dt} \right) ^2 + \frac{M^2}{m r^2} - \frac{\alpha}{r}\\
-	dr & = \sqrt{\frac{2}{m} \left( E - \frac{M^2}{m r^2} + \frac{\alpha}{r} \right) } dt
+	E & = \frac{m}{2} \left( \frac{dr}{dt} \right) ^2 + \frac{M^2}{2 m r^2} - \frac{\alpha}{r}\\
+	dr & = \sqrt{\frac{2}{m} \left( E - \frac{M^2}{2 m r^2} + \frac{\alpha}{r} \right) } dt
 \end{align*}
 
-deve le costanti valgono
+dove le costanti valgono
 
 \begin{align*}
-	E & = - \frac{2 \pi^2 a^2}{T^2} m \\
-	& = -2 \left( \frac{\pi \cdot 149,55 \times 10^9}{31.56 \times 10^6} \right)^2 \cdot 149,55 \times 10^9\\
-	& = -66.285 \times 10^{18} \\
-	M & = 2 \pi \frac{ab}{T} m \\
-	& = \frac{2 \cdot \pi \cdot 149,55 \times 10^9 \cdot 149,53 \times 10^9 \cdot 5,972 \times 10^{24}}{31.56 \times 10^6} \\
-	& = 25.587 \times 10^{39} \\
-	\alpha & = mKG \\
-	& = 5.972 \times 10^{24} \cdot 19.868 \times 10^{29} \cdot 6.67 \times 10^{-11} \\
-	& = 791,4 \times 10^{42}
+	E & = - \frac{2 \pi^2 a^2}{T^2} m = -2.647 \times 10^{33} \\
+	M & = 2 \pi \frac{ab}{T} m = 26.59 \times 10^{39} \\
+	\alpha & = mKG = 791,861 \times 10^{42}
 \end{align*}
-
 
 Simuliamo ora il sistema terra-sole.
 
@@ -202,7 +192,7 @@ e che la distanza dell'afelio sia scalata a $1 m$ (Leibniz simulation).
 Quindi i fattori di scala spazio - tempo risultano essere
 
 \begin{align*}
-	dt & = \frac{31.56 \times 10^6}{10} dt_{sim} & = 31.56 \times 10^5 dt_{sim} \\
+	dt & = \frac{31.56 \times 10^6}{10} dt_{sim} & = 3.156 \times 10^6 dt_{sim} \\
 	r_{sim} & = \frac{1}{152.1 \times 10^9} r & = 6.575 \times 10^{-12} r
 \end{align*}
 
