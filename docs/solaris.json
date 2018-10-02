@@ -1,0 +1,27 @@
+﻿{
+  "bodies": [
+    {
+      "position": "cyl(Rcyl)*6.575e-12"
+    }
+  ],
+  "funcs": {
+    "M": "26.59e30",
+    "m": "5.972e24",
+    "dphi": "M/(m*r*r)*dt1",
+    "dt1": "3.156e6 * dt",
+    "dr": "sqrt(2/m*(En-(M*M)/(2*m*r*r)+alpha/r))*dt1",
+    "alpha": "791.86e42",
+    "rmin": "147e9",
+    "phi0": "0",
+    "Rcyl": "(r, phi, 0)",
+    "En": "-2.647e33"
+  },
+  "update": {
+    "r": "r+dr",
+    "phi": "phi+dphi"
+  },
+  "vars": {
+    "r": "rmin",
+    "phi": "phi0"
+  }
+}

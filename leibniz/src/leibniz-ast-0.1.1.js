@@ -8,8 +8,25 @@ const IdToken = 'Identifier';
 const SymbolToken = 'Symbol';
 const Lexer = require('flex-js');
 
+const IdentifierRegex = /[a-zA-Z_][a-zA-Z0-9_]*/;
+const SingleIdentifierRegex = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
+const NumberRegex = /\d+\.?\d*/;
+const ExpNumberRegex = /\d+\.?\d*[eE][+-]?\d+/;
+
+const ReservedKeywordsRegex = /^i$|^j$|^k$|^I\d+$|^dt$|^ex$|^ey$|^ez$|^e\d+$|^tr$|^det$|^n$|^T$|^inv$|^exp$|^sinh$|^cosh$|^tanh$|^sin$|^cos$|^tan$|^asin$|^acos$|^atan$|^log$|^sqrt$|^cyl$|^sphere$|^cyl1$|^sphere1$|^qrot$|^e$|^PI$/;
+
 function createMissingReferenceResult(id) {
     return new CodeResult(FieldType, 0, 0, [OpTreeBuilder.createField(0)], ['Unresolved reference ' + id]);
+}
+
+function checkForIdentifier(name) {
+    if (!name.match(SingleIdentifierRegex)) {
+        return 'Name "' + name + '" must be an identifier';
+    } else if (name.match(ReservedKeywordsRegex)) {
+        return 'Name "' + name + '" must not be a reserved keyword';
+    } else {
+        return null;
+    }
 }
 
 class Builder {
@@ -131,7 +148,8 @@ class SystemParser {
     /* Returns the error report and the initial state of simulated system */
     parse() {
         const conf1 = this.parseAll();
-        const conf2 = this.checkForFunctionsRedefinition(conf1);
+        const conf1_1 = this.checkForNameDefinitions(conf1);
+        const conf2 = this.checkForFunctionsRedefinition(conf1_1);
         const conf3 = this.checkForUpdateDefinition(conf2);
         const conf4 = this.build(conf3);
         const conf5 = this.checkForUpdateTypeDefinition(conf4);
@@ -144,6 +162,29 @@ class SystemParser {
             errors: errors,
             system: system
         };
+    }
+
+    /* Checks for correct definition names */
+    checkForNameDefinitions(conf) {
+        _(conf.update).each((data, name) => {
+            const err = checkForIdentifier(name);
+            if (err) {
+                data.errors.push(err);
+            }
+        });
+        _(conf.funcs).each((data, name) => {
+            const err = checkForIdentifier(name);
+            if (err) {
+                data.errors.push(err);
+            }
+        });
+        _(conf.vars).each((data, name) => {
+            const err = checkForIdentifier(name);
+            if (err) {
+                data.errors.push(err);
+            }
+        });
+        return conf;
     }
 
     /* Returns the AST all all definition by parseing all config definitions */
@@ -1299,17 +1340,17 @@ class ParserAst {
     constructor() {
         this._errors = [];
         const lexer = new Lexer();
-        lexer.addRule(/\d+\.?\d*[eE][+-]?\d+/, k =>
+        lexer.addRule(ExpNumberRegex, k =>
             this._token = {
                 text: k.text,
                 type: NumberToken
             });
-        lexer.addRule(/\d+\.?\d*/, k =>
+        lexer.addRule(NumberRegex, k =>
             this._token = {
                 text: k.text,
                 type: NumberToken
             });
-        lexer.addRule(/[a-zA-Z_][a-zA-Z0-9_]*/, k =>
+        lexer.addRule(IdentifierRegex, k =>
             this._token = {
                 text: k.text,
                 type: IdToken
@@ -1494,7 +1535,6 @@ class ParserAst {
                         case 'PI':
                             this.discard();
                             return new ConstantNode(Math.PI);
-                        case 'E':
                         case 'e':
                             this.discard();
                             return new ConstantNode(Math.E);
@@ -1545,4 +1585,4 @@ class ParserAst {
     }
 }
 
-export { SystemParser };
+export { SystemParser, checkForIdentifier };

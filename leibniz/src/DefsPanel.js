@@ -3,6 +3,8 @@ import { FormGroup, FormControl, InputGroup, HelpBlock, Panel, Button, Glyphicon
 import { ExprField } from './ExprField';
 import { default as _ } from 'lodash';
 import { OptionPanel } from './OptionPanel';
+import {checkForIdentifier} from './leibniz-ast-0.1.1';
+
 const uuidv5 = require('uuid/v5');
 
 const ns = uuidv5('http://www.mmarini.org', uuidv5.URL);
@@ -64,7 +66,7 @@ class DefsPanel extends Component {
 
   onAdd() {
     if (this.props.onChange) {
-      const newConf = this.createDefs()
+      const newConf = this.createDefs();
       newConf[this.state.newName] = '0';
       this.props.onChange(this.props.panelKey, newConf);
     }
@@ -73,9 +75,9 @@ class DefsPanel extends Component {
   onName(name) {
     const state = { newName: name };
     if (name === '') {
-      state.newNameError = 'Name required';
-    } else if (!name.match(idRegex)) {
-      state.newNameError = 'Wrong name';
+      state.newNameError = 'Identifier is required';
+    } else if (checkForIdentifier(name)) {
+      state.newNameError = checkForIdentifier(name);
     } else if (this.props.defs[name]) {
       state.newNameError = 'Definition already exists';
     } else {
