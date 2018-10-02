@@ -2,22 +2,26 @@
   "bodies": [
     {
       "position": "cyl(Rcyl)*6.575e-12"
+    },
+    {
+      "position": "(0,0,0)"
     }
   ],
   "funcs": {
-    "M": "26.59e30",
+    "M": "26.590E+39",
     "m": "5.972e24",
-    "dphi": "M/(m*r*r)*dt1",
-    "dt1": "3.156e6 * dt",
-    "dr": "sqrt(2/m*(En-(M*M)/(2*m*r*r)+alpha/r))*dt1",
+    "dphi": "M * dt1 / (m * r^2) ",
+    "dt1": "2.630E+06 * dt",
+    "dr": "sqrt(2/m*(E+alpha/r) - (M/(m*r))^2)*dt1",
     "alpha": "791.86e42",
     "rmin": "147e9",
     "phi0": "0",
     "Rcyl": "(r, phi, 0)",
-    "En": "-2.647e33"
+    "T1": "365.2425*24*60*60",
+    "E": "-2.647E+33"
   },
   "update": {
-    "r": "r+dr",
+    "r": "r",
     "phi": "phi+dphi"
   },
   "vars": {
