@@ -1,68 +1,7 @@
 import React, { Component } from 'react';
 import { default as _ } from 'lodash';
-import { Grid, Row, Form, FormGroup, ControlLabel, FormControl, Table } from 'react-bootstrap';
-
-class DumpTable extends Component {
-
-  thead(names) {
-    return _.map(names, name => {
-      return (
-        <th key={name}>{name}</th>
-      );
-    });
-  }
-
-  createTableData(dumpData) {
-    const colNames = _(dumpData[0]).keys().sortBy().value();
-    const cells = _.map(dumpData, (row, idx) => {
-      const cells = _.map(colNames, key => row[key].toString());
-      cells.splice(0, 0, '' + (idx + 1));
-      return cells;
-    });
-    return {
-      names: colNames,
-      cells: cells
-    };
-  }
-
-  trow(row) {
-    return _.map(row, (cell, i) => {
-      return (
-        <td key={i}>{cell}</td>
-      );
-    });
-  }
-
-  trows(cells) {
-    return _.map(cells, (row, i) => {
-      return (
-        <tr key={i}>{this.trow(row)}</tr>
-      );
-    });
-  }
-
-  render() {
-    const dumpData = this.props.dumpData;
-    if (dumpData) {
-      const tableData = this.createTableData(dumpData);
-      return (
-        <Table responsive>
-          <thead>
-            <tr>
-              <th>Count</th>
-              {this.thead(tableData.names)}
-            </tr>
-          </thead>
-          <tbody >
-            {this.trows(tableData.cells)}
-          </tbody>
-        </Table>
-      );
-    } else {
-      return <Table responsive />
-    }
-  }
-}
+import { Button, Grid, Row, Form, FormGroup, ControlLabel, FormControl, Table } from 'react-bootstrap';
+import { saveAs } from 'file-saver/FileSaver';
 
 class DumpPanel extends Component {
 
@@ -75,13 +14,15 @@ class DumpPanel extends Component {
         dumpTable.push(sys.dumpWithDt(dt));
         sys = sys.next(dt);
       }
-      return dumpTable;
-    } else {
-      return null;
+      const keys = _(dumpTable[0]).keys().sortBy().value();
+      const header = _.reduce(keys, (a, b) => a + ',' + b) + '\n\r';
+      const blob = new Blob([header], { type: "text/plain;charset=utf-8" });
+      saveAs(blob, "dump.csv");
     }
   }
 
   render() {
+    const dumpDisabled = !this.props.result.system;
     return (
       <Grid>
         <Row>
@@ -94,10 +35,10 @@ class DumpPanel extends Component {
               <ControlLabel>dt</ControlLabel>{' '}
               <FormControl type="text" placeholder="dt" />
             </FormGroup>
+            <Button bsStyle="primary"
+              disabled={dumpDisabled}
+              onClick={() => this.dumpData()} >Download</Button>
           </Form>
-        </Row>
-        <Row>
-          <DumpTable dumpData={this.dumpData()} />
         </Row>
       </Grid>
     );

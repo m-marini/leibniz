@@ -148,7 +148,7 @@ class Matrix {
         const rows = _(this.values).map((row) =>
             '[' + _.reduce(row, (a, b) => a + ',' + b) + ']'
         ).reduce((a, b) => a + ',' + b);
-        return '['+rows+']';
+        return '[' + rows + ']';
     }
 
     map(f) {
