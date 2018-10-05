@@ -1,7 +1,7 @@
 ﻿{
   "bodies": [
     {
-      "position": "cyl(Rcyl)*6.575e-12"
+      "position": "cyl(Rcyl)*scaler"
     },
     {
       "position": "(0,0,0)"
@@ -9,15 +9,16 @@
   ],
   "funcs": {
     "M": "26.590E+39",
+    "scaler": "19.724E-12",
+    "scalet": "2.630E+06",
     "m": "5.972e24",
     "dphi": "M * dt1 / (m * r^2) ",
-    "dt1": "2.630E+06 * dt",
+    "dt1": "scalet * dt",
     "dr": "sqrt(2/m*(E+alpha/r) - (M/(m*r))^2)*dt1",
     "alpha": "791.86e42",
     "rmin": "147e9",
     "phi0": "0",
     "Rcyl": "(r, phi, 0)",
-    "T1": "365.2425*24*60*60",
     "E": "-2.647E+33"
   },
   "update": {

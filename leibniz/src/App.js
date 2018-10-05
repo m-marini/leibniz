@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Alert, Grid, Navbar, Tabs, Tab, Nav, NavItem, Modal, Button } from 'react-bootstrap';
+import { Alert, Grid, Navbar, Tabs, Tab, Nav, NavItem } from 'react-bootstrap';
 import * as Cookies from 'js-cookie';
 import { saveAs } from 'file-saver/FileSaver';
 import './App.css';
@@ -10,6 +10,7 @@ import { Leibniz } from './leibniz-0.1.3';
 import { Test } from './Test';
 import { ImportFile } from './ImportFile';
 import { OptionPanel } from './OptionPanel';
+import { DumpPanel } from './DumpPanel';
 
 const conf1 = {
   bodies: [],
@@ -207,18 +208,21 @@ class App extends Component {
             <Tab eventKey={2} title="Editor">
               <Editor result={this.state.result.parserState} onChange={conf => this.onChange(conf)} />
             </Tab>
+            <Tab eventKey={3} title="Dump panel">
+              <DumpPanel result={this.state.result} />
+            </Tab>
           </Tabs>
-          <ImportFile show={this.state.importModalShown}
-            onCancel={() => this.hideImportPanel()}
-            onFileRead={file => this.importFile(file)}
-            onError={e => this.onError(e)} />
-          <OptionPanel show={this.state.optionShow}
-            title={this.state.optionTitle}
-            message={this.state.optionMessage}
-            confirmButton={this.state.optionConfirmBtn}
-            onCancel={() => this.hideOptionPanel()}
-            onConfirm={() => this.state.optionConfirm()} />
         </Grid>
+        <ImportFile show={this.state.importModalShown}
+          onCancel={() => this.hideImportPanel()}
+          onFileRead={file => this.importFile(file)}
+          onError={e => this.onError(e)} />
+        <OptionPanel show={this.state.optionShow}
+          title={this.state.optionTitle}
+          message={this.state.optionMessage}
+          confirmButton={this.state.optionConfirmBtn}
+          onCancel={() => this.hideOptionPanel()}
+          onConfirm={() => this.state.optionConfirm()} />
       </div >
     );
   }

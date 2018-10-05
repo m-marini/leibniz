@@ -19,6 +19,10 @@ class Quaternion {
     get k() { return this._values[2]; }
     get w() { return this._values[3]; }
 
+    toString() {
+        return '(' + this.i + '*i+' + this.j + '*j+' + this.k + '*k+' + this.w + ')';
+    }
+
     /* Returns the negate quaternion */
     negate() {
         return new Quaternion(_.map(this.values, a => -a));
@@ -139,6 +143,13 @@ class Matrix {
     get values() { return this._values; }
     get rows() { return this.values.length; }
     get cols() { return this.values.length > 0 ? this.values[0].length : 0; }
+
+    toString() {
+        const rows = _(this.values).map((row) =>
+            '[' + _.reduce(row, (a, b) => a + ',' + b) + ']'
+        ).reduce((a, b) => a + ',' + b);
+        return '[' + rows + ']';
+    }
 
     map(f) {
         const v = _.map(this.values, (row, i) =>

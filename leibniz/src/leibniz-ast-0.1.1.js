@@ -108,13 +108,23 @@ class System {
         this._bodies = bodies;
     }
 
+
     next(dt) {
-        this._funcs.dt = OpTreeBuilder.createField(dt);
+        return this.withDt(dt).nextState();
+    }
+
+    nextState() {
         const vars = _.mapValues(this._vars, (value, ref) => {
             const update = this._update[ref];
             return update ? update.apply(this) : value;
         });
         return new System(vars, this._funcs, this._update, this._bodies);
+    }
+
+    withDt(dt) {
+        const funcs = _.cloneDeep(this._funcs);
+        funcs.dt = OpTreeBuilder.createField(dt);
+        return new System(this._vars, funcs, this._update, this._bodies);
     }
 
     resolve(id) {
@@ -135,6 +145,15 @@ class System {
             }
             return result;
         });
+    }
+
+    dump() {
+        const funcs = _.mapValues(this._funcs, func => func.apply(this));
+        return _.assign(funcs, this._vars);
+    }
+
+    dumpWithDt(dt) {
+        return this.withDt(dt).dump();
     }
 }
 
