@@ -13,7 +13,7 @@ const SingleIdentifierRegex = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
 const NumberRegex = /\d+\.?\d*/;
 const ExpNumberRegex = /\d+\.?\d*[eE][+-]?\d+/;
 
-const ReservedKeywordsRegex = /^i$|^j$|^k$|^I\d+$|^dt$|^ex$|^ey$|^ez$|^e\d+$|^tr$|^det$|^n$|^T$|^inv$|^exp$|^sinh$|^cosh$|^tanh$|^sin$|^cos$|^tan$|^asin$|^acos$|^atan$|^log$|^sqrt$|^cyl$|^sphere$|^cyl1$|^sphere1$|^qrot$|^e$|^PI$|^min$|^max$/;
+const ReservedKeywordsRegex = /^i$|^j$|^k$|^I\d+$|^dt$|^ex$|^ey$|^ez$|^e\d+$|^tr$|^det$|^n$|^T$|^inv$|^exp$|^sinh$|^cosh$|^tanh$|^sin$|^cos$|^tan$|^asin$|^acos$|^atan$|^log$|^sqrt$|^cyl$|^sphere$|^cyl1$|^sphere1$|^qrot$|^e$|^PI$|^min$|^max$|^abs$/;
 
 function createMissingReferenceResult(id) {
     return new CodeResult(FieldType, 0, 0, [OpTreeBuilder.createField(0)], ['Unresolved reference ' + id]);
@@ -1359,6 +1359,22 @@ class MaxNode extends UnaryNode {
     }
 }
 
+class AbsNode extends UnaryNode {
+    build(builder) {
+        const op = this.arg.build(builder)
+        switch (op.type) {
+            case FieldType:
+                return op.withCode(OpTreeBuilder.createAbs(op.code));
+            case QuaternionType:
+                return op.withErrors(['Invalid abs on quaternion']);
+            case VectorType:
+                return op.withErrors(['Invalid abs on vector']);
+            default:
+                return op.withErrors(['Invalid abs on matrix']);
+        }
+    }
+}
+
 const DefaultNode = new ConstantNode('0');
 
 const UnaryFunctions = {
@@ -1385,7 +1401,8 @@ const UnaryFunctions = {
     inv: (arg) => new InverseNode(arg),
     det: (arg) => new DetNode(arg),
     min: (arg) => new MinNode(arg),
-    max: (arg) => new MaxNode(arg)
+    max: (arg) => new MaxNode(arg),
+    abs: (arg) => new AbsNode(arg)
 };
 
 class ParserAst {

@@ -1013,6 +1013,12 @@ function createMaxMat(code) {
         code: _.concat(code.code, ['max matrix'])
     };
 }
+function createAbs(code) {
+    return {
+        apply: (context) => Math.abs(code.apply(context)),
+        code: _.concat(code.code, ['abs'])
+    };
+}
 const OpTreeBuilder = {
     createDet: createDet,
     createMatrixInverse: createMatrixInverse,
@@ -1088,7 +1094,8 @@ const OpTreeBuilder = {
     createMinVec: createMinVec,
     createMinMat: createMinMat,
     createMaxVec: createMaxVec,
-    createMaxMat: createMaxMat
+    createMaxMat: createMaxMat,
+    createAbs: createAbs
 };
 
 export {
