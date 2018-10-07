@@ -4,17 +4,17 @@ import { SystemParser, checkForIdentifier } from '../../src/leibniz-ast-0.1.1';
 describe('A SystemParser', function () {
   it('parses a invalid identifier', function () {
     const result = checkForIdentifier('0a');
-    expect(result).toEqual('Name 0a must be an identifier');
+    expect(result).toEqual('Name "0a" must be an identifier');
   });
 
-  it('parses a reserved keyword identifier', function () {
-    const result = checkForIdentifier('E');
-    expect(result).toEqual('Name E must not be a reserved keyword');
+  it('parses a e reserved keyword identifier', function () {
+    const result = checkForIdentifier('e');
+    expect(result).toEqual('Name "e" must not be a reserved keyword');
   });
 
   it('parses a I10 reserved keyword identifier', function () {
     const result = checkForIdentifier('I10');
-    expect(result).toEqual('Name I10 must not be a reserved keyword');
+    expect(result).toEqual('Name "I10" must not be a reserved keyword');
   });
 
   it('parses a value expression returning the constant code', function () {

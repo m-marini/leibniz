@@ -13,7 +13,7 @@ const SingleIdentifierRegex = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
 const NumberRegex = /\d+\.?\d*/;
 const ExpNumberRegex = /\d+\.?\d*[eE][+-]?\d+/;
 
-const ReservedKeywordsRegex = /^i$|^j$|^k$|^I\d+$|^dt$|^ex$|^ey$|^ez$|^e\d+$|^tr$|^det$|^n$|^T$|^inv$|^exp$|^sinh$|^cosh$|^tanh$|^sin$|^cos$|^tan$|^asin$|^acos$|^atan$|^log$|^sqrt$|^cyl$|^sphere$|^cyl1$|^sphere1$|^qrot$|^e$|^PI$/;
+const ReservedKeywordsRegex = /^i$|^j$|^k$|^I\d+$|^dt$|^ex$|^ey$|^ez$|^e\d+$|^tr$|^det$|^n$|^T$|^inv$|^exp$|^sinh$|^cosh$|^tanh$|^sin$|^cos$|^tan$|^asin$|^acos$|^atan$|^log$|^sqrt$|^cyl$|^sphere$|^cyl1$|^sphere1$|^qrot$|^e$|^PI$|^min$|^max$/;
 
 function createMissingReferenceResult(id) {
     return new CodeResult(FieldType, 0, 0, [OpTreeBuilder.createField(0)], ['Unresolved reference ' + id]);
@@ -1327,6 +1327,38 @@ class DetNode extends UnaryNode {
     }
 }
 
+class MinNode extends UnaryNode {
+    build(builder) {
+        const op = this.arg.build(builder)
+        switch (op.type) {
+            case FieldType:
+                return op;
+            case QuaternionType:
+                return op.withErrors(['Invalid min on quaternion']);
+            case VectorType:
+                return op.withType(FieldType).withCode(OpTreeBuilder.createMinVec(op.code));
+            default:
+                return op.withType(FieldType).withCode(OpTreeBuilder.createMinMat(op.code));
+        }
+    }
+}
+
+class MaxNode extends UnaryNode {
+    build(builder) {
+        const op = this.arg.build(builder)
+        switch (op.type) {
+            case FieldType:
+                return op;
+            case QuaternionType:
+                return op.withErrors(['Invalid max on quaternion']);
+            case VectorType:
+                return op.withType(FieldType).withCode(OpTreeBuilder.createMaxVec(op.code));
+            default:
+                return op.withType(FieldType).withCode(OpTreeBuilder.createMaxMat(op.code));
+        }
+    }
+}
+
 const DefaultNode = new ConstantNode('0');
 
 const UnaryFunctions = {
@@ -1351,8 +1383,10 @@ const UnaryFunctions = {
     cyl1: (arg) => new Cyl1Node(arg),
     sphere1: (arg) => new Sphere1Node(arg),
     inv: (arg) => new InverseNode(arg),
-    det: (arg) => new DetNode(arg)
-}
+    det: (arg) => new DetNode(arg),
+    min: (arg) => new MinNode(arg),
+    max: (arg) => new MaxNode(arg)
+};
 
 class ParserAst {
 

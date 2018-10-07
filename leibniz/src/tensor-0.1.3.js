@@ -477,6 +477,14 @@ class Matrix {
             det: det
         };
     }
+
+    min() {
+        return _(this.values).map(row => _(row).min()).min();
+    }
+
+    max() {
+        return _(this.values).map(row => _(row).max()).max();
+    }
 }
 
 function createField(value) {
@@ -981,6 +989,30 @@ function createDet(code) {
         code: _.concat(code.code, ['det'])
     };
 }
+function createMinVec(code) {
+    return {
+        apply: (context) => code.apply(context).min(),
+        code: _.concat(code.code, ['min vector'])
+    };
+}
+function createMinMat(code) {
+    return {
+        apply: (context) => code.apply(context).min(),
+        code: _.concat(code.code, ['min matrix'])
+    };
+}
+function createMaxVec(code) {
+    return {
+        apply: (context) => code.apply(context).max(),
+        code: _.concat(code.code, ['max vector'])
+    };
+}
+function createMaxMat(code) {
+    return {
+        apply: (context) => code.apply(context).max(),
+        code: _.concat(code.code, ['max matrix'])
+    };
+}
 const OpTreeBuilder = {
     createDet: createDet,
     createMatrixInverse: createMatrixInverse,
@@ -1052,7 +1084,11 @@ const OpTreeBuilder = {
     createProductQuat: createProductQuat,
     createDivQuatField: createDivQuatField,
     createDivQuat: createDivQuat,
-    createSqrt: createSqrt
+    createSqrt: createSqrt,
+    createMinVec: createMinVec,
+    createMinMat: createMinMat,
+    createMaxVec: createMaxVec,
+    createMaxMat: createMaxMat
 };
 
 export {

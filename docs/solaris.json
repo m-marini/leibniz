@@ -14,7 +14,7 @@
     "m": "5.972e24",
     "dphi": "M * dt1 / (m * r^2) ",
     "dt1": "scalet * dt",
-    "dr": "sqrt(2/m*(E+alpha/r) - (M/(m*r))^2)*dt1",
+    "dr": "sqrt(max(2/m*(E+alpha/r) - (M/(m*r))^2, 0))*dt1",
     "alpha": "791.86e42",
     "rmin": "147e9",
     "phi0": "0",
@@ -22,7 +22,7 @@
     "E": "-2.647E+33"
   },
   "update": {
-    "r": "r",
+    "r": "r+dr",
     "phi": "phi+dphi"
   },
   "vars": {
