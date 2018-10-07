@@ -637,7 +637,7 @@ function createVectorModule(op) {
             const v = op.apply(context);
             return Math.sqrt(v.transpose().multiply(v).values[0][0]);
         },
-        code: _.concat(op.code, ['module'])
+        code: _.concat(op.code, ['vect module'])
     };
 }
 function createDivideField(op1, op2) {
@@ -1016,7 +1016,7 @@ function createMaxMat(code) {
 function createAbs(code) {
     return {
         apply: (context) => Math.abs(code.apply(context)),
-        code: _.concat(code.code, ['abs'])
+        code: _.concat(code.code, ['module'])
     };
 }
 const OpTreeBuilder = {

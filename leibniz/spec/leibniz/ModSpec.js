@@ -2,14 +2,10 @@
 import { SystemParser, checkForIdentifier } from '../../src/leibniz-ast-0.1.1';
 
 describe('A SystemParser', function () {
-  it('parses abs reserver keyword', function () {
-    const result = checkForIdentifier('abs');
-    expect(result).toEqual('Name "abs" must not be a reserved keyword');
-  });
 
-  it('parses a abs vars with value', function () {
+  it('parses a mod vars with value', function () {
     const conf = {
-      vars: { a: 'abs(-2)' },
+      vars: { a: '|-2|' },
       funcs: {},
       update: {},
       bodies: []
@@ -19,47 +15,53 @@ describe('A SystemParser', function () {
     expect(result.parserState.vars.a.result.code.code).toEqual([
       'value 2',
       'negate value',
-      'abs'
+      'module'
     ]);
     expect(result.system._vars.a).toBeCloseTo(2);
   });
 
-  it('parses a max vars with quaternion', function () {
+  it('parses a mod vars with quaternion', function () {
     const conf = {
-      vars: { a: 'abs(i)' },
-      funcs: {},
+      vars: { a: '|b|' },
+      funcs: {b: '-i-j-k-1'},
       update: {},
       bodies: []
     };
     const result = new SystemParser(conf).parse();
-    expect(result.parserState.vars.a.errors).toEqual([
-      'Invalid abs on quaternion'
+    expect(result.parserState.vars.a.errors).toEqual([]);
+    expect(result.parserState.vars.a.result.code.code).toEqual([
+      'ref b',
+      'quat module'
     ]);
+    expect(result.system._vars.a).toBeCloseTo(2);
   });
 
-  it('parses a max vars with vector', function () {
+  it('parses a mod vars with vector', function () {
     const conf = {
-      vars: { a: 'abs(ex)' },
-      funcs: {},
+      vars: { a: '|b|' },
+      funcs: {b:'-1,-1,-1,-1'},
       update: {},
       bodies: []
     };
     const result = new SystemParser(conf).parse();
-    expect(result.parserState.vars.a.errors).toEqual([
-      'Invalid abs on vector'
+    expect(result.parserState.vars.a.errors).toEqual([]);
+    expect(result.parserState.vars.a.result.code.code).toEqual([
+      'ref b',
+      'vect module'
     ]);
+    expect(result.system._vars.a).toBeCloseTo(2);
   });
 
-  it('parses a max vars with matrix', function () {
+  it('parses a mod vars with matrix', function () {
     const conf = {
-      vars: { a: 'abs(I2)' },
+      vars: { a: '|I2|' },
       funcs: {},
       update: {},
       bodies: []
     };
     const result = new SystemParser(conf).parse();
     expect(result.parserState.vars.a.errors).toEqual([
-      'Invalid abs on matrix'
+      'Invalid module operation on matrix'
     ]);
   });
 });

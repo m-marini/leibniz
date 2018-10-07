@@ -20,4 +20,3 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Issue #14: check for keyword for definitions
 - Issue #16: Dump data simulation
 - Issue #18: Add min max function
-- Issue #20: Abs function
