@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Alert, Grid, Navbar, Tabs, Tab, Nav, NavItem } from 'react-bootstrap';
+import { Form, FormGroup, ControlLabel, FormControl, Alert, Grid, Navbar, Tabs, Tab, Nav, NavItem } from 'react-bootstrap';
 import * as Cookies from 'js-cookie';
 import { saveAs } from 'file-saver/FileSaver';
 import './App.css';
@@ -28,6 +28,7 @@ class App extends Component {
     const cfg = cfgCookie ? JSON.parse(cfgCookie) : conf1;
 
     this.state = {
+      subSteps: "1",
       alertShow: false,
       modalShown: false,
       importModalShown: false,
@@ -63,7 +64,8 @@ class App extends Component {
   onSceneMount(e) {
     const leibniz = new Leibniz(e);
     leibniz.init({
-      //      cameraType: 'ar',
+      cameraType: 'ar',
+      subSteps: this.state.subSteps
     });
     this.leibniz = leibniz;
     this.setState(this.processConf(this.state.initialConf));
@@ -160,6 +162,11 @@ class App extends Component {
     );
   }
 
+  setSubSteps(value) {
+    this.setState({ subSteps: value });
+    this.leibniz.subSteps = parseInt(value);
+  }
+
   exportFile() {
     const text = JSON.stringify(this.state.conf, null, '  ');
     const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
@@ -204,6 +211,15 @@ class App extends Component {
             <Tab eventKey={1} title="Home">
               <BabylonScene onSceneMount={ev => this.onSceneMount(ev)}
                 canvasClass="graphCanvas" />
+              <Form inline>
+                <FormGroup controlId="formInlineName" bsSize="sm">
+                  <ControlLabel>Sub Steps</ControlLabel>{' '}
+                  <FormControl type="text" placeholder="Sub Steps"
+                    onInput={ev => this.setSubSteps(ev.target.value)}
+                    onChange={() => { }}
+                    value={this.state.subSteps} />
+                </FormGroup>{' '}
+              </Form>
             </Tab>
             <Tab eventKey={2} title="Editor">
               <Editor result={this.state.result.parserState} onChange={conf => this.onChange(conf)} />

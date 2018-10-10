@@ -80,8 +80,11 @@ class Leibniz {
             cameraMinZ: 0.5,
             ambientColor: new BABYLON.Color3(0.2, 0.2, 0.2),
             sunLightDirection: new BABYLON.Vector3(1, 1, -1),
-            sunLightIntensity: 0.7
+            sunLightIntensity: 0.7,
+            subSteps: 1
         });
+
+        this._subSteps = _options.subSteps;
 
         const camera = createCamera(this.props.scene, _options);
         camera.attachControl(this.props.canvas, true);
@@ -105,8 +108,10 @@ class Leibniz {
 
         this.props.scene.onBeforeStepObservable.add((scene) => {
             const ar = scene.getAnimationRatio() || 1;
-            const dt = ar / 60;
-            this.refreshTime(dt);
+            const dt = ar / 60 / this.subSteps;
+            for (var i = 0; i < this.subSteps; i++) {
+                this.refreshTime(dt);
+            }
         });
 
         // Adds callback handler on rendering loop
@@ -138,6 +143,15 @@ class Leibniz {
         return this;
     }
 
+    get subSteps() {
+        return this._subSteps;
+    }
+
+    set subSteps(value) {
+        this._subSteps = value;
+    }
+
+
     refreshTime(dt) {
         this._state = this._state.next(dt);
     }
@@ -160,7 +174,7 @@ class Leibniz {
         }
     }
 
-    refresh(){
+    refresh() {
         this.props.engine.resize();
     }
 }

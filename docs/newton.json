@@ -1,7 +1,7 @@
 ﻿{
   "bodies": [
     {
-      "position": "cyl(Rcyl)*scaler"
+      "position": "R * scaler"
     },
     {
       "position": "(0,0,0)"
@@ -26,15 +26,21 @@
     "M": "b * sqrt(2 * m * |E|)",
     "dphi": "M * dtreal / (m * r^2) ",
     "dtreal": "scalet * dt",
-    "dr": "sqrt(max(2 * (E + alpha / r) / m - (M / (m * r))^2, 0)) * dtreal",
-    "Rcyl": "(r, phi, 0)"
+    "R0": "(rmin, 0, 0)",
+    "v": "M / (m * r)",
+    "r": "|R|",
+    "V0": "0,v,0", 
+    "dR": "V*dtreal",
+    "dV": "A*dtreal",
+    "A": "F / m",
+    "F": "-n(R) * alpha / r^2"
   },
   "update": {
-    "r": "r+dr",
-    "phi": "phi+dphi"
+    "R": "R+dR",
+    "V": "V+dV"
   },
   "vars": {
-    "r": "rmin",
-    "phi": "phi0"
+    "R": "R0",
+    "V": "V0"
   }
 }

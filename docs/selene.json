@@ -1,25 +1,26 @@
 ﻿{
   "bodies": [
     {
-      "position": "cyl(Rcyl)*scaler"
+      "position": "Rl * scaler"
     },
     {
-      "position": "(0,0,0)"
+      "position": "Rg * scaler"
     }
   ],
   "funcs": {
-    "rmin": "147E9",
-    "rmax": "152.1E+09",
+    "rmin": "363.3E06",
+    "rmax": "405.5E06",
     "rsim": "3",
-    "m": "5.972E24",
-    "MS": "1.98892E30",
+    "mg": "5.972E24",
+    "ml": "7.342E22",
     "G": "66.7E-12",
-    "Treal": "365.2425 * 24 * 60 * 60",
+    "Treal": "27.321661 * 24 * 60 * 60",
     "Tsim": "12",
     "phi0": "0",
+    "m": "mg * ml / (mg + ml)",
     "scaler": "rsim / rmax",
     "scalet": "Treal/Tsim",
-    "alpha": "m * MS * G",
+    "alpha": "mg * ml * G",
     "a": "(rmin + rmax) / 2",
     "b": "sqrt(rmin * rmax)",
     "E": "-alpha / (2 * a)",
@@ -27,7 +28,10 @@
     "dphi": "M * dtreal / (m * r^2) ",
     "dtreal": "scalet * dt",
     "dr": "sqrt(max(2 * (E + alpha / r) / m - (M / (m * r))^2, 0)) * dtreal",
-    "Rcyl": "(r, phi, 0)"
+    "Rcyl": "(r, phi, 0)",
+    "R": "cyl(Rcyl)",
+    "Rg": "-R * ml / (ml + mg)",
+    "Rl": "R * mg / (ml + mg)"
   },
   "update": {
     "r": "r+dr",
