@@ -13,6 +13,7 @@
     "react-bootstrap": "^0.32.4",
     "react-dom": "^16.5.0",
     "react-scripts": "1.1.5",
+    "rxjs": "^6.3.3",
     "uuid": "^3.3.2"
   },
   "scripts": {

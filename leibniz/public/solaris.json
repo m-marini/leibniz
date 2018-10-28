@@ -1,0 +1,40 @@
+﻿{
+  "bodies": [
+    {
+      "position": "cyl(Rcyl)*scaler"
+    },
+    {
+      "position": "(0,0,0)"
+    }
+  ],
+  "funcs": {
+    "rmin": "147E9",
+    "rmax": "152.1E+09",
+    "rsim": "3",
+    "m": "5.972E24",
+    "MS": "1.98892E30",
+    "G": "66.7E-12",
+    "Treal": "365.2425 * 24 * 60 * 60",
+    "Tsim": "12",
+    "phi0": "0",
+    "scaler": "rsim / rmax",
+    "scalet": "Treal/Tsim",
+    "alpha": "m * MS * G",
+    "a": "(rmin + rmax) / 2",
+    "b": "sqrt(rmin * rmax)",
+    "E": "-alpha / (2 * a)",
+    "M": "b * sqrt(2 * m * |E|)",
+    "dphi": "M * dtreal / (m * r^2) ",
+    "dtreal": "scalet * dt",
+    "dr": "sqrt(max(2 * (E + alpha / r) / m - (M / (m * r))^2, 0)) * dtreal",
+    "Rcyl": "(r, phi, 0)"
+  },
+  "update": {
+    "r": "r+dr",
+    "phi": "phi+dphi"
+  },
+  "vars": {
+    "r": "rmin",
+    "phi": "phi0"
+  }
+}
