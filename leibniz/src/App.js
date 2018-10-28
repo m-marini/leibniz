@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Form, FormGroup, ControlLabel, FormControl, Alert, Grid, Navbar, Tabs, Tab, Nav, NavItem } from 'react-bootstrap';
+import { Form, FormGroup, ControlLabel, FormControl, Alert, Grid, Navbar, Tabs, Tab, Nav, NavDropdown, NavItem } from 'react-bootstrap';
 import * as Cookies from 'js-cookie';
 import { saveAs } from 'file-saver/FileSaver';
 import './App.css';
@@ -11,6 +11,7 @@ import { Test } from './Test';
 import { ImportFile } from './ImportFile';
 import { OptionPanel } from './OptionPanel';
 import { DumpPanel } from './DumpPanel';
+import { ajax } from 'rxjs/ajax';
 
 const conf1 = {
   bodies: [],
@@ -80,6 +81,15 @@ class App extends Component {
     );
   }
 
+  onLoad(name) {
+    this.showOptionPanel(
+      'Load definitions ' + name + ' ?',
+      'The definitions will be load from ' + name + ' .',
+      'Load',
+      () => this.load(name)
+    );
+  }
+
   showOptionPanel(title, message, confirmButton, confirmAction) {
     this.setState({
       optionShow: true,
@@ -110,6 +120,31 @@ class App extends Component {
     const state = this.processConf(conf1);
     this.setState(state);
     this.hideOptionPanel();
+  }
+
+  onLoaded(ajax) {
+    const state = this.processConf(ajax.response);
+    this.setState(state);
+    this.hideOptionPanel();
+  }
+
+  onLoadError(ajax) {
+    const msg = ajax.xhr.status + ' - ' + ajax.xhr.statusText;
+    console.error(msg);
+    this.showAlert('Error', msg);
+    this.hideOptionPanel();
+  }
+
+  load(name) {
+    ajax({
+      url: name,
+      createXHR: function () {
+        return new XMLHttpRequest();
+      }
+    }).subscribe(
+      ajax => this.onLoaded(ajax),
+      (ajax) => this.onLoadError(ajax)
+    );
   }
 
   test() {
@@ -193,9 +228,17 @@ class App extends Component {
           </Navbar.Header>
           <Navbar.Collapse>
             <Nav>
-              <NavItem eventKey="navItem.1" onClick={() => this.onReset()}>
-                Reset
+              <NavDropdown id="predefNavDropdown" eventKey="navItem.1" title="Predefined">
+                <NavItem eventKey="navItem.reset" onClick={() => this.onReset()}>
+                  Reset
               </NavItem>
+                <NavItem eventKey="navItem.solaris" onClick={() => this.onLoad('solaris.json')}>
+                  Solaris (Earth - Sun)
+              </NavItem>
+                <NavItem eventKey="navItem.selene" onClick={() => this.onLoad('selene.json')}>
+                  Selene (Moon -Earth)
+              </NavItem>
+              </NavDropdown>
               <NavItem eventKey="navItem.2" onClick={() => this.showImportPanel()}>
                 Import
               </NavItem>
