@@ -3,7 +3,7 @@ import * as BABYLON from 'babylonjs'
 /*
  * Returns the Color3 for HSB value (Hue, Saturation, Bright)
  */
-export function fromHSB(h, s, b) {
+export function fromHSB(h: number, s: number, b: number) {
   var hc = null;
   if (h <= 0) {
     hc = BABYLON.Color3.Red();
@@ -29,6 +29,6 @@ export function fromHSB(h, s, b) {
 /*
  * Returns the Color3 of heat color scale (Violet to Red)
  */
-export function fromHeat(h) {
+export function fromHeat(h: number) {
   return fromHSB((1 - h) * 5 / 6, 1, 1 - (1 - h) * 0.2);
 }

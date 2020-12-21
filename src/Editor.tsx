@@ -3,13 +3,23 @@ import { DefsPanel } from './DefsPanel';
 import { default as _ } from 'lodash';
 import { BodiesPanel } from './BodiesPane';
 import { Form } from 'react-bootstrap';
+import { SystemNode, ExpressionNodes } from './Interpreter';
+import { SystemDefinition, Definitions, BodyDefinitions } from './Definitions';
 
-/*
- * this.props.result = parse state
+interface EditorProps {
+  result: SystemNode;
+  onChange?: (conf: SystemDefinition) => void;
+};
+
+/**
+ * 
  */
-class Editor extends Component {
+export class Editor extends Component<EditorProps, {}> {
 
-  createConf() {
+  /**
+   * 
+   */
+  private createConf() {
     return {
       bodies: this.createBodies(),
       funcs: this.createDefs(this.props.result.funcs),
@@ -18,7 +28,10 @@ class Editor extends Component {
     }
   }
 
-  createBodies() {
+  /**
+   * 
+   */
+  private createBodies(): BodyDefinitions {
     return _.map(this.props.result.bodies, b =>
       (b.rotation) ?
         {
@@ -31,31 +44,45 @@ class Editor extends Component {
     );
   }
 
-  createDefs(defs) {
+  /**
+   * 
+   * @param defs 
+   */
+  private createDefs(defs: ExpressionNodes): Definitions {
     return _.mapValues(defs, 'exp');
   }
 
-  onChange(panelKey, value) {
-    if (this.props.onChange) {
-      const conf = this.createConf();
+  /**
+   * 
+   * @param panelKey 
+   * @param value 
+   */
+  private onChange(panelKey: string, value: Definitions) {
+    const { onChange } = this.props;
+    if (onChange) {
+      const conf = this.createConf() as unknown as Record<string, Definitions>;
       conf[panelKey] = value;
-      this.props.onChange(conf);
+      onChange(conf as unknown as SystemDefinition);
     }
   }
 
-  onBodiesChange(bodies) {
-    if (this.props.onChange) {
+  /**
+   * 
+   * @param bodies 
+   */
+  private onBodiesChange(bodies: BodyDefinitions) {
+    const { onChange } = this.props;
+    if (onChange) {
       const conf = this.createConf();
       conf.bodies = bodies;
-      this.props.onChange(conf);
+      onChange(conf);
     }
   }
 
   render() {
     const { result } = this.props;
-    const hasError = _.flatMap(result.funcs, 'errors').length > 0;
     return (
-      <Form noValidate validated={!hasError} >
+      <Form noValidate >
         <BodiesPanel bodies={this.props.result.bodies}
           onChange={bodies => this.onBodiesChange(bodies)} />
         <DefsPanel panelKey="funcs" title="Macros" defs={result.funcs}
@@ -71,5 +98,3 @@ class Editor extends Component {
     );
   }
 }
-
-export { Editor };

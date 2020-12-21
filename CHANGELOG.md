@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.2.0] - 21-12-2020
+
+### Added
+
+- Issue #30: Basic example
+
+### Fixed
+
+- Issue #31: Lock definitions
+
+## [1.2.0] - 20-12-2020
+
 ### Added
 
 - Issue #4: Export project

@@ -15,6 +15,7 @@ import { ajax } from 'rxjs/ajax';
 import { tap } from 'rxjs/operators';
 import { LbNavBar } from './LbNavBar';
 import { LbAlert } from './LbAlert';
+import { SystemDefinition } from './Definitions';
 
 const conf1 = {
   bodies: [],
@@ -23,9 +24,31 @@ const conf1 = {
   update: {}
 };
 
-export class App extends Component {
+interface AppState {
+  alertShow: boolean;
+  alertTitle?: string;
+  alertMessage?: string;
+  modalShown: boolean;
+  importModalShown: boolean;
+  result: any;
+  subSteps: string;
+  initialConf: any;
+  optionShow?: boolean;
+  optionTitle?: string;
+  optionMessage?: string;
+  optionConfirmBtn?: string;
+  optionConfirm?: () => void,
+  conf?: any;
+}
 
-  constructor(props) {
+export class App extends Component<{}, AppState> {
+  private leibniz: Leibniz | undefined;
+
+  /**
+   * 
+   * @param props 
+   */
+  constructor(props: {}) {
     super(props);
 
     const cfgCookie = Cookies.get('leibniz');
@@ -48,24 +71,36 @@ export class App extends Component {
     };
   }
 
-  processConf(conf) {
+  /**
+   * 
+   * @param conf 
+   */
+  private processConf(conf: SystemDefinition) {
     const result = new SystemParser(conf).parse();
     const state = {
       conf: conf,
       result: result
     };
     Cookies.set('leibniz', JSON.stringify(conf));
-    if (result.system) {
+    if (result.system && this.leibniz) {
       this.leibniz.system = result.system;
     }
     return state;
   }
 
-  onChange(conf) {
+  /**
+   * 
+   * @param conf 
+   */
+  private onChange(conf: SystemDefinition) {
     this.setState(this.processConf(conf));
   }
 
-  onSceneMount(e) {
+  /**
+   * 
+   * @param e 
+   */
+  private onSceneMount(e: any) {
     const leibniz = new Leibniz(e);
     leibniz.init({
       cameraType: 'ar',
@@ -75,7 +110,10 @@ export class App extends Component {
     this.setState(this.processConf(this.state.initialConf));
   }
 
-  onReset() {
+  /**
+   * 
+   */
+  private onReset() {
     this.showOptionPanel(
       'Reset definitions ?',
       'The definitions will be resetted to default value.',
@@ -84,7 +122,7 @@ export class App extends Component {
     );
   }
 
-  onLoad(name) {
+  private onLoad(name: string) {
     this.showOptionPanel(
       'Load definitions ' + name + ' ?',
       'The definitions will be load from ' + name + ' .',
@@ -93,21 +131,36 @@ export class App extends Component {
     );
   }
 
-  showOptionPanel(title, message, confirmButton, confirmAction) {
+  /**
+   * 
+   * @param optionTitle 
+   * @param optionMessage 
+   * @param optionConfirmBtn 
+   * @param optionConfirm 
+   */
+  private showOptionPanel(optionTitle: string, optionMessage: string, optionConfirmBtn: string, optionConfirm: () => void) {
     this.setState({
       optionShow: true,
-      optionTitle: title,
-      optionMessage: message,
-      optionConfirmBtn: confirmButton,
-      optionConfirm: confirmAction
+      optionTitle,
+      optionMessage,
+      optionConfirmBtn,
+      optionConfirm
     });
   }
 
-  hideOptionPanel() {
+  /**
+   * 
+   */
+  private hideOptionPanel() {
     this.setState({ optionShow: false });
   }
 
-  showAlert(title, message) {
+  /**
+   * 
+   * @param title 
+   * @param message 
+   */
+  private showAlert(title: string, message: string) {
     this.setState({
       alertShow: true,
       alertTitle: title,
@@ -115,34 +168,48 @@ export class App extends Component {
     });
   }
 
-  hideAlert() {
+  /**
+   * 
+   */
+  private hideAlert() {
     this.setState({ alertShow: false });
   }
 
-  reset() {
+  /**
+   * 
+   */
+  private reset() {
     const state = this.processConf(conf1);
     this.setState(state);
     this.hideOptionPanel();
   }
 
-  load(name) {
+  /**
+   * 
+   * @param name 
+   */
+  private load(name: string) {
     const url = process.env.REACT_APP_BASENAME + '/' + name;
     ajax.getJSON(url).pipe(
       tap(
-        json => this.onLoaded(json),
+        json => this.onLoaded(json as SystemDefinition),
         ajax => this.onLoadError(ajax)
       )
-    ).subscribe(this._subj);
+    ).subscribe();
   }
 
-  onLoaded(json) {
+  /**
+   * 
+   * @param json 
+   */
+  private onLoaded(json: SystemDefinition) {
     console.log(json);
     const state = this.processConf(json);
     this.setState(state);
     this.hideOptionPanel();
   }
 
-  onLoadError(ajax) {
+  private onLoadError(ajax: any) {
     console.error(ajax);
     const msg = ajax.xhr.status + ' - ' + ajax.xhr.statusText;
     console.error(msg);
@@ -150,9 +217,12 @@ export class App extends Component {
     this.hideOptionPanel();
   }
 
-  test() {
+  /**
+   * 
+   */
+  private test() {
     return (
-      <Tab eventKey={3} title="Test">
+      <Tab eventKey="test" title="Test">
         <Test initialConf={{
           vars: {
             "a": "a0",
@@ -166,15 +236,25 @@ export class App extends Component {
     );
   }
 
-  showImportPanel() {
+  /**
+   * 
+   */
+  private showImportPanel() {
     this.setState({ importModalShown: true });
   }
 
-  hideImportPanel() {
+  /**
+   * 
+   */
+  private hideImportPanel() {
     this.setState({ importModalShown: false });
   }
 
-  importFile(content) {
+  /**
+   * 
+   * @param content 
+   */
+  private importFile(content: string) {
     try {
       const state = this.processConf(JSON.parse(content));
       this.setState(state);
@@ -186,12 +266,19 @@ export class App extends Component {
     }
   }
 
-  onError(e) {
+  /**
+   * 
+   * @param e 
+   */
+  private onError(e: string) {
     this.showAlert('Error', 'Error parsing file ' + e);
     this.hideImportPanel();
   }
 
-  showExportPanel() {
+  /**
+   * 
+   */
+  private showExportPanel() {
     this.showOptionPanel(
       'Export definitions ?',
       'The definitions will be exported into a local file.',
@@ -200,18 +287,30 @@ export class App extends Component {
     );
   }
 
-  setSubSteps(value) {
+  /**
+   * 
+   * @param value 
+   */
+  private setSubSteps(value: string) {
     this.setState({ subSteps: value });
-    this.leibniz.subSteps = parseInt(value);
+    if (this.leibniz) {
+      this.leibniz.subSteps = parseInt(value);
+    }
   }
 
-  exportFile() {
+  /**
+   * 
+   */
+  private exportFile() {
     const text = JSON.stringify(this.state.conf, null, '  ');
     const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
     saveAs(blob, "test.json");
     this.hideOptionPanel();
   }
 
+  /**
+   * 
+   */
   render() {
     const {
       alertShow, alertTitle, alertMessage,
@@ -227,44 +326,42 @@ export class App extends Component {
           onImport={() => this.showImportPanel()}
           onExport={() => this.showExportPanel()}
         />
-        <LbAlert
-          show={alertShow}
+        <LbAlert isVisible={alertShow}
           title={alertTitle}
           message={alertMessage}
           onClose={() => this.hideAlert()} />
         <Container>
-          <Tabs id="Tab" defaultActiveKey={1}>
-            <Tab eventKey={1} title="Home">
-              <BabylonScene onSceneMount={ev => this.onSceneMount(ev)}
+          <Tabs id="Tab" defaultActiveKey="home">
+            <Tab eventKey="home" title="Home">
+              <BabylonScene onSceneMount={(ev: any) => this.onSceneMount(ev)}
                 canvasClass="graphCanvas" />
               <Form inline>
-                <FormGroup controlId="formInlineName" size="sm">
+                <FormGroup controlId="formInlineName">
                   <Form.Label>Sub Steps</Form.Label>{' '}
                   <FormControl type="text" placeholder="Sub Steps"
-                    onInput={ev => this.setSubSteps(ev.target.value)}
-                    onChange={() => { }}
+                    onChange={ev => this.setSubSteps(ev.target.value)}
                     value={subSteps} />
                 </FormGroup>{' '}
               </Form>
             </Tab>
-            <Tab eventKey={2} title="Editor">
+            <Tab eventKey="editor" title="Editor">
               <Editor result={result.parserState} onChange={conf => this.onChange(conf)} />
             </Tab>
-            <Tab eventKey={3} title="Dump panel">
+            <Tab eventKey="dump" title="Dump panel">
               <DumpPanel result={result} />
             </Tab>
           </Tabs>
         </Container>
         <ImportFile show={importModalShown}
           onCancel={() => this.hideImportPanel()}
-          onFileRead={file => this.importFile(file)}
+          onFileRead={file => this.importFile(file as string)}
           onError={e => this.onError(e)} />
-        <OptionPanel show={optionShow}
+        <OptionPanel show={!!optionShow}
           title={optionTitle}
           message={optionMessage}
-          confirmButton={optionConfirmBtn}
+          confirmButton={optionConfirmBtn || ''}
           onCancel={() => this.hideOptionPanel()}
-          onConfirm={() => optionConfirm()} />
+          onConfirm={optionConfirm} />
       </Container>
     );
   }

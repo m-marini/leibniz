@@ -2,15 +2,16 @@ import React, { FunctionComponent } from 'react';
 import { InputGroup, Button, Form } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons'
+import { Expression } from './Definitions';
 
 export const ExprField: FunctionComponent<{
   name: string;
-  expr: string;
-  errors?: any[];
-  withoutDelete: boolean;
-  onChange?: (arg: string) => void;
+  expr: Expression;
+  errors?: string[];
+  withoutDelete?: boolean;
+  onChange?: (arg: Expression) => void;
   onDelete?: () => void;
-}> = ({ name, expr, errors = [], withoutDelete, onDelete, onChange }) => {
+}> = ({ name, expr, errors = [], withoutDelete = false, onDelete, onChange }) => {
   const hasErrors = errors.length > 0;
   const errorItems = errors.map((text, idx) => (<li key={idx}>{text}</li>));
 
@@ -31,6 +32,7 @@ export const ExprField: FunctionComponent<{
           value={expr}
           // onInput={(ev) => { if (onChange) { onChange(ev.target.value); } }}
           onChange={(ev) => { if (onChange) { onChange(ev.target.value); } }}
+          isValid={!hasErrors}
           isInvalid={!!hasErrors} />
         {deleteBtn}
         <Form.Control.Feedback type="invalid">

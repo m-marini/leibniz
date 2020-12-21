@@ -5,17 +5,35 @@ import { BodyRow } from './BodyRow';
 import { OptionPanel } from './OptionPanel';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
+import { BodyNodes } from './Interpreter';
+import { BodyDefinitions, BodyDefinition } from './Definitions';
 
-class BodiesPanel extends Component {
+interface BodiesPanelProps {
+  bodies: BodyNodes;
+  onChange ?: (arg: BodyDefinitions) => void;
+};
 
-  constructor(props) {
+export class BodiesPanel extends Component<BodiesPanelProps, {
+  modalShown: boolean;
+  modalTitle?: string;
+  modalMessage?: string;
+  confirmAction?: () => void;
+}> {
+
+  constructor(props: BodiesPanelProps) {
     super(props);
     this.state = {
       modalShown: false
     };
   }
 
-  showOptionPanel(title, message, action) {
+  /**
+   * 
+   * @param title 
+   * @param message 
+   * @param action 
+   */
+  private showOptionPanel(title: string, message: string, action: () => void) {
     this.setState({
       modalShown: true,
       modalTitle: title,
@@ -24,23 +42,34 @@ class BodiesPanel extends Component {
     });
   }
 
-  hideOptionPanel() {
+  /**
+   * 
+   */
+  private hideOptionPanel() {
     this.setState({
       modalShown: false
     });
   }
 
-  onAdd() {
-    if (this.props.onChange) {
+  /**
+   * 
+   */
+  private onAdd() {
+    const { onChange } = this.props;
+    if (onChange) {
       const bodies = this.createBodies()
       bodies.push({
         position: '(0,0,0)'
       });
-      this.props.onChange(bodies);
+      onChange(bodies);
     }
   }
 
-  onDelete(idx) {
+  /**
+   * 
+   * @param idx 
+   */
+  private onDelete(idx: number) {
     this.showOptionPanel(
       'Remove body #' + (idx + 1),
       'Body #' + (idx + 1) + ' will be removed from the list.',
@@ -48,16 +77,24 @@ class BodiesPanel extends Component {
     );
   }
 
-  deleteBody(idx) {
-    if (this.props.onChange) {
+  /**
+   * 
+   * @param idx 
+   */
+  private deleteBody(idx: number) {
+    const { onChange } = this.props;
+    if (onChange) {
       const bodies = this.createBodies();
       bodies.splice(idx, 1);
-      this.props.onChange(bodies);
+      onChange(bodies);
     }
     this.hideOptionPanel();
   }
 
-  createBodies() {
+  /**
+   * 
+   */
+  private createBodies(): BodyDefinitions {
     return _.map(this.props.bodies, b =>
       (b.rotation) ?
         {
@@ -70,20 +107,32 @@ class BodiesPanel extends Component {
     );
   }
 
-  onChange(idx, body) {
-    if (this.props.onChange) {
+  /**
+   * 
+   * @param idx 
+   * @param body 
+   */
+  private onChange(idx: number, body: BodyDefinition) {
+    const { onChange } = this.props;
+    if (onChange) {
       const bodies = this.createBodies();
       bodies[idx] = body;
-      this.props.onChange(bodies);
+      onChange(bodies);
     }
   }
 
-  hasError() {
+  /**
+   * 
+   */
+  private hasError() {
     return _.flatMap(this.props.bodies, e => {
       return e.rotation ? _.concat(e.position.errors, e.rotation.errors) : e.position.errors;
     }).length > 0;
   }
 
+  /**
+   * 
+   */
   render() {
     const { bodies } = this.props;
     const { modalShown, modalTitle, modalMessage, confirmAction } = this.state;
@@ -112,7 +161,7 @@ class BodiesPanel extends Component {
                     <th scope="col">#</th>
                     <th scope="col">Position</th>
                     <th scope="col">Rotation</th>
-                    <th scope="col"></th>
+                    <th scope="col">Remove</th>
                   </tr>
                   {rows}
                 </thead>
@@ -121,7 +170,7 @@ class BodiesPanel extends Component {
                 title={modalTitle}
                 message={modalMessage}
                 confirmButton="Remove"
-                onConfirm={() => confirmAction()}
+                onConfirm={() => { if (confirmAction) { confirmAction(); } }}
                 onCancel={() => this.hideOptionPanel()}
               />
             </Card.Body>
@@ -131,5 +180,3 @@ class BodiesPanel extends Component {
     );
   }
 }
-
-export { BodiesPanel };

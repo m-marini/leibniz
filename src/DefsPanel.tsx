@@ -1,48 +1,87 @@
 import React, { Component } from 'react';
 import { InputGroup, Button, Card, Form, Accordion } from 'react-bootstrap';
 import { ExprField } from './ExprField';
-import { default as _ } from 'lodash';
+import _ from 'lodash';
 import { OptionPanel } from './OptionPanel';
 import { checkForIdentifier } from './leibniz-ast-0.1.1';
 import { v5 as uuidv5 } from 'uuid';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
+import { ExpressionNodes } from './Interpreter';
+import { Definitions } from './Definitions';
 
 const ns = uuidv5('http://www.mmarini.org', uuidv5.URL);
-//const idRegex = /^[a-zA-Z_][a-zA-Z0-9_]*$/g
 
-export class DefsPanel extends Component {
+interface DefsPanelProps {
+  panelKey: string;
+  title: string;
+  defs: ExpressionNodes;
+  onChange?: (id: string, value: Definitions) => void;
+};
 
-  constructor(props) {
+/**
+ * 
+ */
+export class DefsPanel extends Component<DefsPanelProps, {
+  deleteModalShown: boolean;
+  newName: string;
+  modalTitle?: string;
+  modalMessage?: string;
+  optionAction?: () => void;
+}>{
+
+  /**
+   * 
+   * @param props 
+   */
+  constructor(props: DefsPanelProps) {
     super(props);
     this.state = {
       deleteModalShown: false,
-      newName: '',
-      newNameError: 'Name required'
+      newName: ''
     };
   }
 
-  createDefs() {
-    return _.mapValues(this.props.defs, 'exp');
+  /**
+   * 
+   */
+  private createDefs(): Record<string, string> {
+    const { defs } = this.props;
+    return _.mapValues(defs, 'exp');
   }
 
-  onChange(id, value) {
+  /**
+   * 
+   * @param id 
+   * @param value 
+   */
+  private onChange(id: string, value: string) {
     const { onChange, panelKey } = this.props;
     if (onChange) {
-      const newConf = this.createDefs()
+      const newConf = this.createDefs();
       newConf[id] = value;
       onChange(panelKey, newConf);
     }
   }
 
-  onDelete(id) {
+  /**
+   * 
+   * @param id 
+   */
+  private onDelete(id: string) {
     this.showOptionPanel(
       'Remove "' + id + '" definition ?',
       'The definition "' + id + '" will be removed from the list.',
       () => this.deleteDefs(id));
   }
 
-  showOptionPanel(title, message, action) {
+  /**
+   * 
+   * @param title 
+   * @param message 
+   * @param action 
+   */
+  private showOptionPanel(title: string, message: string, action: () => void) {
     this.setState({
       deleteModalShown: true,
       modalTitle: title,
@@ -51,7 +90,11 @@ export class DefsPanel extends Component {
     });
   }
 
-  deleteDefs(id) {
+  /**
+   * 
+   * @param id 
+   */
+  private deleteDefs(id: string) {
     const { onChange, panelKey } = this.props;
     if (onChange) {
       const newConf = this.createDefs()
@@ -61,36 +104,58 @@ export class DefsPanel extends Component {
     this.hideOptionPanel();
   }
 
-  hideOptionPanel() {
+  /**
+   * 
+   */
+  private hideOptionPanel() {
     this.setState({
       deleteModalShown: false
     });
   }
 
-  onAdd() {
+  /**
+   * 
+   */
+  private onAdd() {
     const { onChange, panelKey } = this.props;
     if (onChange) {
+      const { newName } = this.state;
       const newConf = this.createDefs();
-      newConf[this.state.newName] = '0';
+      newConf[newName] = '0';
       onChange(panelKey, newConf);
+      this.setState({ newName: '' });
     }
   }
 
-  onName(name) {
-    const state = { newName: name };
+  /**
+   * 
+   * @param name 
+   */
+  onName(name: string) {
+    this.setState({ newName: name });
+  }
+
+  /**
+   * 
+   * @param name 
+   */
+  newNameError(name: string) {
     if (name === '') {
-      state.newNameError = 'Identifier is required';
-    } else if (checkForIdentifier(name)) {
-      state.newNameError = checkForIdentifier(name);
-    } else if (this.props.defs[name]) {
-      state.newNameError = 'Definition already exists';
-    } else {
-      state.newNameError = '';
+      return 'Identifier is required';
     }
-    this.setState(state);
+    if (checkForIdentifier(name)) {
+      return checkForIdentifier(name);
+    }
+    if (!!this.props.defs[name]) {
+      return 'Definition already exists';
+    }
+    return '';
   }
 
-  hasError() {
+  /**
+   * 
+   */
+  private hasError() {
     return _.flatMap(this.props.defs, 'errors').length > 0;
   }
 
@@ -98,8 +163,9 @@ export class DefsPanel extends Component {
     const { title, defs } = this.props;
     const {
       deleteModalShown, modalTitle, modalMessage, optionAction,
-      newName, newNameError
+      newName
     } = this.state;
+    const newNameError = this.newNameError(newName);
 
     const fieldList = _(defs)
       .toPairs()
@@ -108,13 +174,7 @@ export class DefsPanel extends Component {
         const key = ary[0];
         const value = ary[1];
         const id = uuidv5(key, ns);
-        return (
-          <ExprField key={id} name={key}
-            expr={value.exp}
-            errors={value.errors}
-            onChange={(value) => this.onChange(key, value)}
-            onDelete={() => this.onDelete(key)}></ExprField>
-        );
+        return { id, key, value };
       }).value();
 
     const hasNewNameError = newNameError !== ''
@@ -126,15 +186,16 @@ export class DefsPanel extends Component {
           </Accordion.Toggle>
           <Accordion.Collapse eventKey="0">
             <Card.Body>
-              <Form.Group size="small">
+              <Form.Group controlId="validationAdd">
                 <InputGroup size="sm" >
                   <InputGroup.Prepend>Name</InputGroup.Prepend>
                   <Form.Control type="text"
                     value={newName}
                     onChange={(ev) => this.onName(ev.target.value)}
+                    isValid={!hasNewNameError}
                     isInvalid={!!hasNewNameError} />
                   <InputGroup.Append>
-                    <Button variation="primary"
+                    <Button variant="primary"
                       onClick={() => this.onAdd()}
                       disabled={hasNewNameError}>
                       <FontAwesomeIcon icon={faPlus} />
@@ -145,13 +206,19 @@ export class DefsPanel extends Component {
                 </InputGroup>
               </Form.Group>
               <hr></hr>
-              {fieldList}
+              {fieldList.map(({ id, key, value }) => (
+                <ExprField key={id} name={key}
+                  expr={value.exp}
+                  errors={value.errors}
+                  onChange={(value) => this.onChange(key, value)}
+                  onDelete={() => this.onDelete(key)}></ExprField>
+              ))}
               <OptionPanel show={deleteModalShown}
                 title={modalTitle}
                 message={modalMessage}
                 confirmButton="Remove"
                 onCancel={() => this.hideOptionPanel()}
-                onConfirm={() => optionAction()}
+                onConfirm={() => { if (optionAction) { optionAction(); } }}
               />
             </Card.Body >
           </Accordion.Collapse>
