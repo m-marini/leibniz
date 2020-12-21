@@ -2,22 +2,42 @@ import React, { Component } from 'react';
 import { default as _ } from 'lodash';
 import { Button, Row, Form, Container } from 'react-bootstrap';
 import { saveAs } from 'file-saver';
+import { System } from './Interpreter';
 
-export class DumpPanel extends Component {
+interface DumpPanelProps {
+  result: System;
+};
 
-  constructor(props) {
-    super();
+/**
+ * 
+ */
+export class DumpPanel extends Component<DumpPanelProps, {
+  counts: string;
+  dt: string;
+}> {
+
+  /**
+   * 
+   * @param props 
+   */
+  constructor(props: DumpPanelProps) {
+    super(props);
     this.state = {
       counts: '10',
       dt: '0.1'
     };
   }
 
-  dumpData() {
-    var sys = this.props.result.system;
+  /**
+   * 
+   */
+  private dumpData() {
+    const { result } = this.props;
+    const { dt: dtString, counts: countsString } = this.state;
+    const dt = parseFloat(dtString);
+    const counts = parseInt(countsString);
+    var sys = result.system;
     if (sys) {
-      const dt = parseFloat(this.state.dt);
-      const counts = parseInt(this.state.counts);
       const dumpTable = [];
       for (var i = 0; i < counts; i++) {
         dumpTable.push(sys.dumpWithDt(dt));
@@ -34,32 +54,42 @@ export class DumpPanel extends Component {
     }
   }
 
-  setCounts(value) {
+  /**
+   * 
+   * @param value 
+   */
+  private setCounts(value: string) {
     this.setState({ counts: value });
   }
 
-  setDt(value) {
+  /**
+   * 
+   * @param value 
+   */
+  private setDt(value: string) {
     this.setState({ dt: value });
   }
 
+  /**
+   * 
+   */
   render() {
-    const dumpDisabled = !this.props.result.system;
+    const { result } = this.props;
+    const dumpDisabled = !result.system;
     return (
       <Container>
         <Row>
-          <Form inline>
-            <Form.Group controlId="formInlineName" size="sm">
+          <Form noValidate inline>
+            <Form.Group controlId="formInlineName">
               <Form.Label>Counts</Form.Label>{' '}
               <Form.Control type="text" placeholder="Counts"
-                onInput={ev => this.setCounts(ev.target.value)}
-                onChange={() => { }}
+                onChange={ev => this.setCounts(ev.target.value)}
                 value={this.state.counts} />
             </Form.Group>{' '}
-            <Form.Group controlId="formInlineName" size="sm">
+            <Form.Group controlId="formInlineName" >
               <Form.Label>dt</Form.Label>{' '}
               <Form.Control type="text" placeholder="dt"
-                onInput={ev => this.setDt(ev.target.value)}
-                onChange={() => { }}
+                onChange={ev => this.setDt(ev.target.value)}
                 value={this.state.dt} />
             </Form.Group>
             <Button variant="primary"

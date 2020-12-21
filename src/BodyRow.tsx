@@ -4,75 +4,114 @@ import { ExprField } from './ExprField';
 import { OptionPanel } from './OptionPanel';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { BodyDefinition } from './Definitions';
+import { BodyNode } from './Interpreter';
 
-export class BodyRow extends Component {
+interface BodyRowProps {
+  id: number;
+  body: BodyNode;
+  onChange?: (body: BodyDefinition) => void;
+  onDelete?: () => void;
+};
 
-  constructor(props) {
+export class BodyRow extends Component<BodyRowProps, {
+  modalShown: boolean;
+}> {
+
+  constructor(props: BodyRowProps) {
     super(props);
     this.state = {
       modalShown: false
     };
   }
 
-  onAddRotation() {
-    if (this.props.onChange) {
+  /**
+   * 
+   */
+  private onAddRotation() {
+    const { onChange } = this.props;
+    if (onChange) {
       const body = {
         position: this.props.body.position.exp,
         rotation: '1+0*i'
       };
-      this.props.onChange(body);
+      onChange(body);
     }
   }
 
+  /**
+   * 
+   */
   showOptionPanel() {
     this.setState({ modalShown: true });
   }
 
+  /**
+   * 
+   */
   hideOptionPanel() {
     this.setState({ modalShown: false });
   }
 
+  /**
+   * 
+   */
   deleteRotation() {
-    if (this.props.onChange) {
+    const { onChange } = this.props;
+    if (onChange) {
       const body = {
         position: this.props.body.position.exp
       };
-      this.props.onChange(body);
+      onChange(body);
     }
     this.hideOptionPanel();
   }
 
+  /**
+   * 
+   */
   onDeleteRow() {
-    if (this.props.onDelete) {
-      this.props.onDelete();
+    const { onDelete } = this.props;
+    if (onDelete) {
+      onDelete();
     }
   }
 
-  onChangePosition(value) {
-    if (this.props.onChange) {
-      const body = (this.props.body.rotation) ?
+  /**
+   * 
+   * @param value 
+   */
+  private onChangePosition(value: string) {
+    const { onChange, body } = this.props;
+    if (onChange) {
+      const newBody = (body.rotation) ?
         {
           position: value,
-          rotation: this.props.body.rotation.exp
+          rotation: body.rotation.exp
         } : {
           position: value
         };
-      this.props.onChange(body);
+      onChange(newBody);
     }
   }
 
-  onChangeRotation(value) {
-    if (this.props.onChange) {
-      const body = {
-        position: this.props.body.position.exp,
+  /**
+   * 
+   * @param value 
+   */
+  private onChangeRotation(value: string) {
+    const { onChange, body } = this.props;
+    if (onChange) {
+      const newBody = {
+        position: body.position.exp,
         rotation: value
       };
-      this.props.onChange(body);
+      onChange(newBody);
     }
   }
 
   render() {
-    const {body} = this.props;
+    const { body } = this.props;
     const rotField = body.rotation ? (
       <div>
         <ExprField name=""
@@ -89,8 +128,8 @@ export class BodyRow extends Component {
         />
       </div>
     ) : (
-        <Button size="sm" variant="danger" onClick={() => this.onAddRotation()}>
-          <FontAwesomeIcon icon={faPlus} >Add rotation</FontAwesomeIcon>
+        <Button size="sm" variant="primary" onClick={() => this.onAddRotation()}>
+          <FontAwesomeIcon icon={faPlus} />
         </Button>);
     return (
       <tr>
@@ -99,7 +138,7 @@ export class BodyRow extends Component {
           <ExprField name="" expr={body.position.exp}
             errors={body.position.errors}
             onChange={(value) => this.onChangePosition(value)}
-            withoutDelete="true"
+            withoutDelete={true}
           />
         </td>
         <td>
@@ -107,7 +146,7 @@ export class BodyRow extends Component {
         </td>
         <td>
           <Button size="sm" variant="danger" onClick={() => this.onDeleteRow()}>
-            <FontAwesomeIcon icon={faTrash} >Remove body</FontAwesomeIcon>
+            <FontAwesomeIcon icon={faTrash} />
           </Button>
         </td>
       </tr>

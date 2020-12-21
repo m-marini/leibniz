@@ -1,0 +1,49 @@
+{
+  "bodies": [
+    {
+      "position": "(0,0,0)"
+    },
+    {
+      "position": "(0,1,-1)"
+    },
+    {
+      "position": "(1,1,-1)",
+      "rotation": "q1"
+    },
+    {
+      "position": "p2"
+    },
+    {
+      "position": "(-1,0,1)",
+      "rotation": "1+0*i"
+    }
+  ],
+  "funcs": {
+    "qphi": "qrot(ey*phi)",
+    "q1": "qpsi*qtheta*qphi",
+    "dphi": "wphi*dt",
+    "qtheta": "qrot(ez*theta)",
+    "qpsi": "qrot(ey*psi)",
+    "dpsi": "wpsi*dt",
+    "dtheta": "wtheta*dt",
+    "dalpha": "walpha*dt",
+    "p2": "cyl(r2, alpha, 0)"
+  },
+  "update": {
+    "phi": "phi+dphi",
+    "psi": "psi+dpsi",
+    "theta": "theta+dtheta",
+    "alpha": "alpha+dalpha"
+  },
+  "vars": {
+    "wphi": "2*PI/0.5",
+    "phi": "0",
+    "theta": "0",
+    "psi": "0",
+    "wpsi": "2*PI/3",
+    "wtheta": "2*PI/17",
+    "alpha": "0",
+    "walpha": "2*PI/5",
+    "r2": "1"
+  }
+}
