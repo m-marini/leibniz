@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/leibniz/static/css/main.31a993f7.chunk.css",
-    "main.js": "/leibniz/static/js/main.8bbbf2c3.chunk.js",
-    "main.js.map": "/leibniz/static/js/main.8bbbf2c3.chunk.js.map",
+    "main.js": "/leibniz/static/js/main.85069a58.chunk.js",
+    "main.js.map": "/leibniz/static/js/main.85069a58.chunk.js.map",
     "runtime-main.js": "/leibniz/static/js/runtime-main.e6f4f38e.js",
     "runtime-main.js.map": "/leibniz/static/js/runtime-main.e6f4f38e.js.map",
     "static/js/2.92ad4b78.chunk.js": "/leibniz/static/js/2.92ad4b78.chunk.js",
@@ -17,6 +17,6 @@
     "static/js/runtime-main.e6f4f38e.js",
     "static/js/2.92ad4b78.chunk.js",
     "static/css/main.31a993f7.chunk.css",
-    "static/js/main.8bbbf2c3.chunk.js"
+    "static/js/main.85069a58.chunk.js"
   ]
 }
