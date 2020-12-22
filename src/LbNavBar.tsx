@@ -25,9 +25,13 @@ export const LbNavBar: FunctionComponent<Readonly<{
               onSelect={() => { if (onReset) { onReset(); } }}>
               Reset
               </NavDropdown.Item>
-            <NavDropdown.Item
+              <NavDropdown.Item
               onSelect={() => { if (onLoad) { onLoad('sample1.json'); } }}>
               Basic sample
+            </NavDropdown.Item>
+            <NavDropdown.Item
+              onSelect={() => { if (onLoad) { onLoad('bodies3.json'); } }}>
+              3 Bodies
             </NavDropdown.Item>
             <NavDropdown.Item
               onSelect={() => { if (onLoad) { onLoad('solaris.json'); } }}>

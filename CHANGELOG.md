@@ -9,7 +9,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-## [1.2.0] - 21-12-2020
+## [1.2.2] - 22-12-2020
+
+### Added
+
+- Issue #29: System with 3 bodies
+
+## [1.2.1] - 21-12-2020
 
 ### Added
 

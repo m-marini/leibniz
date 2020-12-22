@@ -27,7 +27,12 @@
     "dpsi": "wpsi*dt",
     "dtheta": "wtheta*dt",
     "dalpha": "walpha*dt",
-    "p2": "cyl(r2, alpha, 0)"
+    "wphi": "2*PI/0.5",
+    "wpsi": "2*PI/3",
+    "wtheta": "2*PI/17",
+    "walpha": "2*PI/5",
+    "p2": "cyl(r2, alpha, 0)",
+    "r2": "1"
   },
   "update": {
     "phi": "phi+dphi",
@@ -36,14 +41,9 @@
     "alpha": "alpha+dalpha"
   },
   "vars": {
-    "wphi": "2*PI/0.5",
     "phi": "0",
     "theta": "0",
     "psi": "0",
-    "wpsi": "2*PI/3",
-    "wtheta": "2*PI/17",
-    "alpha": "0",
-    "walpha": "2*PI/5",
-    "r2": "1"
+    "alpha": "0"
   }
 }
