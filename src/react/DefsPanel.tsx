@@ -3,20 +3,20 @@ import { InputGroup, Button, Card, Form, Accordion } from 'react-bootstrap';
 import { ExprField } from './ExprField';
 import _ from 'lodash';
 import { OptionPanel } from './OptionPanel';
-import { checkForIdentifier } from './leibniz-ast-0.1.1';
 import { v5 as uuidv5 } from 'uuid';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
-import { ExpressionNodes } from './Interpreter';
-import { Definitions } from './Definitions';
+import { identifierError } from '../modules/leibniz-parser';
+import { Errors } from '../modules/leibniz-defs';
 
 const ns = uuidv5('http://www.mmarini.org', uuidv5.URL);
 
 interface DefsPanelProps {
   panelKey: string;
   title: string;
-  defs: ExpressionNodes;
-  onChange?: (id: string, value: Definitions) => void;
+  defs?: Record<string, string>;
+  errors?: Record<string, Errors>;
+  onChange?: (id: string, value: Record<string, string>) => void;
 };
 
 /**
@@ -44,21 +44,13 @@ export class DefsPanel extends Component<DefsPanelProps, {
 
   /**
    * 
-   */
-  private createDefs(): Record<string, string> {
-    const { defs } = this.props;
-    return _.mapValues(defs, 'exp');
-  }
-
-  /**
-   * 
    * @param id 
    * @param value 
    */
   private onChange(id: string, value: string) {
-    const { onChange, panelKey } = this.props;
-    if (onChange) {
-      const newConf = this.createDefs();
+    const { onChange, panelKey, defs } = this.props;
+    if (onChange && defs) {
+      const newConf = _.clone(defs);
       newConf[id] = value;
       onChange(panelKey, newConf);
     }
@@ -95,10 +87,9 @@ export class DefsPanel extends Component<DefsPanelProps, {
    * @param id 
    */
   private deleteDefs(id: string) {
-    const { onChange, panelKey } = this.props;
-    if (onChange) {
-      const newConf = this.createDefs()
-      delete newConf[id];
+    const { onChange, panelKey, defs } = this.props;
+    if (onChange && defs) {
+      const newConf = _.omit(defs, id);
       onChange(panelKey, newConf);
     }
     this.hideOptionPanel();
@@ -117,10 +108,10 @@ export class DefsPanel extends Component<DefsPanelProps, {
    * 
    */
   private onAdd() {
-    const { onChange, panelKey } = this.props;
-    if (onChange) {
+    const { onChange, panelKey,defs } = this.props;
+    if (onChange&&defs) {
       const { newName } = this.state;
-      const newConf = this.createDefs();
+      const newConf = _.clone(defs);
       newConf[newName] = '0';
       onChange(panelKey, newConf);
       this.setState({ newName: '' });
@@ -140,27 +131,22 @@ export class DefsPanel extends Component<DefsPanelProps, {
    * @param name 
    */
   newNameError(name: string) {
+    const { defs } = this.props;
     if (name === '') {
       return 'Identifier is required';
     }
-    if (checkForIdentifier(name)) {
-      return checkForIdentifier(name);
+    const error = identifierError(name);
+    if (error) {
+      return error;
     }
-    if (!!this.props.defs[name]) {
+    if (defs && defs[name] !== undefined) {
       return 'Definition already exists';
     }
     return '';
   }
 
-  /**
-   * 
-   */
-  private hasError() {
-    return _.flatMap(this.props.defs, 'errors').length > 0;
-  }
-
   render() {
-    const { title, defs } = this.props;
+    const { title, defs, errors } = this.props;
     const {
       deleteModalShown, modalTitle, modalMessage, optionAction,
       newName
@@ -208,8 +194,8 @@ export class DefsPanel extends Component<DefsPanelProps, {
               <hr></hr>
               {fieldList.map(({ id, key, value }) => (
                 <ExprField key={id} name={key}
-                  expr={value.exp}
-                  errors={value.errors}
+                  expr={value}
+                  errors={errors ? errors[key] : undefined}
                   onChange={(value) => this.onChange(key, value)}
                   onDelete={() => this.onDelete(key)}></ExprField>
               ))}

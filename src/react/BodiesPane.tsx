@@ -5,12 +5,12 @@ import { BodyRow } from './BodyRow';
 import { OptionPanel } from './OptionPanel';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
-import { BodyNodes } from './Interpreter';
-import { BodyDefinitions, BodyDefinition } from './Definitions';
+import { BodyStructure, Errors } from '../modules/leibniz-defs';
 
 interface BodiesPanelProps {
-  bodies: BodyNodes;
-  onChange ?: (arg: BodyDefinitions) => void;
+  bodies?: BodyStructure<string>[];
+  errors?: BodyStructure<Errors>[];
+  onChange?: (arg: BodyStructure<string>[]) => void;
 };
 
 export class BodiesPanel extends Component<BodiesPanelProps, {
@@ -94,17 +94,13 @@ export class BodiesPanel extends Component<BodiesPanelProps, {
   /**
    * 
    */
-  private createBodies(): BodyDefinitions {
-    return _.map(this.props.bodies, b =>
-      (b.rotation) ?
-        {
-          position: b.position.exp,
-          rotation: b.rotation.exp
-        } :
-        {
-          position: b.position.exp
-        }
-    );
+  private createBodies(): BodyStructure<string>[] {
+    return _.map(this.props.bodies, b => {
+      return {
+        position: b.position,
+        rotation: b.rotation
+      };
+    });
   }
 
   /**
@@ -112,7 +108,7 @@ export class BodiesPanel extends Component<BodiesPanelProps, {
    * @param idx 
    * @param body 
    */
-  private onChange(idx: number, body: BodyDefinition) {
+  private onChange(idx: number, body: BodyStructure<string>) {
     const { onChange } = this.props;
     if (onChange) {
       const bodies = this.createBodies();
@@ -124,25 +120,17 @@ export class BodiesPanel extends Component<BodiesPanelProps, {
   /**
    * 
    */
-  private hasError() {
-    return _.flatMap(this.props.bodies, e => {
-      return e.rotation ? _.concat(e.position.errors, e.rotation.errors) : e.position.errors;
-    }).length > 0;
-  }
-
-  /**
-   * 
-   */
   render() {
-    const { bodies } = this.props;
+    const { bodies, errors } = this.props;
     const { modalShown, modalTitle, modalMessage, confirmAction } = this.state;
-    const rows = _.map(bodies, (body, idx) =>
+    const rows = bodies ? _.map(bodies, (body, idx) =>
       <BodyRow key={idx} id={idx} body={body}
+        errors={errors ? errors[idx] : undefined}
         onChange={(body) => this.onChange(idx, body)}
         onDelete={() => this.onDelete(idx)} />
-    );
+    ) : [];
     return (
-      <Accordion defaultActiveKey="0">
+      <Accordion defaultActiveKey="0" >
         <Card>
           <Accordion.Toggle as={Card.Header} eventKey="0">
             Bodies

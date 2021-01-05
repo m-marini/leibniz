@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+
+- Issue #32: Move defs from cookies to storage enhancement
+- Issue #33: convert core to typescript
+
 ## [1.2.2] - 22-12-2020
 
 ### Added

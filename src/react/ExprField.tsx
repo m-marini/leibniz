@@ -2,14 +2,13 @@ import React, { FunctionComponent } from 'react';
 import { InputGroup, Button, Form } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons'
-import { Expression } from './Definitions';
 
 export const ExprField: FunctionComponent<{
   name: string;
-  expr: Expression;
+  expr?: string;
   errors?: string[];
   withoutDelete?: boolean;
-  onChange?: (arg: Expression) => void;
+  onChange?: (arg: string) => void;
   onDelete?: () => void;
 }> = ({ name, expr, errors = [], withoutDelete = false, onDelete, onChange }) => {
   const hasErrors = errors.length > 0;
