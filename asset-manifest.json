@@ -1,22 +1,22 @@
 {
   "files": {
     "main.css": "/leibniz/static/css/main.31a993f7.chunk.css",
-    "main.js": "/leibniz/static/js/main.8910d021.chunk.js",
-    "main.js.map": "/leibniz/static/js/main.8910d021.chunk.js.map",
-    "runtime-main.js": "/leibniz/static/js/runtime-main.e6f4f38e.js",
-    "runtime-main.js.map": "/leibniz/static/js/runtime-main.e6f4f38e.js.map",
-    "static/js/2.92ad4b78.chunk.js": "/leibniz/static/js/2.92ad4b78.chunk.js",
-    "static/js/2.92ad4b78.chunk.js.map": "/leibniz/static/js/2.92ad4b78.chunk.js.map",
-    "static/js/3.956975d7.chunk.js": "/leibniz/static/js/3.956975d7.chunk.js",
-    "static/js/3.956975d7.chunk.js.map": "/leibniz/static/js/3.956975d7.chunk.js.map",
+    "main.js": "/leibniz/static/js/main.94140b99.chunk.js",
+    "main.js.map": "/leibniz/static/js/main.94140b99.chunk.js.map",
+    "runtime-main.js": "/leibniz/static/js/runtime-main.5e80cd43.js",
+    "runtime-main.js.map": "/leibniz/static/js/runtime-main.5e80cd43.js.map",
+    "static/js/2.fdeb4719.chunk.js": "/leibniz/static/js/2.fdeb4719.chunk.js",
+    "static/js/2.fdeb4719.chunk.js.map": "/leibniz/static/js/2.fdeb4719.chunk.js.map",
+    "static/js/3.fcbcddf5.chunk.js": "/leibniz/static/js/3.fcbcddf5.chunk.js",
+    "static/js/3.fcbcddf5.chunk.js.map": "/leibniz/static/js/3.fcbcddf5.chunk.js.map",
     "index.html": "/leibniz/index.html",
     "static/css/main.31a993f7.chunk.css.map": "/leibniz/static/css/main.31a993f7.chunk.css.map",
-    "static/js/2.92ad4b78.chunk.js.LICENSE.txt": "/leibniz/static/js/2.92ad4b78.chunk.js.LICENSE.txt"
+    "static/js/2.fdeb4719.chunk.js.LICENSE.txt": "/leibniz/static/js/2.fdeb4719.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.e6f4f38e.js",
-    "static/js/2.92ad4b78.chunk.js",
+    "static/js/runtime-main.5e80cd43.js",
+    "static/js/2.fdeb4719.chunk.js",
     "static/css/main.31a993f7.chunk.css",
-    "static/js/main.8910d021.chunk.js"
+    "static/js/main.94140b99.chunk.js"
   ]
 }
