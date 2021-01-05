@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.3.0] - 05-01-2021
+
 ### Changed
 
 - Issue #32: Move defs from cookies to storage enhancement

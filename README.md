@@ -1,3 +1,6 @@
+![Node.js CI](https://github.com/m-marini/leibniz/workflows/Node.js%20CI/badge.svg)
+![Deploy](https://github.com/m-marini/leibniz/workflows/Deploy/badge.svg)
+
 **Leibnitz** is a simulator of 3D body trajectories with differential equation
 
 Wiki at https://github.com/m-marini/leibnitz/wiki
