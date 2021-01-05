@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
-import { default as _ } from 'lodash';
 import { Button, Row, Form, Container } from 'react-bootstrap';
 import { saveAs } from 'file-saver';
-import { System } from './Interpreter';
+import { SystemRules } from '../modules/leibniz-defs';
+import { generateData, toCsv } from '../modules/leibnitz-dumper';
 
 interface DumpPanelProps {
-  result: System;
+  rules?: SystemRules;
 };
 
 /**
@@ -32,24 +32,14 @@ export class DumpPanel extends Component<DumpPanelProps, {
    * 
    */
   private dumpData() {
-    const { result } = this.props;
-    const { dt: dtString, counts: countsString } = this.state;
-    const dt = parseFloat(dtString);
-    const counts = parseInt(countsString);
-    var sys = result.system;
-    if (sys) {
-      const dumpTable = [];
-      for (var i = 0; i < counts; i++) {
-        dumpTable.push(sys.dumpWithDt(dt));
-        sys = sys.next(dt);
-      }
-      const keys = _(dumpTable[0]).keys().sortBy().value();
-      const header = _.reduce(keys, (a, b) => a + ',' + b) + '\n\r';
-      const rows = _(dumpTable).map(row =>
-        _(keys).map(k =>
-          '"' + row[k].toString() + '"').reduce((a, b) => a + ',' + b)
-      ).reduce((a, b) => a + '\n\r' + b) + '\n\r';
-      const blob = new Blob([header + rows], { type: "text/plain;charset=utf-8" });
+    const { rules } = this.props;
+    if (rules) {
+      const { dt: dtString, counts: countsString } = this.state;
+      const dt = parseFloat(dtString);
+      const counts = parseInt(countsString);
+      const data = generateData(rules, dt, counts);
+      const dumpData = toCsv(data, rules);
+      const blob = new Blob([dumpData], { type: "text/plain;charset=utf-8" });
       saveAs(blob, "dump.csv");
     }
   }
@@ -74,8 +64,8 @@ export class DumpPanel extends Component<DumpPanelProps, {
    * 
    */
   render() {
-    const { result } = this.props;
-    const dumpDisabled = !result.system;
+    const { rules } = this.props;
+    const dumpDisabled = rules === undefined;
     return (
       <Container>
         <Row>

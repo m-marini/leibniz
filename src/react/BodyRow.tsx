@@ -4,13 +4,13 @@ import { ExprField } from './ExprField';
 import { OptionPanel } from './OptionPanel';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faTrash } from '@fortawesome/free-solid-svg-icons'
-import { BodyDefinition } from './Definitions';
-import { BodyNode } from './Interpreter';
+import { BodyStructure, Errors } from '../modules/leibniz-defs';
 
 interface BodyRowProps {
   id: number;
-  body: BodyNode;
-  onChange?: (body: BodyDefinition) => void;
+  body?: BodyStructure<string>;
+  errors?: BodyStructure<Errors>;
+  onChange?: (body: BodyStructure<string>) => void;
   onDelete?: () => void;
 };
 
@@ -29,13 +29,12 @@ export class BodyRow extends Component<BodyRowProps, {
    * 
    */
   private onAddRotation() {
-    const { onChange } = this.props;
-    if (onChange) {
-      const body = {
-        position: this.props.body.position.exp,
+    const { onChange, body } = this.props;
+    if (onChange && body) {
+      onChange({
+        position: body.position,
         rotation: '1+0*i'
-      };
-      onChange(body);
+      });
     }
   }
 
@@ -57,12 +56,9 @@ export class BodyRow extends Component<BodyRowProps, {
    * 
    */
   deleteRotation() {
-    const { onChange } = this.props;
-    if (onChange) {
-      const body = {
-        position: this.props.body.position.exp
-      };
-      onChange(body);
+    const { onChange, body } = this.props;
+    if (onChange && body) {
+      onChange({ position: body.position });
     }
     this.hideOptionPanel();
   }
@@ -83,15 +79,11 @@ export class BodyRow extends Component<BodyRowProps, {
    */
   private onChangePosition(value: string) {
     const { onChange, body } = this.props;
-    if (onChange) {
-      const newBody = (body.rotation) ?
-        {
-          position: value,
-          rotation: body.rotation.exp
-        } : {
-          position: value
-        };
-      onChange(newBody);
+    if (onChange && body) {
+      onChange({
+        position: value,
+        rotation: body.rotation
+      });
     }
   }
 
@@ -101,21 +93,20 @@ export class BodyRow extends Component<BodyRowProps, {
    */
   private onChangeRotation(value: string) {
     const { onChange, body } = this.props;
-    if (onChange) {
-      const newBody = {
-        position: body.position.exp,
+    if (onChange && body) {
+      onChange({
+        position: body.position,
         rotation: value
-      };
-      onChange(newBody);
+      });
     }
   }
 
   render() {
-    const { body } = this.props;
-    const rotField = body.rotation ? (
+    const { body, errors } = this.props;
+    const rotField = body?.rotation ? (
       <div>
         <ExprField name=""
-          expr={body.rotation.exp} errors={body.rotation.errors}
+          expr={body.rotation} errors={errors?.rotation}
           onChange={(value) => this.onChangeRotation(value)}
           onDelete={() => this.showOptionPanel()}
         />
@@ -135,8 +126,8 @@ export class BodyRow extends Component<BodyRowProps, {
       <tr>
         <td>{this.props.id + 1}</td>
         <td>
-          <ExprField name="" expr={body.position.exp}
-            errors={body.position.errors}
+          <ExprField name="" expr={body?.position}
+            errors={errors?.position}
             onChange={(value) => this.onChangePosition(value)}
             withoutDelete={true}
           />

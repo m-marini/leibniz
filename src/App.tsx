@@ -1,27 +1,30 @@
 import React, { Component } from 'react';
 import { Form, FormGroup, FormControl, Tabs, Tab, Container } from 'react-bootstrap';
-import * as Cookies from 'js-cookie';
 import { saveAs } from 'file-saver';
-import './App.css';
-import { BabylonScene } from './SceneComponent';
-import { Editor } from './Editor';
-import { SystemParser } from './leibniz-ast-0.1.1';
-import { Leibniz } from './leibniz-0.1.3';
-import { Test } from './Test';
-import { ImportFile } from './ImportFile';
-import { OptionPanel } from './OptionPanel';
-import { DumpPanel } from './DumpPanel';
 import { ajax } from 'rxjs/ajax';
 import { tap } from 'rxjs/operators';
-import { LbNavBar } from './LbNavBar';
-import { LbAlert } from './LbAlert';
-import { SystemDefinition } from './Definitions';
+import './App.css';
+import { BabylonScene, SceneMountEvent } from './react/SceneComponent';
+import { Editor } from './react/Editor';
+import { ImportFile } from './react/ImportFile';
+import { OptionPanel } from './react/OptionPanel';
+import { DumpPanel } from './react/DumpPanel';
+import { LbNavBar } from './react/LbNavBar';
+import { LbAlert } from './react/LbAlert';
+import { CurrentSysDefVersion, SystemDefinition, SystemErrors, SystemRules } from './modules/leibniz-defs';
+import { CameraType, Leibniz } from './modules/leibniz-renderer';
+import { compile, validateSystemDefinition } from './modules/leibniz-compiler';
+import _ from 'lodash';
 
-const conf1 = {
+const KEY = 'leibniz';
+const MinDt = 1e-3;
+
+const DefaultDefinition: SystemDefinition = {
+  version: CurrentSysDefVersion,
   bodies: [],
   funcs: {},
-  vars: {},
-  update: {}
+  initialStatus: {},
+  transition: {}
 };
 
 interface AppState {
@@ -30,15 +33,16 @@ interface AppState {
   alertMessage?: string;
   modalShown: boolean;
   importModalShown: boolean;
-  result: any;
-  subSteps: string;
-  initialConf: any;
+  maxDt: string;
   optionShow?: boolean;
   optionTitle?: string;
   optionMessage?: string;
   optionConfirmBtn?: string;
   optionConfirm?: () => void,
-  conf?: any;
+  defs?: SystemDefinition;
+  rules?: SystemRules;
+  errors?: SystemErrors;
+  leibniz?: Leibniz;
 }
 
 export class App extends Component<{}, AppState> {
@@ -51,23 +55,11 @@ export class App extends Component<{}, AppState> {
   constructor(props: {}) {
     super(props);
 
-    const cfgCookie = Cookies.get('leibniz');
-    const cfg = cfgCookie ? JSON.parse(cfgCookie) : conf1;
-
     this.state = {
-      subSteps: "1",
+      maxDt: '0.01',
       alertShow: false,
       modalShown: false,
       importModalShown: false,
-      initialConf: cfg,
-      result: {
-        parserState: {
-          bodies: [],
-          funcs: {},
-          update: {},
-          vars: {}
-        }
-      }
     };
   }
 
@@ -75,39 +67,31 @@ export class App extends Component<{}, AppState> {
    * 
    * @param conf 
    */
-  private processConf(conf: SystemDefinition) {
-    const result = new SystemParser(conf).parse();
-    const state = {
-      conf: conf,
-      result: result
-    };
-    Cookies.set('leibniz', JSON.stringify(conf));
-    if (result.system && this.leibniz) {
-      this.leibniz.system = result.system;
+  private processDefs(defs: SystemDefinition, leibniz?: Leibniz) {
+    const leib = leibniz ?? this.state.leibniz;
+    const { rules, errors } = compile(defs);
+    localStorage.setItem(KEY, JSON.stringify(defs));
+
+    if (leib) {
+      leib.rules = rules;
     }
-    return state;
-  }
-
-  /**
-   * 
-   * @param conf 
-   */
-  private onChange(conf: SystemDefinition) {
-    this.setState(this.processConf(conf));
+    this.setState({ defs, rules, errors });
   }
 
   /**
    * 
    * @param e 
    */
-  private onSceneMount(e: any) {
+  private onSceneMount(e: SceneMountEvent) {
     const leibniz = new Leibniz(e);
     leibniz.init({
-      cameraType: 'ar',
-      subSteps: this.state.subSteps
+      cameraType: CameraType.ArcRotate,
+      maxDt: parseFloat(this.state.maxDt)
     });
-    this.leibniz = leibniz;
-    this.setState(this.processConf(this.state.initialConf));
+    this.setState({ leibniz });
+    const text = localStorage.getItem(KEY);
+    const defs = text ? JSON.parse(text) : DefaultDefinition;
+    this.processDefs(defs, leibniz);
   }
 
   /**
@@ -179,8 +163,7 @@ export class App extends Component<{}, AppState> {
    * 
    */
   private reset() {
-    const state = this.processConf(conf1);
-    this.setState(state);
+    this.processDefs(DefaultDefinition);
     this.hideOptionPanel();
   }
 
@@ -192,7 +175,7 @@ export class App extends Component<{}, AppState> {
     const url = process.env.REACT_APP_BASENAME + '/' + name;
     ajax.getJSON(url).pipe(
       tap(
-        json => this.onLoaded(json as SystemDefinition),
+        json => this.onLoaded(json),
         ajax => this.onLoadError(ajax)
       )
     ).subscribe();
@@ -202,11 +185,15 @@ export class App extends Component<{}, AppState> {
    * 
    * @param json 
    */
-  private onLoaded(json: SystemDefinition) {
-    console.log(json);
-    const state = this.processConf(json);
-    this.setState(state);
+  private onLoaded(json: any) {
     this.hideOptionPanel();
+    try {
+      if (validateSystemDefinition(json)) {
+        this.processDefs(json);
+      }
+    } catch (ex: any) {
+      this.onError(ex);
+    }
   }
 
   private onLoadError(ajax: any) {
@@ -215,25 +202,6 @@ export class App extends Component<{}, AppState> {
     console.error(msg);
     this.showAlert('Error', msg);
     this.hideOptionPanel();
-  }
-
-  /**
-   * 
-   */
-  private test() {
-    return (
-      <Tab eventKey="test" title="Test">
-        <Test initialConf={{
-          vars: {
-            "a": "a0",
-            "b": "inv(a0)",
-            "c": "a*b"
-          }, funcs: {
-            "a0": "T((8,1,6),(3,5,7),(4,9,2))",
-          }, bodies: [], update: {}
-        }} />
-      </Tab>
-    );
   }
 
   /**
@@ -256,10 +224,12 @@ export class App extends Component<{}, AppState> {
    */
   private importFile(content: string) {
     try {
-      const state = this.processConf(JSON.parse(content));
-      this.setState(state);
       this.hideAlert();
       this.hideImportPanel();
+      const json = JSON.parse(content);
+      if (validateSystemDefinition(json)) {
+        this.processDefs(json);
+      }
     } catch (e) {
       console.error('Error parsing', content);
       this.onError(e);
@@ -291,10 +261,11 @@ export class App extends Component<{}, AppState> {
    * 
    * @param value 
    */
-  private setSubSteps(value: string) {
-    this.setState({ subSteps: value });
+  private setMaxDt(maxDt: string) {
+    this.setState({ maxDt: maxDt });
     if (this.leibniz) {
-      this.leibniz.subSteps = parseInt(value);
+      const dtnum1 = parseFloat(maxDt);
+      this.leibniz.maxDt = Math.max(MinDt, dtnum1);
     }
   }
 
@@ -302,10 +273,14 @@ export class App extends Component<{}, AppState> {
    * 
    */
   private exportFile() {
-    const text = JSON.stringify(this.state.conf, null, '  ');
-    const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
-    saveAs(blob, "test.json");
+    const { defs } = this.state;
     this.hideOptionPanel();
+    if (defs) {
+      const exporting = _.defaults({ version: CurrentSysDefVersion }, defs);
+      const text = JSON.stringify(exporting, null, 2);
+      const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+      saveAs(blob, "test.json");
+    }
   }
 
   /**
@@ -316,7 +291,7 @@ export class App extends Component<{}, AppState> {
       alertShow, alertTitle, alertMessage,
       importModalShown,
       optionShow, optionTitle, optionMessage, optionConfirmBtn, optionConfirm,
-      result, subSteps
+      maxDt, defs, errors, rules
     } = this.state;
     return (
       <Container fluid>
@@ -337,18 +312,19 @@ export class App extends Component<{}, AppState> {
                 canvasClass="graphCanvas" />
               <Form inline>
                 <FormGroup controlId="formInlineName">
-                  <Form.Label>Sub Steps</Form.Label>{' '}
-                  <FormControl type="text" placeholder="Sub Steps"
-                    onChange={ev => this.setSubSteps(ev.target.value)}
-                    value={subSteps} />
+                  <Form.Label>Max dt</Form.Label>{' '}
+                  <FormControl type="text" placeholder="Max dt"
+                    onChange={ev => this.setMaxDt(ev.target.value)}
+                    value={maxDt} />
                 </FormGroup>{' '}
               </Form>
             </Tab>
             <Tab eventKey="editor" title="Editor">
-              <Editor result={result.parserState} onChange={conf => this.onChange(conf)} />
+              <Editor defs={defs} errors={errors}
+                onChange={defs => this.processDefs(defs)} />
             </Tab>
             <Tab eventKey="dump" title="Dump panel">
-              <DumpPanel result={result} />
+              <DumpPanel rules={rules} />
             </Tab>
           </Tabs>
         </Container>

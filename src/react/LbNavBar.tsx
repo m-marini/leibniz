@@ -1,7 +1,5 @@
 import React, { FunctionComponent } from 'react';
-import './App.css';
 import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
-
 
 /**
  * 
@@ -25,7 +23,7 @@ export const LbNavBar: FunctionComponent<Readonly<{
               onSelect={() => { if (onReset) { onReset(); } }}>
               Reset
               </NavDropdown.Item>
-              <NavDropdown.Item
+            <NavDropdown.Item
               onSelect={() => { if (onLoad) { onLoad('sample1.json'); } }}>
               Basic sample
             </NavDropdown.Item>
@@ -49,6 +47,9 @@ export const LbNavBar: FunctionComponent<Readonly<{
           <Nav.Link
             onClick={() => { if (onExport) { onExport(); } }}>
             Export
+          </Nav.Link>
+          <Nav.Link href="https://github.com/m-marini/leibniz/wiki/Expression-syntax" target="leibniz-help">
+            Help
           </Nav.Link>
         </Nav>
       </Navbar.Collapse>
