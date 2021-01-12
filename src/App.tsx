@@ -15,6 +15,7 @@ import { CurrentSysDefVersion, SystemDefinition, SystemErrors, SystemRules } fro
 import { CameraType, Leibniz } from './modules/leibniz-renderer';
 import { compile, validateSystemDefinition } from './modules/leibniz-compiler';
 import _ from 'lodash';
+import { homepage } from '../package.json';
 
 const KEY = 'leibniz';
 const MinDt = 1e-3;
@@ -172,7 +173,7 @@ export class App extends Component<{}, AppState> {
    * @param name 
    */
   private load(name: string) {
-    const url = process.env.REACT_APP_BASENAME + '/' + name;
+    const url = `/${homepage}/${name}`;
     ajax.getJSON(url).pipe(
       tap(
         json => this.onLoaded(json),

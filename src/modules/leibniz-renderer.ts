@@ -281,8 +281,7 @@ export class Leibniz {
         scene.onBeforeStepObservable.add((scene) => {
             const { rules, status } = this;
             if (rules && status) {
-                const ar = scene.getAnimationRatio() || 1;
-                const realDt = ar / FPS;
+                const realDt = scene.getEngine().getDeltaTime() / 1000;
                 const dt = Math.min(this.maxDt, realDt);
                 var st = status;
                 for (var t = this._remainderT; t < realDt; t += dt) {

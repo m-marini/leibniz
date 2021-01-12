@@ -1,5 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
+import { version, homepage } from '../../package.json';
 
 /**
  * 
@@ -10,14 +11,13 @@ export const LbNavBar: FunctionComponent<Readonly<{
   onImport?: () => void;
   onExport?: () => void;
 }>> = ({ onReset, onLoad, onImport, onExport }) => {
-  const home = process.env.REACT_APP_BASENAME;
   return (
     <Navbar variant="dark" bg="dark" expand="lg" >
       <Navbar.Brand href="http://www.mmarini.org">www.mmarini.org</Navbar.Brand>
       <Navbar.Toggle aria-controls="navbar-nav" />
       <Navbar.Collapse id="navbar-nav">
         <Nav className="mr-auto">
-          <Nav.Link href={home}>Leibniz {process.env.REACT_APP_VERSION}</Nav.Link>
+          <Nav.Link href={`/${homepage}`}>Leibniz {version}</Nav.Link>
           <NavDropdown id="predefined-menu" title="Predefined">
             <NavDropdown.Item
               onSelect={() => { if (onReset) { onReset(); } }}>
