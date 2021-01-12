@@ -9,20 +9,30 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-## [1.3.0] - 05-01-2021
+## [1.3.1] - 2021-01-12
+
+### Changed
+
+- Issue #39: get time interval frame from babylon engine frame
+
+### Fixed
+
+- Issue #40: version and homepage fro package.json
+
+## [1.3.0] - 2021-01-05
 
 ### Changed
 
 - Issue #32: Move defs from cookies to storage enhancement
 - Issue #33: convert core to typescript
 
-## [1.2.2] - 22-12-2020
+## [1.2.2] - 2020-12-22
 
 ### Added
 
 - Issue #29: System with 3 bodies
 
-## [1.2.1] - 21-12-2020
+## [1.2.1] - 2020-12-21
 
 ### Added
 
@@ -32,7 +42,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Issue #31: Lock definitions
 
-## [1.2.0] - 20-12-2020
+## [1.2.0] - 2020-12-20
 
 ### Added
 
