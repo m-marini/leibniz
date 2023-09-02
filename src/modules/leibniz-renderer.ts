@@ -283,37 +283,40 @@ export class Leibniz {
             if (rules && status) {
                 const realDt = scene.getEngine().getDeltaTime() / 1000;
                 const dt = Math.min(this.maxDt, realDt);
-                var st = status;
-                for (var t = this._remainderT; t < realDt; t += dt) {
-                    st = rules.next(st, dt);
+                if (dt != 0) {
+                    var st = status;
+                    for (var t = this._remainderT; t < realDt; t += dt) {
+                        st = rules.next(st, dt);
+                    }
+                    this._remainderT = t - realDt;
+                    this._status = st;
                 }
-                this._remainderT = t - realDt;
-                this._status = st;
             }
+        }
         });
 
         // Adds callback handler on rendering loop
         engine.runRenderLoop(() => {
-            this.refreshScene();
-            scene.render();
-        });
-        return this;
+    this.refreshScene();
+    scene.render();
+});
+return this;
     }
 
     /**
      *
      */
     private refreshScene() {
-        const { status, shapes, rules } = this;
-        if (status && rules) {
-            const bodies = rules.bodies(status);
-            _.zip(bodies, shapes).forEach(([body, shape]) => {
-                if (body && shape) {
-                    this.updateShape(shape, body);
-                }
-            });
-        }
+    const { status, shapes, rules } = this;
+    if (status && rules) {
+        const bodies = rules.bodies(status);
+        _.zip(bodies, shapes).forEach(([body, shape]) => {
+            if (body && shape) {
+                this.updateShape(shape, body);
+            }
+        });
     }
+}
 
     /**
      * 
@@ -321,29 +324,29 @@ export class Leibniz {
      * @param body 
      */
     private updateShape(shape: Mesh, body: BodyStatus) {
-        shape.position = new Vector3(
-            body.position.get(0),
-            body.position.get(1),
-            body.position.get(2));
-        if (body.rotation) {
-            shape.rotationQuaternion = body.rotation;
-        }
+    shape.position = new Vector3(
+        body.position.get(0),
+        body.position.get(1),
+        body.position.get(2));
+    if (body.rotation) {
+        shape.rotationQuaternion = body.rotation;
     }
+}
 
-    /**
-     * 
-     */
-    refresh() {
-        this.props.engine.resize();
-    }
+/**
+ * 
+ */
+refresh() {
+    this.props.engine.resize();
+}
 
-    /**
-     * 
-     */
-    resetStatus() {
-        const { rules } = this;
-        if (rules) {
-            this._status = rules.initialStatus();
-        }
+/**
+ * 
+ */
+resetStatus() {
+    const { rules } = this;
+    if (rules) {
+        this._status = rules.initialStatus();
     }
+}
 }
