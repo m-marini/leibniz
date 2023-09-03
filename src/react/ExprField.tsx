@@ -15,18 +15,18 @@ export const ExprField: FunctionComponent<{
   const errorItems = errors.map((text, idx) => (<li key={idx}>{text}</li>));
 
   const deleteBtn = !withoutDelete ?
-    (<InputGroup.Append>
+    (<InputGroup.Text>
       <Button variant="danger"
         onClick={() => { if (onDelete) { onDelete() } }}>
         <FontAwesomeIcon icon={faTrash} />
       </Button>
-    </InputGroup.Append>)
+    </InputGroup.Text>)
     : '';
 
   return (
     <Form.Group >
       <InputGroup size="sm" >
-        <InputGroup.Prepend>{name}</InputGroup.Prepend>
+        <InputGroup.Text>{name}</InputGroup.Text>
         <Form.Control type="text"
           value={expr}
           // onInput={(ev) => { if (onChange) { onChange(ev.target.value); } }}

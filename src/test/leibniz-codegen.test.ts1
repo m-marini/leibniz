@@ -1,4 +1,4 @@
-import { Quaternion, Vector3 } from 'babylonjs';
+import { Quaternion, Vector3 } from '@babylonjs/core';
 import _ from 'lodash';
 import { ValueTypeCode, numberCode, expressionCodeGen, createCodeGenContext } from "../modules/leibnitz-codegen";
 import { parse } from '../modules/leibniz-parser';

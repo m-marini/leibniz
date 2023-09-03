@@ -1,4 +1,4 @@
-import { Quaternion } from "babylonjs";
+import { Quaternion } from "@babylonjs/core";
 import { InternalStatus, ValueFunction } from "./leibniz-defs";
 import { AnyValue, isMatrix, isNumber, isQuaternion, Matrix, vector } from "./leibniz-tensor";
 

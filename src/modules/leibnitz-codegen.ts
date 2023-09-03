@@ -1,4 +1,4 @@
-import { Quaternion } from 'babylonjs';
+import { Quaternion } from '@babylonjs/core';
 import _ from 'lodash';
 import {
     createConstantCode, createNegMatrixCode, createNegQuaternionCode, createNegScalarCode, createPowCode,

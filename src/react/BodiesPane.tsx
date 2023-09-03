@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Accordion, Button, Card, Table } from 'react-bootstrap';
+import { Accordion, Button, Table } from 'react-bootstrap';
 import { default as _ } from 'lodash';
 import { BodyRow } from './BodyRow';
 import { OptionPanel } from './OptionPanel';
@@ -130,14 +130,11 @@ export class BodiesPanel extends Component<BodiesPanelProps, {
         onDelete={() => this.onDelete(idx)} />
     ) : [];
     return (
-      <Accordion defaultActiveKey="0" >
-        <Card>
-          <Accordion.Toggle as={Card.Header} eventKey="0">
-            Bodies
-          </Accordion.Toggle>
-          <Accordion.Collapse eventKey="0">
-            <Card.Body>
-              <Button size="sm" variant="primary"
+      <Accordion defaultActiveKey="bodies" >
+        <Accordion.Item eventKey="bodies">
+          <Accordion.Header>Bodies</Accordion.Header>
+          <Accordion.Body>
+          <Button size="sm" variant="primary"
                 onClick={() => this.onAdd()}>
                 <FontAwesomeIcon icon={faPlus} />
               Add new body
@@ -161,9 +158,8 @@ export class BodiesPanel extends Component<BodiesPanelProps, {
                 onConfirm={() => { if (confirmAction) { confirmAction(); } }}
                 onCancel={() => this.hideOptionPanel()}
               />
-            </Card.Body>
-          </Accordion.Collapse>
-        </Card>
+          </Accordion.Body>
+        </Accordion.Item>
       </Accordion >
     );
   }

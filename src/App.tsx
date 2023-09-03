@@ -15,8 +15,8 @@ import { CurrentSysDefVersion, SystemDefinition, SystemErrors, SystemRules } fro
 import { CameraType, Leibniz } from './modules/leibniz-renderer';
 import { compile, validateSystemDefinition } from './modules/leibniz-compiler';
 import _ from 'lodash';
-import { homepage } from '../package.json';
 
+const homepage = `${process.env.REACT_APP_HOMEPAGE}`;
 const KEY = 'leibniz';
 const MinDt = 1e-3;
 
@@ -46,12 +46,15 @@ interface AppState {
   leibniz?: Leibniz;
 }
 
-export class App extends Component<{}, AppState> {
+/**
+ * Renders the application page
+ */
+export default class App extends Component<{}, AppState> {
   private leibniz: Leibniz | undefined;
 
   /**
-   * 
-   * @param props 
+   * Creates the application page
+   * @param props the properties
    */
   constructor(props: {}) {
     super(props);
@@ -96,9 +99,11 @@ export class App extends Component<{}, AppState> {
   }
 
   /**
-   * 
+   * Handles the on reset event
+   * Opens the option panel to ask for resetting panel
    */
   private onReset() {
+    console.log('onReset');
     this.showOptionPanel(
       'Reset definitions ?',
       'The definitions will be resetted to default value.',
@@ -107,7 +112,12 @@ export class App extends Component<{}, AppState> {
     );
   }
 
+  /**
+   * Handles the load event
+   * Opens the option panel to ask for predefined json files loading
+   */
   private onLoad(name: string) {
+    console.log(name);
     this.showOptionPanel(
       'Load definitions ' + name + ' ?',
       'The definitions will be load from ' + name + ' .',
@@ -117,11 +127,11 @@ export class App extends Component<{}, AppState> {
   }
 
   /**
-   * 
-   * @param optionTitle 
-   * @param optionMessage 
-   * @param optionConfirmBtn 
-   * @param optionConfirm 
+   * Shows the option panel
+   * @param optionTitle the title panel
+   * @param optionMessage the message
+   * @param optionConfirmBtn the confirm button text
+   * @param optionConfirm the confirm call back
    */
   private showOptionPanel(optionTitle: string, optionMessage: string, optionConfirmBtn: string, optionConfirm: () => void) {
     this.setState({
@@ -134,16 +144,16 @@ export class App extends Component<{}, AppState> {
   }
 
   /**
-   * 
+   * Hides the option panel
    */
   private hideOptionPanel() {
     this.setState({ optionShow: false });
   }
 
   /**
-   * 
-   * @param title 
-   * @param message 
+   * Shows the alert panel
+   * @param title the title panel
+   * @param message the message
    */
   private showAlert(title: string, message: string) {
     this.setState({
@@ -154,14 +164,14 @@ export class App extends Component<{}, AppState> {
   }
 
   /**
-   * 
+   * Hides the alert panel
    */
   private hideAlert() {
     this.setState({ alertShow: false });
   }
 
   /**
-   * 
+   * Resets the definitions
    */
   private reset() {
     this.processDefs(DefaultDefinition);
@@ -169,8 +179,8 @@ export class App extends Component<{}, AppState> {
   }
 
   /**
-   * 
-   * @param name 
+   * Load the definition from predefined files
+   * @param name the file name
    */
   private load(name: string) {
     const url = `/${homepage}/${name}`;
@@ -183,8 +193,9 @@ export class App extends Component<{}, AppState> {
   }
 
   /**
-   * 
-   * @param json 
+   * Handles the load event.
+   * Validates the definitions and starts the simulation process
+   * @param json the json definition
    */
   private onLoaded(json: any) {
     this.hideOptionPanel();
@@ -197,6 +208,11 @@ export class App extends Component<{}, AppState> {
     }
   }
 
+  /**
+   * Handles the load error event
+   * Shows the alert panel with the error message
+   * @param ajax the ajax message
+   */
   private onLoadError(ajax: any) {
     console.error(ajax);
     const msg = ajax.xhr.status + ' - ' + ajax.xhr.statusText;
@@ -206,22 +222,22 @@ export class App extends Component<{}, AppState> {
   }
 
   /**
-   * 
+   * Shows the import panel to ask for file import and confirmation
    */
   private showImportPanel() {
     this.setState({ importModalShown: true });
   }
 
   /**
-   * 
+   * Hides the import panel
    */
   private hideImportPanel() {
     this.setState({ importModalShown: false });
   }
 
   /**
-   * 
-   * @param content 
+   * Imports the process definition from text content
+   * @param content the content
    */
   private importFile(content: string) {
     try {
@@ -233,13 +249,13 @@ export class App extends Component<{}, AppState> {
       }
     } catch (e) {
       console.error('Error parsing', content);
-      this.onError(e);
+      this.onError('' + e);
     }
   }
 
   /**
-   * 
-   * @param e 
+   * Handles the parsing error event
+   * @param e the error message
    */
   private onError(e: string) {
     this.showAlert('Error', 'Error parsing file ' + e);
@@ -247,7 +263,7 @@ export class App extends Component<{}, AppState> {
   }
 
   /**
-   * 
+   * Shows the export panel to ask for export file confirmation
    */
   private showExportPanel() {
     this.showOptionPanel(
@@ -259,8 +275,8 @@ export class App extends Component<{}, AppState> {
   }
 
   /**
-   * 
-   * @param value 
+   * Sets the maximum dt value
+   * @param maxDt the maximum value
    */
   private setMaxDt(maxDt: string) {
     this.setState({ maxDt: maxDt });
@@ -271,7 +287,7 @@ export class App extends Component<{}, AppState> {
   }
 
   /**
-   * 
+   * Export the file
    */
   private exportFile() {
     const { defs } = this.state;
@@ -285,7 +301,7 @@ export class App extends Component<{}, AppState> {
   }
 
   /**
-   * 
+   * Renders the application page
    */
   render() {
     const {
@@ -311,7 +327,7 @@ export class App extends Component<{}, AppState> {
             <Tab eventKey="home" title="Home">
               <BabylonScene onSceneMount={(ev: any) => this.onSceneMount(ev)}
                 canvasClass="graphCanvas" />
-              <Form inline>
+              <Form>
                 <FormGroup controlId="formInlineName">
                   <Form.Label>Max dt</Form.Label>{' '}
                   <FormControl type="text" placeholder="Max dt"

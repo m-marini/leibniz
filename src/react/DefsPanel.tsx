@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { InputGroup, Button, Card, Form, Accordion } from 'react-bootstrap';
+import { InputGroup, Button, Form, Accordion } from 'react-bootstrap';
 import { ExprField } from './ExprField';
 import _ from 'lodash';
 import { OptionPanel } from './OptionPanel';
@@ -108,8 +108,8 @@ export class DefsPanel extends Component<DefsPanelProps, {
    * 
    */
   private onAdd() {
-    const { onChange, panelKey,defs } = this.props;
-    if (onChange&&defs) {
+    const { onChange, panelKey, defs } = this.props;
+    if (onChange && defs) {
       const { newName } = this.state;
       const newConf = _.clone(defs);
       newConf[newName] = '0';
@@ -146,7 +146,7 @@ export class DefsPanel extends Component<DefsPanelProps, {
   }
 
   render() {
-    const { title, defs, errors } = this.props;
+    const { title, defs, errors, panelKey } = this.props;
     const {
       deleteModalShown, modalTitle, modalMessage, optionAction,
       newName
@@ -165,51 +165,45 @@ export class DefsPanel extends Component<DefsPanelProps, {
 
     const hasNewNameError = newNameError !== ''
     return (
-      <Accordion defaultActiveKey="0">
-        <Card>
-          <Accordion.Toggle as={Card.Header} eventKey="0">
-            {title}
-          </Accordion.Toggle>
-          <Accordion.Collapse eventKey="0">
-            <Card.Body>
-              <Form.Group controlId="validationAdd">
-                <InputGroup size="sm" >
-                  <InputGroup.Prepend>Name</InputGroup.Prepend>
-                  <Form.Control type="text"
-                    value={newName}
-                    onChange={(ev) => this.onName(ev.target.value)}
-                    isValid={!hasNewNameError}
-                    isInvalid={!!hasNewNameError} />
-                  <InputGroup.Append>
-                    <Button variant="primary"
-                      onClick={() => this.onAdd()}
-                      disabled={hasNewNameError}>
-                      <FontAwesomeIcon icon={faPlus} />
-                      <span>Add definition</span>
-                    </Button>
-                  </InputGroup.Append>
-                  <Form.Control.Feedback type="invalid">{newNameError}</Form.Control.Feedback>
-                </InputGroup>
-              </Form.Group>
-              <hr></hr>
-              {fieldList.map(({ id, key, value }) => (
-                <ExprField key={id} name={key}
-                  expr={value}
-                  errors={errors ? errors[key] : undefined}
-                  onChange={(value) => this.onChange(key, value)}
-                  onDelete={() => this.onDelete(key)}></ExprField>
-              ))}
-              <OptionPanel show={deleteModalShown}
-                title={modalTitle}
-                message={modalMessage}
-                confirmButton="Remove"
-                onCancel={() => this.hideOptionPanel()}
-                onConfirm={() => { if (optionAction) { optionAction(); } }}
-              />
-            </Card.Body >
-          </Accordion.Collapse>
-        </Card>
-      </Accordion>
+      <Accordion.Item eventKey={panelKey}>
+        <Accordion.Header>{title}</Accordion.Header>
+        <Accordion.Body>
+          <Form.Group controlId="validationAdd">
+            <InputGroup size="sm" >
+              <InputGroup.Text>Name</InputGroup.Text>
+              <Form.Control type="text"
+                value={newName}
+                onChange={(ev) => this.onName(ev.target.value)}
+                isValid={!hasNewNameError}
+                isInvalid={!!hasNewNameError} />
+              <InputGroup.Text>
+                <Button variant="primary"
+                  onClick={() => this.onAdd()}
+                  disabled={hasNewNameError}>
+                  <FontAwesomeIcon icon={faPlus} />
+                  <span>Add definition</span>
+                </Button>
+              </InputGroup.Text>
+              <Form.Control.Feedback type="invalid">{newNameError}</Form.Control.Feedback>
+            </InputGroup>
+          </Form.Group>
+          <hr></hr>
+          {fieldList.map(({ id, key, value }) => (
+            <ExprField key={id} name={key}
+              expr={value}
+              errors={errors ? errors[key] : undefined}
+              onChange={(value) => this.onChange(key, value)}
+              onDelete={() => this.onDelete(key)}></ExprField>
+          ))}
+          <OptionPanel show={deleteModalShown}
+            title={modalTitle}
+            message={modalMessage}
+            confirmButton="Remove"
+            onCancel={() => this.hideOptionPanel()}
+            onConfirm={() => { if (optionAction) { optionAction(); } }}
+          />
+        </Accordion.Body>
+      </Accordion.Item>
     );
   }
 }

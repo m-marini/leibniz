@@ -2,7 +2,7 @@ import {
     AnaglyphArcRotateCamera, ArcRotateCamera, Color3, DeviceOrientationCamera,
     HemisphericLight, Mesh, MeshBuilder, Scene, StandardMaterial,
     Vector3, VRDeviceOrientationArcRotateCamera, UniversalCamera
-} from 'babylonjs';
+} from '@babylonjs/core';
 import { default as _ } from 'lodash';
 import { SceneMountEvent } from '../react/SceneComponent';
 import { SystemRules, BodyStatus, InternalStatus } from './leibniz-defs';
@@ -283,12 +283,14 @@ export class Leibniz {
             if (rules && status) {
                 const realDt = scene.getEngine().getDeltaTime() / 1000;
                 const dt = Math.min(this.maxDt, realDt);
-                var st = status;
-                for (var t = this._remainderT; t < realDt; t += dt) {
-                    st = rules.next(st, dt);
+                if (dt !== 0) {
+                    var st = status;
+                    for (var t = this._remainderT; t < realDt; t += dt) {
+                        st = rules.next(st, dt);
+                    }
+                    this._remainderT = t - realDt;
+                    this._status = st;
                 }
-                this._remainderT = t - realDt;
-                this._status = st;
             }
         });
 
