@@ -7,7 +7,7 @@ import {
     orderedDependencies, statusCodeGen, bodiesCodeGen, transitionCodeGen, mapBodiesPR, compile
 } from "../modules/leibniz-compiler";
 import { DefaultQuaternionCode, DefaultScalarCode, matrix0Code, numberCode, ValueCode, ValueTypeCode, vector0Code } from '../modules/leibnitz-codegen';
-import { Quaternion, Vector3 } from 'babylonjs';
+import { Quaternion, Vector3 } from '@babylonjs/core';
 import { AnyValue, matrix, vector } from '../modules/leibniz-tensor';
 
 function flattenErrors(errors: SystemErrors): string[] {

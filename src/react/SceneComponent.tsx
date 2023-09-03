@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { Engine, Scene } from 'babylonjs';
+import { Engine, Scene } from '@babylonjs/core';
 
 /**
  * 

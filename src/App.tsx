@@ -15,8 +15,8 @@ import { CurrentSysDefVersion, SystemDefinition, SystemErrors, SystemRules } fro
 import { CameraType, Leibniz } from './modules/leibniz-renderer';
 import { compile, validateSystemDefinition } from './modules/leibniz-compiler';
 import _ from 'lodash';
-import { homepage } from '../package.json';
 
+const homepage = `${process.env.REACT_APP_HOMEPAGE}`;
 const KEY = 'leibniz';
 const MinDt = 1e-3;
 
@@ -46,7 +46,7 @@ interface AppState {
   leibniz?: Leibniz;
 }
 
-export class App extends Component<{}, AppState> {
+export default class App extends Component<{}, AppState> {
   private leibniz: Leibniz | undefined;
 
   /**
@@ -233,7 +233,7 @@ export class App extends Component<{}, AppState> {
       }
     } catch (e) {
       console.error('Error parsing', content);
-      this.onError(e);
+      this.onError('' + e);
     }
   }
 
@@ -311,7 +311,7 @@ export class App extends Component<{}, AppState> {
             <Tab eventKey="home" title="Home">
               <BabylonScene onSceneMount={(ev: any) => this.onSceneMount(ev)}
                 canvasClass="graphCanvas" />
-              <Form inline>
+              <Form>
                 <FormGroup controlId="formInlineName">
                   <Form.Label>Max dt</Form.Label>{' '}
                   <FormControl type="text" placeholder="Max dt"

@@ -1,4 +1,4 @@
-import { Quaternion, Vector3 } from 'babylonjs';
+import { Quaternion, Vector3 } from '@babylonjs/core';
 import _ from 'lodash';
 
 /**

@@ -1,6 +1,8 @@
 import React, { FunctionComponent } from 'react';
 import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
-import { version, homepage } from '../../package.json';
+
+const version = `${process.env.REACT_APP_VERSION}`;
+const homepage = `${process.env.REACT_APP_HOMEPAGE}`;
 
 /**
  * 

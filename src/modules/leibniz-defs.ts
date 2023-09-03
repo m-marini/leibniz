@@ -1,4 +1,4 @@
-import { Quaternion } from "babylonjs";
+import { Quaternion } from "@babylonjs/core";
 import { AnyValue, Matrix } from "./leibniz-tensor";
 
 export interface BodyStructurePR<P, R> {

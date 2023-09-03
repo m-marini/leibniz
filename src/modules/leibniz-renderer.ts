@@ -2,7 +2,7 @@ import {
     AnaglyphArcRotateCamera, ArcRotateCamera, Color3, DeviceOrientationCamera,
     HemisphericLight, Mesh, MeshBuilder, Scene, StandardMaterial,
     Vector3, VRDeviceOrientationArcRotateCamera, UniversalCamera
-} from 'babylonjs';
+} from '@babylonjs/core';
 import { default as _ } from 'lodash';
 import { SceneMountEvent } from '../react/SceneComponent';
 import { SystemRules, BodyStatus, InternalStatus } from './leibniz-defs';
@@ -292,31 +292,30 @@ export class Leibniz {
                     this._status = st;
                 }
             }
-        }
         });
 
         // Adds callback handler on rendering loop
         engine.runRenderLoop(() => {
-    this.refreshScene();
-    scene.render();
-});
-return this;
+            this.refreshScene();
+            scene.render();
+        });
+        return this;
     }
 
     /**
      *
      */
     private refreshScene() {
-    const { status, shapes, rules } = this;
-    if (status && rules) {
-        const bodies = rules.bodies(status);
-        _.zip(bodies, shapes).forEach(([body, shape]) => {
-            if (body && shape) {
-                this.updateShape(shape, body);
-            }
-        });
+        const { status, shapes, rules } = this;
+        if (status && rules) {
+            const bodies = rules.bodies(status);
+            _.zip(bodies, shapes).forEach(([body, shape]) => {
+                if (body && shape) {
+                    this.updateShape(shape, body);
+                }
+            });
+        }
     }
-}
 
     /**
      * 
@@ -324,29 +323,29 @@ return this;
      * @param body 
      */
     private updateShape(shape: Mesh, body: BodyStatus) {
-    shape.position = new Vector3(
-        body.position.get(0),
-        body.position.get(1),
-        body.position.get(2));
-    if (body.rotation) {
-        shape.rotationQuaternion = body.rotation;
+        shape.position = new Vector3(
+            body.position.get(0),
+            body.position.get(1),
+            body.position.get(2));
+        if (body.rotation) {
+            shape.rotationQuaternion = body.rotation;
+        }
     }
-}
 
-/**
- * 
- */
-refresh() {
-    this.props.engine.resize();
-}
-
-/**
- * 
- */
-resetStatus() {
-    const { rules } = this;
-    if (rules) {
-        this._status = rules.initialStatus();
+    /**
+     * 
+     */
+    refresh() {
+        this.props.engine.resize();
     }
-}
+
+    /**
+     * 
+     */
+    resetStatus() {
+        const { rules } = this;
+        if (rules) {
+            this._status = rules.initialStatus();
+        }
+    }
 }
