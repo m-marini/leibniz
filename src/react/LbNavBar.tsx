@@ -5,7 +5,7 @@ const version = `${process.env.REACT_APP_VERSION}`;
 const homepage = `${process.env.REACT_APP_HOMEPAGE}`;
 
 /**
- * 
+ * renders the navigation bar
  */
 export const LbNavBar: FunctionComponent<Readonly<{
   onReset?: () => void;
@@ -22,23 +22,23 @@ export const LbNavBar: FunctionComponent<Readonly<{
           <Nav.Link href={`/${homepage}`}>Leibniz {version}</Nav.Link>
           <NavDropdown id="predefined-menu" title="Predefined">
             <NavDropdown.Item
-              onSelect={() => { if (onReset) { onReset(); } }}>
+              onClick={() => { if (onReset) { onReset(); } }}>
               Reset
               </NavDropdown.Item>
             <NavDropdown.Item
-              onSelect={() => { if (onLoad) { onLoad('sample1.json'); } }}>
+              onClick={() => { if (onLoad) { onLoad('sample1.json'); } }}>
               Basic sample
             </NavDropdown.Item>
             <NavDropdown.Item
-              onSelect={() => { if (onLoad) { onLoad('bodies3.json'); } }}>
+              onClick={() => { if (onLoad) { onLoad('bodies3.json'); } }}>
               3 Bodies
             </NavDropdown.Item>
             <NavDropdown.Item
-              onSelect={() => { if (onLoad) { onLoad('solaris.json'); } }}>
+              onClick={() => { if (onLoad) { onLoad('solaris.json'); } }}>
               Solaris (Earth - Sun)
             </NavDropdown.Item>
             <NavDropdown.Item
-              onSelect={() => { if (onLoad) { onLoad('selene.json'); } }}>
+              onClick={() => { if (onLoad) { onLoad('selene.json'); } }}>
               Selene (Moon -Earth)
               </NavDropdown.Item>
           </NavDropdown>

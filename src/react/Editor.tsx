@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { DefsPanel } from './DefsPanel';
 import { default as _ } from 'lodash';
 import { BodiesPanel } from './BodiesPane';
-import { Form } from 'react-bootstrap';
+import { Accordion, Form } from 'react-bootstrap';
 import { BodyStructure, SystemDefinition, SystemErrors } from '../modules/leibniz-defs';
 
 interface EditorProps {
@@ -46,21 +46,23 @@ export class Editor extends Component<EditorProps, {}> {
     const { defs, errors } = this.props;
     return (
       <Form noValidate >
-        <BodiesPanel bodies={defs?.bodies}
-          errors={errors?.bodies}
-          onChange={bodies => this.onBodiesChange(bodies)} />
-        <DefsPanel panelKey="funcs" title="Functions"
-          defs={defs?.funcs} errors={errors?.funcs}
-          onChange={(panelId, value) => this.onChange(panelId, value)}
-        />
-        <DefsPanel panelKey="initialStatus" title="Initial Status"
-          defs={defs?.initialStatus} errors={errors?.initialStatus}
-          onChange={(panelId, value) => this.onChange(panelId, value)}
-        />
-        <DefsPanel panelKey="transition" title="Transition"
-          defs={defs?.transition} errors={errors?.transition}
-          onChange={(panelId, value) => this.onChange(panelId, value)}
-        />
+        <Accordion defaultActiveKey={['bodies', 'funcs', 'initialStatus', 'transition']}>
+          <BodiesPanel bodies={defs?.bodies}
+            errors={errors?.bodies}
+            onChange={bodies => this.onBodiesChange(bodies)} />
+          <DefsPanel panelKey="funcs" title="Functions"
+            defs={defs?.funcs} errors={errors?.funcs}
+            onChange={(panelId, value) => this.onChange(panelId, value)}
+          />
+          <DefsPanel panelKey="initialStatus" title="Initial Status"
+            defs={defs?.initialStatus} errors={errors?.initialStatus}
+            onChange={(panelId, value) => this.onChange(panelId, value)}
+          />
+          <DefsPanel panelKey="transition" title="Transition"
+            defs={defs?.transition} errors={errors?.transition}
+            onChange={(panelId, value) => this.onChange(panelId, value)}
+          />
+        </Accordion>
       </Form>
     );
   }

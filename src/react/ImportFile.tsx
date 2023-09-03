@@ -35,7 +35,7 @@ export class ImportFile extends Component<ImportFileProps, {}>{
       } catch (e) {
         console.error(e);
         if (onError) {
-          onError(e.toString());
+          onError('' + e);
         }
       }
     }
@@ -54,11 +54,12 @@ export class ImportFile extends Component<ImportFileProps, {}>{
         <Modal.Body>
           <p>The definitions will be imported from the selected file.</p>
           <Form>
-            <Form.File
-              label="Import file"
-              custom
-              onChange={(ev: any) => this.onFileChange(ev.target.files[0])}
-            />
+            <Form.Group>
+              <Form.Label>Import file</Form.Label>
+              <Form.Control type="file"
+                onChange={(ev: any) => this.onFileChange(ev.target.files[0])}
+              />
+            </Form.Group>
           </Form>
         </Modal.Body>
         <Modal.Footer>

@@ -69,7 +69,7 @@ export class DumpPanel extends Component<DumpPanelProps, {
     return (
       <Container>
         <Row>
-          <Form noValidate inline>
+          <Form noValidate>
             <Form.Group controlId="formInlineName">
               <Form.Label>Counts</Form.Label>{' '}
               <Form.Control type="text" placeholder="Counts"

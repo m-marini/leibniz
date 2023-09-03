@@ -283,7 +283,7 @@ export class Leibniz {
             if (rules && status) {
                 const realDt = scene.getEngine().getDeltaTime() / 1000;
                 const dt = Math.min(this.maxDt, realDt);
-                if (dt != 0) {
+                if (dt !== 0) {
                     var st = status;
                     for (var t = this._remainderT; t < realDt; t += dt) {
                         st = rules.next(st, dt);

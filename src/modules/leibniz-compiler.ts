@@ -404,35 +404,6 @@ interface CodeGenResult {
 }
 
 /**
- * 
- * @param ast 
- */
-// function dumpAst(ast: TreeNode<ASTNode>): string {
-//     function node(n: ASTNode): string {
-//         switch (n.type) {
-//             case ASTNodeType.End:
-//                 return 'EOM';
-//             case ASTNodeType.Id:
-//                 return n.id;
-//             case ASTNodeType.Number:
-//                 return n.value;
-//             case ASTNodeType.Sym:
-//                 return n.symbol;
-//             case ASTNodeType.Rule:
-//                 return `<${n.rule}>`;
-//         }
-//     }
-
-//     function dump(ast: TreeNode<ASTNode>): string[] {
-//         const ch = _.flatMap(ast.children, dump);
-//         return _.concat([node(ast.node)], ch);
-//     }
-
-//     return dump(ast).join('\n');
-// }
-
-
-/**
  * Returns the semantic analysis of an ast map related to a variable resolver.
  * It check for missing definitions, cycle references, semantic source code errors.
  * @param astsMap the asts map
