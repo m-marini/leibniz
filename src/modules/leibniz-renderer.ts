@@ -1,7 +1,7 @@
 import {
     AnaglyphArcRotateCamera, ArcRotateCamera, Color3, DeviceOrientationCamera,
     HemisphericLight, Mesh, MeshBuilder, Scene, StandardMaterial,
-    Vector3, VRDeviceOrientationArcRotateCamera, UniversalCamera
+    Vector3, VRDeviceOrientationArcRotateCamera, UniversalCamera, AxesViewer
 } from '@babylonjs/core';
 import { default as _ } from 'lodash';
 import { SceneMountEvent } from '../react/SceneComponent';
@@ -25,7 +25,6 @@ interface SceneOptions {
 const FPS = 60;
 
 const Octahedron = 1;
-// const ElongatedSquareDipyramid = 12;
 
 /*
  * Returns the Color3 for HSB value (Hue, Saturation, Bright)
@@ -101,11 +100,15 @@ function createCamera(scene: Scene, options: SceneOptions) {
     }
 }
 
+const BODY_SPHERE_RADIUS = 0.1;
+const AXIS_LENGTH = BODY_SPHERE_RADIUS * 2;
+const BODY_ROTATING_SIZE = BODY_SPHERE_RADIUS;
+
 /**
- * 
- * @param scene 
- * @param name 
- * @param color 
+* Returns the mesh of rotated body
+* @param scene the scene
+* @param name the body name
+* @param color the color
  */
 function createOcta(scene: Scene, name: string, color: Color3) {
     const material = new StandardMaterial('Material_' + name, scene);
@@ -115,13 +118,17 @@ function createOcta(scene: Scene, name: string, color: Color3) {
     const shape = MeshBuilder.CreatePolyhedron(
         'Octa_' + name, {
         type: Octahedron,
-        sizeX: 0.1,
-        sizeY: 0.2,
-        sizeZ: 0.05,
+        sizeX: BODY_ROTATING_SIZE,
+        sizeY: BODY_ROTATING_SIZE,
+        sizeZ: BODY_ROTATING_SIZE,
     },
         scene
     );
     shape.material = material;
+    const axes = new AxesViewer(scene, AXIS_LENGTH);
+    axes.xAxis.parent = shape;
+    axes.yAxis.parent = shape;
+    axes.zAxis.parent = shape;
     return shape;
 }
 
@@ -293,7 +300,7 @@ export class Leibniz {
                 }
             }
         });
-
+        new AxesViewer(scene, AXIS_LENGTH);
         // Adds callback handler on rendering loop
         engine.runRenderLoop(() => {
             this.refreshScene();
