@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+
+- Issue #47: Change rotated body shape
+
 ### Fixed
 
 - Issue #42: Body rotation disapper when expression is empty
