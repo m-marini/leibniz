@@ -103,10 +103,10 @@ export class BodyRow extends Component<BodyRowProps, {
 
   render() {
     const { body, errors } = this.props;
-    const rotField = body?.rotation ? (
+    const rotField = body?.rotation  !== undefined ? (
       <div>
         <ExprField name=""
-          expr={body.rotation} errors={errors?.rotation}
+          expr={body?.rotation} errors={errors?.rotation}
           onChange={(value) => this.onChangeRotation(value)}
           onDelete={() => this.showOptionPanel()}
         />
