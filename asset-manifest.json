@@ -1,22 +1,15 @@
 {
   "files": {
-    "main.css": "/leibniz/static/css/main.31a993f7.chunk.css",
-    "main.js": "/leibniz/static/js/main.c9663606.chunk.js",
-    "main.js.map": "/leibniz/static/js/main.c9663606.chunk.js.map",
-    "runtime-main.js": "/leibniz/static/js/runtime-main.4dfff0ba.js",
-    "runtime-main.js.map": "/leibniz/static/js/runtime-main.4dfff0ba.js.map",
-    "static/js/2.76d5c7e6.chunk.js": "/leibniz/static/js/2.76d5c7e6.chunk.js",
-    "static/js/2.76d5c7e6.chunk.js.map": "/leibniz/static/js/2.76d5c7e6.chunk.js.map",
-    "static/js/3.69d0c891.chunk.js": "/leibniz/static/js/3.69d0c891.chunk.js",
-    "static/js/3.69d0c891.chunk.js.map": "/leibniz/static/js/3.69d0c891.chunk.js.map",
+    "main.css": "/leibniz/static/css/main.f0fbc4c3.css",
+    "main.js": "/leibniz/static/js/main.17d8dadd.js",
+    "static/js/787.6dfedb27.chunk.js": "/leibniz/static/js/787.6dfedb27.chunk.js",
     "index.html": "/leibniz/index.html",
-    "static/css/main.31a993f7.chunk.css.map": "/leibniz/static/css/main.31a993f7.chunk.css.map",
-    "static/js/2.76d5c7e6.chunk.js.LICENSE.txt": "/leibniz/static/js/2.76d5c7e6.chunk.js.LICENSE.txt"
+    "main.f0fbc4c3.css.map": "/leibniz/static/css/main.f0fbc4c3.css.map",
+    "main.17d8dadd.js.map": "/leibniz/static/js/main.17d8dadd.js.map",
+    "787.6dfedb27.chunk.js.map": "/leibniz/static/js/787.6dfedb27.chunk.js.map"
   },
   "entrypoints": [
-    "static/js/runtime-main.4dfff0ba.js",
-    "static/js/2.76d5c7e6.chunk.js",
-    "static/css/main.31a993f7.chunk.css",
-    "static/js/main.c9663606.chunk.js"
+    "static/css/main.f0fbc4c3.css",
+    "static/js/main.17d8dadd.js"
   ]
 }
