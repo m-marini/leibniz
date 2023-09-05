@@ -8,7 +8,7 @@ import { AnyValue, isMatrix, isNumber, isQuaternion, ypr } from "./leibniz-tenso
 export interface DataTable {
     headers: string[];
     cells: number[][];
-}
+};
 
 /**
  * Returns the internal status for a time interval simulation steps
@@ -61,7 +61,7 @@ export function generateData(sys: SystemRules, dt: number, n: number): DataTable
  * Returns the header name of the composite value
  * @param n the composite value
  */
-function headerSuffixes(n: AnyValue): string[] {
+function headerSuffixes(n: AnyValue) {
     if (isNumber(n)) {
         return [''];
     }
@@ -83,7 +83,7 @@ function headerSuffixes(n: AnyValue): string[] {
  * Returns the scalar values array 
  * @param n the composite type
  */
-function row(n: AnyValue): number[] {
+function row(n: AnyValue) {
     if (isNumber(n)) {
         return [n];
     }
@@ -106,7 +106,7 @@ function row(n: AnyValue): number[] {
  * Returns the csv string of table
  * @param data the data
  */
-export function tableToString(data: DataTable): string {
+export function tableToString(data: DataTable) {
     const headerRow = _.join(data.headers, ',');
     const cellRows = data.cells.map(row => _.join(row.map(x => '' + x), ','));
     return headerRow + '\n\r' + _.join(cellRows, '\n\r');
