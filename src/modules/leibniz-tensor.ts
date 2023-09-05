@@ -511,3 +511,18 @@ export function vector(...values: number[]): Matrix {
 export function matrix(values: number[][]): Matrix {
     return new Matrix(values);
 }
+
+/**
+ * Returns the (yaw, pitch, roll) vector from quaternion
+ * @param q the quaternion
+ */
+export function ypr(q: Quaternion): Vector3 {
+    const yaw = -Math.atan2(
+        2 * (q._x * q._y + q._w * q._z),
+        q._w * q._w + q._x * q._x - q._y * q._y - q._y - q._z * q._z);
+    const pitch = -Math.asin(-2 * (q._x * q._z - q._w * q._y));
+    const roll = Math.atan2(2 * (q._y * q._z + q._w * q._x),
+        q._w * q._w - q._x * q._x - q._y * q._y + q._z * q._z);
+
+    return new Vector3(yaw, pitch, roll);
+}

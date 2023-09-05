@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Form, FormGroup, FormControl, Tabs, Tab, Container } from 'react-bootstrap';
+import { Form, FormGroup, FormControl, Tabs, Tab, Container, Button } from 'react-bootstrap';
 import { saveAs } from 'file-saver';
 import { ajax } from 'rxjs/ajax';
 import { tap } from 'rxjs/operators';
@@ -103,7 +103,6 @@ export default class App extends Component<{}, AppState> {
    * Opens the option panel to ask for resetting panel
    */
   private onReset() {
-    console.log('onReset');
     this.showOptionPanel(
       'Reset definitions ?',
       'The definitions will be resetted to default value.',
@@ -117,7 +116,6 @@ export default class App extends Component<{}, AppState> {
    * Opens the option panel to ask for predefined json files loading
    */
   private onLoad(name: string) {
-    console.log(name);
     this.showOptionPanel(
       'Load definitions ' + name + ' ?',
       'The definitions will be load from ' + name + ' .',
@@ -287,6 +285,16 @@ export default class App extends Component<{}, AppState> {
   }
 
   /**
+   * Restart the simulation
+   */
+  private restart() {
+    const { leibniz } = this.state;
+    if (leibniz) {
+      leibniz.resetStatus();
+    }
+  }
+
+  /**
    * Export the file
    */
   private exportFile() {
@@ -333,7 +341,10 @@ export default class App extends Component<{}, AppState> {
                   <FormControl type="text" placeholder="Max dt"
                     onChange={ev => this.setMaxDt(ev.target.value)}
                     value={maxDt} />
-                </FormGroup>{' '}
+                </FormGroup>
+                <FormGroup>
+                  <Button onClick={ev => this.restart()}>Restart</Button>
+                </FormGroup>
               </Form>
             </Tab>
             <Tab eventKey="editor" title="Editor">
