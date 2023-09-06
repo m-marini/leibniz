@@ -6,6 +6,12 @@ import {
 import { default as _ } from 'lodash';
 import { SceneMountEvent } from '../react/SceneComponent';
 import { SystemRules, BodyStatus, InternalStatus } from './leibniz-defs';
+import { Observable, Subject } from 'rxjs';
+
+const MAX_ITERATIONS = 3;
+const BODY_SPHERE_RADIUS = 0.1;
+const AXIS_LENGTH = BODY_SPHERE_RADIUS * 2;
+const BODY_ROTATING_SIZE = BODY_SPHERE_RADIUS;
 
 export enum CameraType {
     DeviceOrientation = 'do',
@@ -100,9 +106,40 @@ function createCamera(scene: Scene, options: SceneOptions) {
     }
 }
 
-const BODY_SPHERE_RADIUS = 0.1;
-const AXIS_LENGTH = BODY_SPHERE_RADIUS * 2;
-const BODY_ROTATING_SIZE = BODY_SPHERE_RADIUS;
+
+/**
+ * 
+ * @param shape 
+ * @param body 
+ */
+function updateShape(shape: Mesh, body: BodyStatus) {
+    shape.position = new Vector3(
+        body.position.get(0),
+        body.position.get(1),
+        body.position.get(2));
+    if (body.rotation) {
+        shape.rotationQuaternion = body.rotation;
+    }
+}
+
+
+/**
+ * 
+ * @param bodies 
+ */
+function createShapes(scene: Scene, bodies: BodyStatus[]) {
+    const n = bodies.length;
+    const shapes = _.map(bodies, (body, i) => {
+        const name = 'Body' + i;
+        const color = fromHeat(n > 1 ? i / (n - 1) : 0);
+        const mesh = (body.rotation !== undefined)
+            ? createOcta(scene, name, color)
+            : createSphere(scene, name, color);
+        updateShape(mesh, body);
+        return mesh;
+    });
+    return shapes;
+}
 
 /**
 * Returns the mesh of rotated body
@@ -173,6 +210,7 @@ export class Leibniz {
     private _rules?: SystemRules;
     private _shapes: Mesh[];
     private _remainderT: number;
+    private _speedSubj: Subject<number>;
 
     /**
      * 
@@ -183,6 +221,7 @@ export class Leibniz {
         this._maxDt = 1 / FPS;
         this._shapes = [];
         this._remainderT = 0;
+        this._speedSubj = new Subject<number>();
     }
 
     /**
@@ -217,25 +256,6 @@ export class Leibniz {
 
     /**
      * 
-     * @param rules 
-     */
-    private createShapes(bodies: BodyStatus[]) {
-        const { scene } = this.props;
-        const n = bodies.length;
-        const shapes = _.map(bodies, (body, i) => {
-            const name = 'Body' + i;
-            const color = fromHeat(n > 1 ? i / (n - 1) : 0);
-            const mesh = (body.rotation !== undefined)
-                ? createOcta(scene, name, color)
-                : createSphere(scene, name, color);
-            this.updateShape(mesh, body);
-            return mesh;
-        });
-        return shapes;
-    }
-
-    /**
-     * 
      */
     set rules(rules: SystemRules | undefined) {
         // Cleans up scene
@@ -246,7 +266,7 @@ export class Leibniz {
         if (rules) {
             const status = rules.initialStatus();
             const bodies = rules.bodies(status);
-            this._shapes = this.createShapes(bodies);
+            this._shapes = createShapes(this.props.scene, bodies);
             this._status = status;
         } else {
             this._status = undefined;
@@ -256,8 +276,70 @@ export class Leibniz {
     }
 
     /**
-     * 
-     * @param options 
+     * Returns the speed observable
+     */
+    readSpeed(): Observable<number> {
+        return this._speedSubj;
+    }
+
+    /**
+     * Simulates the time elapsed just in time
+     * @param scene the scene
+     */
+    private simulateJIT(scene: Scene) {
+        const { rules, status } = this;
+        if (rules && status) {
+            const realDt = scene.getEngine().getDeltaTime() / 1000;
+            const dt = Math.min(realDt, this.maxDt);
+            if (dt > 0) {
+                const n = Math.round(realDt / dt);
+                const m = Math.min(n, MAX_ITERATIONS)
+                var st = status;
+                for (var i = 0; i < m; i++) {
+                    st = rules.next(st, dt);
+                }
+                this._status = st;
+                const speed = m * dt / realDt
+                this._speedSubj.next(speed);
+                /*
+                var st = status;
+                const n = Math.min(n1, MAX_ITERATIONS);
+                console.log(n, n1);
+                for (var i = 0; i < n; i++) {
+                    st = rules.next(st, dt);
+                }
+                this._remainderT += dt * n - realDt;
+                this._status = st;
+                */
+            }
+        }
+    }
+
+    /**
+     * Simulates the time elapsed accumulated
+     * @param scene the scene
+     */
+    private simulateAcc(scene: Scene) {
+        const { rules, status } = this;
+        if (rules && status) {
+            const realDt = scene.getEngine().getDeltaTime() / 1000;
+            const dt = Math.min(realDt, this.maxDt);
+            if (dt > 0) {
+                var st = status;
+                for (var t = this._remainderT; t < realDt; t += dt) {
+                    st = rules.next(st, dt);
+                }
+                this._status = st;
+                this._remainderT = t - realDt;
+                const speed = t / realDt;
+                this._speedSubj.next(speed);
+            }
+        }
+    }
+
+    /**
+     * Initializes liebniz simulator
+     * @param options the options
      */
     init(options?: Partial<SceneOptions>): Leibniz {
         const { engine, scene } = this.props;
@@ -285,21 +367,10 @@ export class Leibniz {
         light.intensity = _options.sunLightIntensity;
 
         scene.ambientColor = _options.ambientColor;
-        scene.onBeforeStepObservable.add((scene) => {
-            const { rules, status } = this;
-            if (rules && status) {
-                const realDt = scene.getEngine().getDeltaTime() / 1000;
-                const dt = Math.min(this.maxDt, realDt);
-                if (dt !== 0) {
-                    var st = status;
-                    for (var t = this._remainderT; t < realDt; t += dt) {
-                        st = rules.next(st, dt);
-                    }
-                    this._remainderT = t - realDt;
-                    this._status = st;
-                }
-            }
-        });
+        scene.onBeforeStepObservable.add((scene) =>
+            //this.simulateJIT(scene)
+            this.simulateAcc(scene)
+        );
         new AxesViewer(scene, AXIS_LENGTH);
         // Adds callback handler on rendering loop
         engine.runRenderLoop(() => {
@@ -318,24 +389,9 @@ export class Leibniz {
             const bodies = rules.bodies(status);
             _.zip(bodies, shapes).forEach(([body, shape]) => {
                 if (body && shape) {
-                    this.updateShape(shape, body);
+                    updateShape(shape, body);
                 }
             });
-        }
-    }
-
-    /**
-     * 
-     * @param shape 
-     * @param body 
-     */
-    private updateShape(shape: Mesh, body: BodyStatus) {
-        shape.position = new Vector3(
-            body.position.get(0),
-            body.position.get(1),
-            body.position.get(2));
-        if (body.rotation) {
-            shape.rotationQuaternion = body.rotation;
         }
     }
 
@@ -350,6 +406,7 @@ export class Leibniz {
      * 
      */
     resetStatus() {
+        this._remainderT = 0;
         const { rules } = this;
         if (rules) {
             this._status = rules.initialStatus();

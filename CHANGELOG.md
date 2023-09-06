@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+
+- Issue #60: Add simulation speed monitoring
+
 ## [2.0.0] - 2023-09-06
 
 ### Added

@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { Form, FormGroup, FormControl, Tabs, Tab, Container, Button } from 'react-bootstrap';
+import { Form, FormGroup, FormControl, Tabs, Tab, Container, Button, Row, Col } from 'react-bootstrap';
 import { saveAs } from 'file-saver';
 import { ajax } from 'rxjs/ajax';
-import { catchError, tap } from 'rxjs/operators';
+import { catchError, tap, throttleTime, scan } from 'rxjs/operators';
 import './App.css';
 import { BabylonScene, SceneMountEvent } from './react/SceneComponent';
 import { Editor } from './react/Editor';
@@ -16,12 +16,13 @@ import { CameraType, Leibniz } from './modules/leibniz-renderer';
 import { compile, validateSystemDefinition } from './modules/leibniz-compiler';
 import _ from 'lodash';
 import YAML from 'yaml';
-import { of } from 'rxjs';
+import { Subscription, of } from 'rxjs';
 import { TextPanel } from './react/TextPanel';
 
 const homepage = `${process.env.REACT_APP_HOMEPAGE}`;
 const KEY = 'leibniz';
-const MinDt = 1e-3;
+const MIN_DT = 1e-3;
+const SPEED_ALPHA = 0.99;
 
 const DefaultDefinition: SystemDefinition = {
   version: CurrentSysDefVersion,
@@ -48,13 +49,14 @@ interface AppState {
   errors?: SystemErrors;
   leibniz?: Leibniz;
   yaml?: string;
+  speed?: number;
 }
 
 /**
  * Renders the application page
  */
 export default class App extends Component<{}, AppState> {
-  private leibniz: Leibniz | undefined;
+  private _speedSubs?: Subscription;
 
   /**
    * Creates the application page
@@ -91,11 +93,21 @@ export default class App extends Component<{}, AppState> {
    * @param e 
    */
   private onSceneMount(e: SceneMountEvent) {
+    if (this._speedSubs) {
+      this._speedSubs.unsubscribe();
+    }
     const leibniz = new Leibniz(e);
     leibniz.init({
       cameraType: CameraType.ArcRotate,
       maxDt: parseFloat(this.state.maxDt)
     });
+    this._speedSubs = leibniz.readSpeed().pipe(
+      scan((avg, speed) => speed + SPEED_ALPHA * (avg - speed), 1),
+      throttleTime(300),
+      tap(speed => {
+        this.setState({ speed });
+      })
+    ).subscribe();
     this.setState({ leibniz });
     const text = localStorage.getItem(KEY);
     const defs = text ? JSON.parse(text) : DefaultDefinition;
@@ -286,11 +298,14 @@ export default class App extends Component<{}, AppState> {
    * @param maxDt the maximum value
    */
   private setMaxDt(maxDt: string) {
-    this.setState({ maxDt: maxDt });
-    if (this.leibniz) {
+    const { leibniz } = this.state;
+    if (leibniz) {
       const dtnum1 = parseFloat(maxDt);
-      this.leibniz.maxDt = Math.max(MinDt, dtnum1);
+      if (!Number.isNaN(dtnum1)) {
+        leibniz.maxDt = Math.max(MIN_DT, dtnum1);
+      }
     }
+    this.setState({ maxDt: maxDt });
   }
 
   /**
@@ -325,7 +340,7 @@ export default class App extends Component<{}, AppState> {
       alertShow, alertTitle, alertMessage,
       importModalShown,
       optionShow, optionTitle, optionMessage, optionConfirmBtn, optionConfirm,
-      maxDt, defs, errors, rules
+      maxDt, defs, errors, rules, speed
     } = this.state;
     const yaml = defs
       ? YAML.stringify(defs)
@@ -333,6 +348,9 @@ export default class App extends Component<{}, AppState> {
     const errorsList = errors
       ? toErrorsText(errors)
       : undefined;
+    const format = new Intl.NumberFormat('en-IN', {
+      maximumSignificantDigits: 3
+    });
     return (
       <Container fluid>
         <LbNavBar
@@ -348,19 +366,42 @@ export default class App extends Component<{}, AppState> {
         <Container>
           <Tabs id="Tab" defaultActiveKey="home">
             <Tab eventKey="home" title="Home">
-              <BabylonScene onSceneMount={(ev: any) => this.onSceneMount(ev)}
-                canvasClass="graphCanvas" />
-              <Form>
-                <FormGroup controlId="formInlineName">
-                  <Form.Label>Max dt</Form.Label>{' '}
-                  <FormControl type="text" placeholder="Max dt"
-                    onChange={ev => this.setMaxDt(ev.target.value)}
-                    value={maxDt} />
-                </FormGroup>
-                <FormGroup>
-                  <Button onClick={ev => this.restart()}>Restart</Button>
-                </FormGroup>
-              </Form>
+              <Container fluid>
+                <Form>
+                  <Row xs={1}>
+                    <Col>
+                      <BabylonScene onSceneMount={(ev: any) => this.onSceneMount(ev)}
+                        canvasClass="graphCanvas" />
+                    </Col>
+                  </Row>
+                  <Row xs={3} ms={3}>
+                    <Col>
+                      <FormGroup controlId="formInlineName">
+                        <Form.Label>Max dt</Form.Label>{' '}
+                        <FormControl type="text" placeholder="Max dt"
+                          onChange={ev => this.setMaxDt(ev.target.value)}
+                          value={maxDt} />
+                      </FormGroup>
+                    </Col>
+                    <Col>
+                      <FormGroup controlId="formInlineName">
+                        <Form.Label>Speed</Form.Label>{' '}
+                        <Form.Control plaintext readOnly
+                          defaultValue={speed
+                            ? speed >= 1
+                              ? `${format.format(speed)} x`
+                              : `1/${format.format(1 / speed)}`
+                            : undefined} />
+                      </FormGroup>
+                    </Col>
+                    <Col>
+                      <FormGroup>
+                        <Button onClick={ev => this.restart()}>Restart</Button>
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                </Form>
+              </Container>
             </Tab>
             <Tab eventKey="editor" title="Editor">
               <Editor defs={defs} errors={errors}
@@ -384,7 +425,7 @@ export default class App extends Component<{}, AppState> {
           confirmButton={optionConfirmBtn || ''}
           onCancel={() => this.hideOptionPanel()}
           onConfirm={optionConfirm} />
-      </Container>
+      </Container >
     );
   }
 }
