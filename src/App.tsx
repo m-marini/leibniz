@@ -367,7 +367,7 @@ export default class App extends Component<{}, AppState> {
                 onChange={defs => this.processDefs(defs)} />
             </Tab>
             <Tab eventKey="yaml" title="Yaml">
-              <TextPanel text={yaml} errorList={errorsList} />
+              <TextPanel text={yaml} errorList={errorsList} onValidate={text => this.importFile(text)} />
             </Tab>
             <Tab eventKey="dump" title="Dump panel">
               <DumpPanel rules={rules} />
