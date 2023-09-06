@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Form, FormGroup, FormControl, Tabs, Tab, Container, Button } from 'react-bootstrap';
 import { saveAs } from 'file-saver';
 import { ajax } from 'rxjs/ajax';
-import { tap } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
 import './App.css';
 import { BabylonScene, SceneMountEvent } from './react/SceneComponent';
 import { Editor } from './react/Editor';
@@ -15,6 +15,8 @@ import { CurrentSysDefVersion, SystemDefinition, SystemErrors, SystemRules } fro
 import { CameraType, Leibniz } from './modules/leibniz-renderer';
 import { compile, validateSystemDefinition } from './modules/leibniz-compiler';
 import _ from 'lodash';
+import YAML from 'yaml';
+import { of } from 'rxjs';
 
 const homepage = `${process.env.REACT_APP_HOMEPAGE}`;
 const KEY = 'leibniz';
@@ -182,11 +184,17 @@ export default class App extends Component<{}, AppState> {
    */
   private load(name: string) {
     const url = `/${homepage}/${name}`;
-    ajax.getJSON(url).pipe(
-      tap(
-        json => this.onLoaded(json),
-        ajax => this.onLoadError(ajax)
-      )
+    ajax<string>({
+      url,
+      responseType: 'text'
+    }).pipe(
+      tap(ajax => this.onLoaded(ajax.response)),
+      catchError(
+        error => {
+          this.onLoadError(error);
+          return of(error);
+        }
+      ),
     ).subscribe();
   }
 
@@ -195,12 +203,10 @@ export default class App extends Component<{}, AppState> {
    * Validates the definitions and starts the simulation process
    * @param json the json definition
    */
-  private onLoaded(json: any) {
+  private onLoaded(text: string) {
     this.hideOptionPanel();
     try {
-      if (validateSystemDefinition(json)) {
-        this.processDefs(json);
-      }
+      this.importFile(text);
     } catch (ex: any) {
       this.onError(ex);
     }
@@ -241,7 +247,7 @@ export default class App extends Component<{}, AppState> {
     try {
       this.hideAlert();
       this.hideImportPanel();
-      const json = JSON.parse(content);
+      const json = YAML.parse(content);
       if (validateSystemDefinition(json)) {
         this.processDefs(json);
       }
@@ -302,9 +308,9 @@ export default class App extends Component<{}, AppState> {
     this.hideOptionPanel();
     if (defs) {
       const exporting = _.defaults({ version: CurrentSysDefVersion }, defs);
-      const text = JSON.stringify(exporting, null, 2);
+      const text = YAML.stringify(exporting);
       const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
-      saveAs(blob, "test.json");
+      saveAs(blob, "leibniz.yml");
     }
   }
 
