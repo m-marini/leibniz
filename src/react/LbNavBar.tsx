@@ -26,19 +26,19 @@ export const LbNavBar: FunctionComponent<Readonly<{
               Reset
               </NavDropdown.Item>
             <NavDropdown.Item
-              onClick={() => { if (onLoad) { onLoad('sample1.json'); } }}>
+              onClick={() => { if (onLoad) { onLoad('sample1.yml'); } }}>
               Basic sample
             </NavDropdown.Item>
             <NavDropdown.Item
-              onClick={() => { if (onLoad) { onLoad('bodies3.json'); } }}>
+              onClick={() => { if (onLoad) { onLoad('bodies3.yml'); } }}>
               3 Bodies
             </NavDropdown.Item>
             <NavDropdown.Item
-              onClick={() => { if (onLoad) { onLoad('solaris.json'); } }}>
+              onClick={() => { if (onLoad) { onLoad('solaris.yml'); } }}>
               Solaris (Earth - Sun)
             </NavDropdown.Item>
             <NavDropdown.Item
-              onClick={() => { if (onLoad) { onLoad('selene.json'); } }}>
+              onClick={() => { if (onLoad) { onLoad('selene.yml'); } }}>
               Selene (Moon -Earth)
               </NavDropdown.Item>
           </NavDropdown>
