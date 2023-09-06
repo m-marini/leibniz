@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+
+- Issue #46: Add yaml editing
+
 ### Changed
 
 - Issue #44: Add yaml file
