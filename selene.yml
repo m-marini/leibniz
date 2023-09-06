@@ -1,0 +1,35 @@
+version: "0.1"
+bodies:
+  - position: Rl * scaler
+  - position: Rg * scaler
+funcs:
+  rmin: "363.3E06"
+  rmax: "405.5E06"
+  rsim: "3"
+  mg: "5.972E24"
+  ml: "7.342E22"
+  G: "66.7E-12"
+  Treal: 27.321661 * 24 * 60 * 60
+  Tsim: "12"
+  phi0: "0"
+  m: mg * ml / (mg + ml)
+  scaler: rsim / rmax
+  scalet: Treal/Tsim
+  alpha: mg * ml * G
+  a: (rmin + rmax) / 2
+  b: sqrt(rmin * rmax)
+  E: -alpha / (2 * a)
+  M: b * sqrt(2 * m * |E|)
+  dphi: "M * dtreal / (m * r^2) "
+  dtreal: scalet * dt
+  dr: sqrt(max(2 * (E + alpha / r) / m - (M / (m * r))^2, 0)) * dtreal
+  Rcyl: (r, phi, 0)
+  R: cyl(Rcyl)
+  Rg: -R * ml / (ml + mg)
+  Rl: R * mg / (ml + mg)
+transition:
+  r: r+dr
+  phi: phi+dphi
+initialStatus:
+  r: rmin
+  phi: phi0
