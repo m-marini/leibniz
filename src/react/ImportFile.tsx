@@ -49,7 +49,7 @@ export class ImportFile extends Component<ImportFileProps, {}>{
     return (
       <Modal size="lg" show={show} onHide={() => { if (onCancel) { onCancel(); } }}>
         <Modal.Header closeButton>
-          <Modal.Title>Import definitions from file ?</Modal.Title>
+          <Modal.Title>Import definitions from yaml file ?</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <p>The definitions will be imported from the selected file.</p>
