@@ -17,6 +17,7 @@ import { compile, validateSystemDefinition } from './modules/leibniz-compiler';
 import _ from 'lodash';
 import YAML from 'yaml';
 import { of } from 'rxjs';
+import { TextPanel } from './react/TextPanel';
 
 const homepage = `${process.env.REACT_APP_HOMEPAGE}`;
 const KEY = 'leibniz';
@@ -46,6 +47,7 @@ interface AppState {
   rules?: SystemRules;
   errors?: SystemErrors;
   leibniz?: Leibniz;
+  yaml?: string;
 }
 
 /**
@@ -251,6 +253,7 @@ export default class App extends Component<{}, AppState> {
       if (validateSystemDefinition(json)) {
         this.processDefs(json);
       }
+      this.setState({ yaml: content });
     } catch (e) {
       console.error('Error parsing', content);
       this.onError('' + e);
@@ -324,6 +327,12 @@ export default class App extends Component<{}, AppState> {
       optionShow, optionTitle, optionMessage, optionConfirmBtn, optionConfirm,
       maxDt, defs, errors, rules
     } = this.state;
+    const yaml = defs
+      ? YAML.stringify(defs)
+      : '---';
+    const errorsList = errors
+      ? toErrorsText(errors)
+      : undefined;
     return (
       <Container fluid>
         <LbNavBar
@@ -357,6 +366,9 @@ export default class App extends Component<{}, AppState> {
               <Editor defs={defs} errors={errors}
                 onChange={defs => this.processDefs(defs)} />
             </Tab>
+            <Tab eventKey="yaml" title="Yaml">
+              <TextPanel text={yaml} errorList={errorsList} onValidate={text => this.importFile(text)} />
+            </Tab>
             <Tab eventKey="dump" title="Dump panel">
               <DumpPanel rules={rules} />
             </Tab>
@@ -375,4 +387,47 @@ export default class App extends Component<{}, AppState> {
       </Container>
     );
   }
+}
+
+/**
+ * Returns the errors map
+ * @param sysErrors the system errors
+ */
+function toErrorsText(sysErrors: SystemErrors): [string, string[]][] | undefined {
+  const bodiesErrors = sysErrors.bodies.flatMap((bodyError, i) => {
+    const positionErrors = bodyError.position.length > 0 ? [[`bodies[${i}].position`, bodyError.position] as [string, string[]]] : []
+    const rotationErrors = bodyError.rotation && bodyError.rotation.length > 0
+      ? [[`P[${i}].rotation`, bodyError.rotation] as [string, string[]]]
+      : [];
+    return [...positionErrors, ...rotationErrors];
+  })
+  const funcsErrors = _(_.toPairs(sysErrors.funcs))
+    .filter(([id, errors]) =>
+      errors.length > 0
+    )
+    .map(([id, errors]) => [`funcs.${id}`, errors] as [string, string[]])
+    .value();
+
+  const initialStatusErrors = _(_.toPairs(sysErrors.initialStatus))
+    .filter(([id, errors]) =>
+      errors.length > 0
+    )
+    .map(([id, errors]) => [`initialStatus.${id}`, errors] as [string, string[]])
+    .value();
+
+  const transitionErrors = _(_.toPairs(sysErrors.transition))
+    .filter(([id, errors]) =>
+      errors.length > 0
+    )
+    .map(([id, errors]) => [`transition.${id}`, errors] as [string, string[]])
+    .value();
+
+  const errors = [
+    ...bodiesErrors,
+    ...funcsErrors,
+    ...initialStatusErrors,
+    ...transitionErrors
+  ];
+
+  return errors.length > 0 ? errors : undefined;
 }
