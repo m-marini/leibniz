@@ -1,0 +1,19 @@
+version: "0.2"
+bodies:
+  - position: (0,0,0)
+    rotation: qrot(Phi)
+  - position: R0
+  - position: R1
+  - position: R2
+funcs:
+  w: 60*PI/180
+  N: n(0,1,1)
+  W: w*N
+  dPhi: W*dt
+  R0: 0.5,0,0
+  R1: qrot(Phi) * (2,0,0)
+  R2: R0 @ R1
+initialStatus:
+  Phi: 0,0,0
+transition:
+  Phi: Phi+dPhi

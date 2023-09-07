@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
+- Issue #64: Add cross product
 - Issue #65: Add product quaternion by vector3
 
 ## [2.0.1] - 2023-09-07

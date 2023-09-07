@@ -53,7 +53,8 @@ import {
     createQuaternionRefCode,
     createMatrixRefCode,
     createModScalarCode,
-    createMulQMCode
+    createMulQMCode,
+    createCrossCode
 } from "./leibniz-code";
 import { ValueFunction } from "./leibniz-defs";
 import { ASTNode, ASTNodeType, baseVectorId, kroneckerId, TreeNode } from "./leibniz-parser";
@@ -695,6 +696,8 @@ function factorSuffixCodeGen(ctx: CodeGenContext, node: TreeNode<ASTNode>): Code
         switch (opsNode.symbol) {
             case '*':
                 return mulCodeGen(unary2Ctx, unary1Ctx.typeCode, unary2Ctx.typeCode);
+            case '@':
+                return crossCodeGen(unary2Ctx, unary1Ctx.typeCode, unary2Ctx.typeCode);
             case '/':
                 return divCodeGen(unary2Ctx, unary1Ctx.typeCode, unary2Ctx.typeCode);
             default:
@@ -794,6 +797,24 @@ function mulCodeGen(ctx: CodeGenContext, a: ValueCode, b: ValueCode): CodeGenCon
         }
     }
     throw new Error('Invalid branch');
+}
+
+/**
+ * 
+ * @param aCtx 
+ * @param bCtx 
+ */
+function crossCodeGen(ctx: CodeGenContext, a: ValueCode, b: ValueCode): CodeGenContext {
+    if (a.type !== ValueTypeCode.Vector || a.rows !== 3) {
+        return ctx.addErrors(errorByCode('vector3 expected', a));
+    }
+    if (b.type !== ValueTypeCode.Vector || b.rows !== 3) {
+        return ctx.addErrors(errorByCode('vector3 expected', b));
+    }
+    return ctx.withTypeCode(
+        newVectorCode(
+            createCrossCode(a.code, b.code), 3)
+    );
 }
 
 /**
