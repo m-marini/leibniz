@@ -4,6 +4,29 @@ import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
 const version = `${process.env.REACT_APP_VERSION}`;
 const homepage = `${process.env.REACT_APP_HOMEPAGE}`;
 
+const PREDEFINED = [
+  {
+    text: 'Basic sample',
+    url: 'sample1.yml'
+  },
+  {
+    text: 'Cross product sample',
+    url: 'cross.yml'
+  },
+  {
+    text: '3 Bodies',
+    url: 'bodies3.yml'
+  },
+  {
+    text: 'Solaris (Earth - Sun)',
+    url: 'solaris.yml'
+  },
+  {
+    text: 'Selene (Moon -Earth)',
+    url: 'selene.yml'
+  }
+];
+
 /**
  * renders the navigation bar
  */
@@ -24,23 +47,13 @@ export const LbNavBar: FunctionComponent<Readonly<{
             <NavDropdown.Item
               onClick={() => { if (onReset) { onReset(); } }}>
               Reset
+            </NavDropdown.Item>
+            {PREDEFINED.map(({ text, url }) => (
+              <NavDropdown.Item
+                onClick={() => { if (onLoad) { onLoad(url); } }}>
+                {text}
               </NavDropdown.Item>
-            <NavDropdown.Item
-              onClick={() => { if (onLoad) { onLoad('sample1.yml'); } }}>
-              Basic sample
-            </NavDropdown.Item>
-            <NavDropdown.Item
-              onClick={() => { if (onLoad) { onLoad('bodies3.yml'); } }}>
-              3 Bodies
-            </NavDropdown.Item>
-            <NavDropdown.Item
-              onClick={() => { if (onLoad) { onLoad('solaris.yml'); } }}>
-              Solaris (Earth - Sun)
-            </NavDropdown.Item>
-            <NavDropdown.Item
-              onClick={() => { if (onLoad) { onLoad('selene.yml'); } }}>
-              Selene (Moon -Earth)
-              </NavDropdown.Item>
+            ))}
           </NavDropdown>
           <Nav.Link
             onClick={() => { if (onImport) { onImport(); } }}>

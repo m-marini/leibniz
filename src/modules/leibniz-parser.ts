@@ -695,8 +695,9 @@ export const systemSyntax: Record<string, SyntaxRule> = {
     'factor-suffix*': repeatExpr('factor-suffix*',
         seqExpr('factor-suffix',
             altExpr('factor-op',
-                symbolExpr('*'),
-                symbolExpr('/')
+            symbolExpr('*'),
+            symbolExpr('@'),
+            symbolExpr('/')
             ),
             nonTermExpr('unary')
         )

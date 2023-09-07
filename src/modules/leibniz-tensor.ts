@@ -209,6 +209,26 @@ export class Matrix {
         return new Matrix(v);
     }
 
+
+    /**
+     * 
+     * @param other 
+     */
+    cross(other: Matrix) {
+        assert(this.rows === 3 && this.cols === 1,
+            () => `Assert failed: (this.rows === 3 && this.cols === 1), this.rows=${this.rows}, this.cols=${this.cols}`);
+
+        assert(other.rows === 3 && other.cols === 1,
+            () => `Assert failed: (other.rows === 3 && other.cols === 3), other.rows=${this.rows}, other.cols=${this.cols}`);
+
+        const [[a0], [a1], [a2]] = this._values;
+        const [[b0], [b1], [b2]] = other._values;
+        const c0 = a1 * b2 - a2 * b1;
+        const c1 = a2 * b0 - a0 * b2;
+        const c2 = a0 * b1 - a1 * b0;
+        return vector(c0, c1, c2);
+    }
+
     /**
      * 
      * @param other 

@@ -459,6 +459,21 @@ export function createMulMMCode(a: ValueFunction<Matrix>, b: ValueFunction<Matri
  * @param a 
  * @param b 
  */
+export function createCrossCode(a: ValueFunction<Matrix>, b: ValueFunction<Matrix>): ValueFunction<Matrix> {
+    return (ctx: Record<string, AnyValue>) => {
+        const av = a(ctx);
+        const bv = b(ctx);
+        const result = av.cross(bv);
+        tracing(() => `${av} @ ${bv} = ${result}`);
+        return result;
+    };
+}
+
+/**
+ * 
+ * @param a 
+ * @param b 
+ */
 export function createDivSSCode(a: ValueFunction<number>, b: ValueFunction<number>): ValueFunction<number> {
     return (ctx: Record<string, AnyValue>) => {
         const av = a(ctx);
