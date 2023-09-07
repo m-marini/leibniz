@@ -21,6 +21,7 @@
     "jsonschema": "^1.4.1",
     "lex": "^1.7.9",
     "lodash": "^4.17.21",
+    "mathjs": "^11.11.0",
     "react": "^18.2.0",
     "react-bootstrap": "^2.8.0",
     "react-dom": "^18.2.0",
