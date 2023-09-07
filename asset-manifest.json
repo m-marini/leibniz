@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/leibniz/static/css/main.f0fbc4c3.css",
-    "main.js": "/leibniz/static/js/main.0c8136a0.js",
+    "main.js": "/leibniz/static/js/main.023581ca.js",
     "static/js/787.6dfedb27.chunk.js": "/leibniz/static/js/787.6dfedb27.chunk.js",
     "index.html": "/leibniz/index.html",
     "main.f0fbc4c3.css.map": "/leibniz/static/css/main.f0fbc4c3.css.map",
-    "main.0c8136a0.js.map": "/leibniz/static/js/main.0c8136a0.js.map",
+    "main.023581ca.js.map": "/leibniz/static/js/main.023581ca.js.map",
     "787.6dfedb27.chunk.js.map": "/leibniz/static/js/787.6dfedb27.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.f0fbc4c3.css",
-    "static/js/main.0c8136a0.js"
+    "static/js/main.023581ca.js"
   ]
 }
